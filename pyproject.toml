@@ -12,7 +12,7 @@ license = { file = "LICENSE" }
 authors = [
   { name = "nazroll" }
 ]
-keywords = ["wizard skating", "tricks", "random", "generator"]
+keywords = ["wizard skating", "tricks", "random", "generator", "inline skating"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
@@ -24,6 +24,7 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Typing :: Typed",
   "Topic :: Games/Entertainment",
   "Topic :: Software Development :: Libraries",
@@ -49,19 +50,16 @@ packages = ["src/wzrdbrain"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py39"
-extend-select = ["Q", "UP"]
-extend-ignore = ["E501"]
+lint.extend-select = ["Q", "UP"]
+lint.extend-ignore = ["E501"]
 
 [tool.black]
 line-length = 100
-target-version = ["py39"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
 
 [tool.mypy]
-python_version = "3.9"
 strict = true
 warn_unused_ignores = true
