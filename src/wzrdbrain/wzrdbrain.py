@@ -1,4 +1,5 @@
 import random
+from typing import List, Optional
 
 # Trick data definitions
 direction = ["front", "back"]
@@ -61,7 +62,7 @@ use_fakie = [
 
 
 # Generate a trick
-def generate_trick():
+def generate_trick() -> List[str]:
     selected_move = random.choice(move)
     trick = [random.choice(direction)]
 
@@ -73,11 +74,11 @@ def generate_trick():
 
 
 # Generate a conbination of tricks. Default setting is random, between 1-5 tricks.
-def generate_combo(num_of_tricks=None):
+def generate_combo(num_of_tricks: Optional[int] = None) -> List[str]:
     if num_of_tricks is None:
         num_of_tricks = random.randint(1, 5)
 
-    trick_line = []
+    trick_line: List[str] = []
     for i in range(num_of_tricks):
         trick_parts = generate_trick()
         # If the move uses the fakie semantics, convert the direction "front"/"back" to "forward"/"fakie"
