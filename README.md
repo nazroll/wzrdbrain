@@ -22,6 +22,10 @@ print(generate_combo(3))
 # Example output: ['front parallel', 'fakie toe press', 'forward 360']
 ```
 
+## List of wizard skating tricks
+
+The list of tricks in this library is not comprehensive. Please create an issue and give us your suggestions of new tricks to be added.
+
 ## Contributing
 
 Contributions are welcome! Please see the [Contributing Guide](CONTRIBUTING.md) for details on how to set up your development environment, run tests, and submit changes.
