@@ -1,4 +1,4 @@
-from .wzrdbrain import categories, generate_combo, generate_trick
+from .wzrdbrain import generate_combo, generate_trick
 
 """
 wzrdbrain: Basic APIs to generate tricks for wizard skating.
