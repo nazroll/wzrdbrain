@@ -25,6 +25,6 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           # To test first against TestPyPI, uncomment the next two lines and add a prerelease:
-          repository-url: https://test.pypi.org/legacy/
-          skip-existing: true
+          # repository-url: https://test.pypi.org/legacy/
+          # skip-existing: true
           print-hash: true
