@@ -1,30 +1,30 @@
 import random
 
 # Trick data definitions
-direction = ['front', 'back']
-stance = ['open', 'closed']
+direction = ["front", "back"]
+stance = ["open", "closed"]
 move = [
-    'predator', 'predator one', 
-    'parallel', 'tree', 
-    'gazelle', 'gazelle s', 
-    'lion', 'lion s',
-    'toe press', 'heel press',
-    'toe roll', 'heel roll',
-    '360', '180',
-    'parallel slide', 'soul slide', 'acid slide', 'mizu slide', 'star slide', 'fast slide', 'back slide'
+    "predator", "predator one", 
+    "parallel", "tree", 
+    "gazelle", "gazelle s", 
+    "lion", "lion s",
+    "toe press", "heel press",
+    "toe roll", "heel roll",
+    "360", "180",
+    "parallel slide", "soul slide", "acid slide", "mizu slide", "star slide", "fast slide", "back slide"
     ]
 exclude_stance = [
-    'predator', 'predator one', 
-    'toe press', 'toe roll', 
-    'heel press', 'heel roll', 
-    '360', '180', 
-    'parallel slide', 'soul slide', 'acid slide', 'mizu slide', 'star slide', 'fast slide', 'back slide'
+    "predator", "predator one", 
+    "toe press", "toe roll", 
+    "heel press", "heel roll", 
+    "360", "180", 
+    "parallel slide", "soul slide", "acid slide", "mizu slide", "star slide", "fast slide", "back slide"
     ]
 use_fakie = [
-    'toe press', 'toe roll', 
-    'heel press', 'heel roll', 
-    '360', '180', 
-    'parallel slide', 'soul slide', 'acid slide', 'mizu slide', 'star slide', 'fast slide', 'back slide'
+    "toe press", "toe roll", 
+    "heel press", "heel roll", 
+    "360", "180", 
+    "parallel slide", "soul slide", "acid slide", "mizu slide", "star slide", "fast slide", "back slide"
 ]
 
 # Generate a trick
