@@ -50,8 +50,8 @@ packages = ["src/wzrdbrain"]
 [tool.ruff]
 line-length = 100
 target-version = "py39"
-extend-select = ["Q", "UP"]
-extend-ignore = ["E501"]
+lint.extend-select = ["Q", "UP"]
+lint.extend-ignore = ["E501"]
 
 [tool.black]
 line-length = 100

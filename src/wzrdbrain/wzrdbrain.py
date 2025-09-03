@@ -1,4 +1,5 @@
 import random
+from typing import Optional
 
 # Trick data definitions
 direction = ["front", "back"]
@@ -72,8 +73,8 @@ def generate_trick() -> list[str]:
     return trick
 
 
-# Generate a conbination of tricks. Default setting is random, between 1-5 tricks.
-def generate_combo(num_of_tricks: int | None = None) -> list[str]:
+# Generate a combination of tricks. Default setting is random, between 1-5 tricks.
+def generate_combo(num_of_tricks: Optional[int] = None) -> list[str]:
     if num_of_tricks is None:
         num_of_tricks = random.randint(1, 5)
 
