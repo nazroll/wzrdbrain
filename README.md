@@ -11,24 +11,13 @@ pip install wzrdbrain
 ## Usage
 
 ```python
-from wzrdbrain import generate_trick, generate_tricks, categories
-
-print(categories())  # ['basics', 'combos', 'grinds', 'manuals', 'spins']
+from wzrdbrain import generate_trick, generate_tricks
 
 # Single trick (random)
-print(generate_trick())  # e.g., "Moon Carve"
-
-# Single trick from a category
-print(generate_trick(category="spins"))  # e.g., "Comet Spin"
-
-# Deterministic (reproducible) trick
-print(generate_trick(seed=123))  # always the same result for this seed
+print(generate_trick())  # e.g., "Front Open Lion"
 
 # Multiple tricks
-print(generate_tricks(5))  # list of 5 tricks (duplicates allowed)
-
-# Multiple tricks from selected categories, no duplicates
-print(generate_tricks(5, categories=["basics", "spins"], unique=True))
+print(generate_combo(5))  # Maximum of 5 tricks in a combo (duplicates allowed)
 ```
 
 ## Development
