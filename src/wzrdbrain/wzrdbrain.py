@@ -50,10 +50,10 @@ def generate_combo(num_of_tricks=None):
         if trick_parts:
             move_name = trick_parts[-1]
             if move_name in use_fakie:
-                if trick_parts[0] == 'back':
-                    trick_parts[0] = 'fakie'
-                elif trick_parts[0] == 'front':
-                    trick_parts[0] = 'forward'
+                if trick_parts[0] == "back":
+                    trick_parts[0] = "fakie"
+                elif trick_parts[0] == "front":
+                    trick_parts[0] = "forward"
         trick_line.append(" ".join(trick_parts))
     return trick_line
 
