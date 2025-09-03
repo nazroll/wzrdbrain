@@ -12,7 +12,7 @@ dist/
 .cache/
 .coverage
 htmlcov/
-
+.ruff_cache/
 # Editors
 .vscode/
 .idea/
