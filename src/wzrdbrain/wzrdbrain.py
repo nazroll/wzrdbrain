@@ -2,9 +2,9 @@ import random
 from typing import Optional
 
 # Trick data definitions
-direction = ["front", "back"]
-stance = ["open", "closed"]
-move = [
+direction = ("front", "back")
+stance = ("open", "closed")
+move = (
     "predator",
     "predator one",
     "parallel",
@@ -26,39 +26,30 @@ move = [
     "star slide",
     "fast slide",
     "back slide",
-]
-exclude_stance = [
+)
+
+# Moves that use "fakie" instead of "back"
+use_fakie = {
+    "toe press",
+    "toe roll",
+    "heel press",
+    "heel roll",
+    "360",
+    "180",
+    "parallel slide",
+    "soul slide",
+    "acid slide",
+    "mizu slide",
+    "star slide",
+    "fast slide",
+    "back slide",
+}
+
+# Moves that don't have an open/closed stance
+exclude_stance = {
     "predator",
     "predator one",
-    "toe press",
-    "toe roll",
-    "heel press",
-    "heel roll",
-    "360",
-    "180",
-    "parallel slide",
-    "soul slide",
-    "acid slide",
-    "mizu slide",
-    "star slide",
-    "fast slide",
-    "back slide",
-]
-use_fakie = [
-    "toe press",
-    "toe roll",
-    "heel press",
-    "heel roll",
-    "360",
-    "180",
-    "parallel slide",
-    "soul slide",
-    "acid slide",
-    "mizu slide",
-    "star slide",
-    "fast slide",
-    "back slide",
-]
+}.union(use_fakie)
 
 
 # Generate a trick

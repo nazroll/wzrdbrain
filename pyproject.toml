@@ -4,19 +4,19 @@ build-backend = "hatchling.build"
 
 [project]
 name = "wzrdbrain"
-version = "0.1.2"
-description = "Basic APIs to generate tricks for wizard skating."
+version = "0.1.3"
+description = "A simple library to generate random trick combinations for wizard skating."
 readme = "README.md"
 requires-python = ">=3.9"
-license = { file = "LICENSE" }
+license = "Apache-2.0"
 authors = [
   { name = "nazroll" }
 ]
 keywords = ["wizard skating", "tricks", "random", "generator", "inline skating"]
 classifiers = [
-  "Development Status :: 3 - Alpha",
+  "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Developers",
-  "License :: OSI Approved :: MIT License",
+  "License :: OSI Approved :: Apache Software License",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
