@@ -64,10 +64,10 @@ def generate_trick() -> list[str]:
     return trick
 
 
-# Generate a combination of tricks. Default setting is random, between 1-5 tricks.
+# Generate a combination of tricks. Default setting is random, between 2-5 tricks.
 def generate_combo(num_of_tricks: Optional[int] = None) -> list[str]:
     if num_of_tricks is None:
-        num_of_tricks = random.randint(1, 5)
+        num_of_tricks = random.randint(2, 5)
 
     trick_line: list[str] = []
     for i in range(num_of_tricks):
