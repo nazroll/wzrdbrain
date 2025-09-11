@@ -20,6 +20,7 @@ MOVES = (
     "heel roll",
     "360",
     "180",
+    "540",  # Added missing move
     "parallel slide",
     "soul slide",
     "acid slide",
@@ -28,6 +29,12 @@ MOVES = (
     "fast slide",
     "back slide",
 )
+# Moves that only occurs as the first trick for a combo
+only_first = {
+    "predator",
+    "predator one",
+    "parallel"
+}
 
 # Moves that use "fakie" instead of "back"
 use_fakie = {
@@ -37,6 +44,7 @@ use_fakie = {
     "heel roll",
     "360",
     "180",
+    "540",
     "parallel slide",
     "soul slide",
     "acid slide",
@@ -62,7 +70,10 @@ class Trick:
     exit_from_trick: Optional[str] = None
 
     def __post_init__(self):
-        """Validate inputs and set random defaults if needed."""
+        """
+        Validate inputs and set random defaults for any attributes that were not provided.
+        """
+        # --- Input Validation ---
         if self.direction is not None and self.direction not in DIRECTIONS:
             raise ValueError(f"Invalid direction: '{self.direction}'. Must be one of {DIRECTIONS}")
         if self.stance is not None and self.stance not in STANCES:
@@ -70,20 +81,25 @@ class Trick:
         if self.move is not None and self.move not in MOVES:
             raise ValueError(f"Invalid move: '{self.move}'. Must be one of {MOVES}")
 
-        """Called after the object is created to set random defaults if needed."""
+        # --- Default Value Generation ---
         if self.direction is None:
             self.direction = random.choice(DIRECTIONS)
-            self.enter_into_trick = self.direction
-            self.exit_from_trick = self.direction
 
         if self.move is None:
             self.move = random.choice(MOVES)
-        
+
+        if self.enter_into_trick is None:
+            self.enter_into_trick = self.direction
+
+        if self.exit_from_trick is None:
+            self.exit_from_trick = self.direction
+
         # Automatically determine stance if not provided
         if self.stance is None and self.move not in exclude_stance:
             self.stance = random.choice(STANCES)
 
-        if self.move in ["gazelle", "lion"]:
+        # Update exit direction for moves that rotate the body
+        if self.move in ["gazelle", "lion", "180", "540"]:
             if self.direction == "back":
                 self.exit_from_trick = "front"
             elif self.direction == "front":
@@ -91,7 +107,6 @@ class Trick:
 
     def __str__(self):
         parts = []
-        
         display_direction = self.direction
         # Handle fakie/forward display name
         if self.move in use_fakie:
@@ -99,8 +114,8 @@ class Trick:
                 display_direction = "fakie"
             elif self.direction == "front":
                 display_direction = "forward"
-        
-        if display_direction and display_direction != "null":
+
+        if display_direction:
             parts.append(display_direction)
         if self.stance:
             parts.append(self.stance)
@@ -116,14 +131,31 @@ class Trick:
         return data
 
 
-# Generate a combination of tricks. Default setting is random, between 2-5 tricks.
-def generate_combo(num_of_tricks: Optional[int] = None) -> list[str]:
+# Generate a combination of tricks. Default is a random number from 2 until 5.
+def generate_combo(num_of_tricks: Optional[int] = None) -> list[dict]:
     if num_of_tricks is None:
         num_of_tricks = random.randint(2, 5)
 
-    trick_line: list[str] = []
+    if num_of_tricks <= 0:
+        return []
+
+    trick_objects: list[Trick] = []
+    previous_trick = None
+
     for _ in range(num_of_tricks):
-        # Use the new class method to generate a Trick object
-        trick_obj = Trick()
-        trick_line.append(str(trick_obj))
-    return trick_line
+        if not previous_trick:
+            # Generate the first trick without constraints
+            new_trick = Trick()
+        else:
+            # Generate subsequent tricks based on the previous one's exit
+            required_direction = previous_trick.exit_from_trick
+            new_trick = None
+            # Loop until we generate a valid trick for this position
+            while new_trick is None or new_trick.move in only_first:
+                new_trick = Trick(direction=required_direction)
+
+        trick_objects.append(new_trick)
+        previous_trick = new_trick
+
+    # Convert all trick objects to dictionaries for the final output
+    return [trick.to_dict() for trick in trick_objects]
