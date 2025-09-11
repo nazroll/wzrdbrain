@@ -73,3 +73,25 @@ def test_generate_combo_default_length() -> None:
     assert 1 <= len(line) <= 5
     for item in line:
         assert isinstance(item, str)
+
+
+def test_generate_combo_empty_trick(monkeypatch: pytest.MonkeyPatch) -> None:
+    # If generate_trick() returns an empty list, the combo should be empty.
+    def fake_generate_trick() -> list[str]:
+        return []
+
+    monkeypatch.setattr(wb, "generate_trick", fake_generate_trick)
+    line = wb.generate_combo(1)
+    assert line == [""]
+
+
+def test_generated_values_are_valid() -> None:
+    # Run the generator a bunch of times and check that the values are valid.
+    for _ in range(100):
+        trick = wb.generate_trick()
+        assert 2 <= len(trick) <= 3
+        assert trick[0] in wb.direction
+        assert trick[-1] in wb.move
+
+        if len(trick) == 3:
+            assert trick[1] in wb.stance
