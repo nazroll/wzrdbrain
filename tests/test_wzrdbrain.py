@@ -2,7 +2,7 @@ import pytest
 from wzrdbrain.wzrdbrain import Trick, generate_combo, DIRECTIONS, MOVES, STANCES, only_first
 
 
-def test_trick_creation_with_validation():
+def test_trick_creation_with_validation() -> None:
     """Test that creating a Trick with invalid data raises a ValueError."""
     with pytest.raises(ValueError, match="Invalid move"):
         Trick(move="invalid_move")
@@ -12,7 +12,7 @@ def test_trick_creation_with_validation():
         Trick(stance="invalid_stance")
 
 
-def test_trick_default_creation():
+def test_trick_default_creation() -> None:
     """Test creating a Trick with no arguments uses random defaults."""
     trick = Trick()
     assert isinstance(trick, Trick)
@@ -24,7 +24,7 @@ def test_trick_default_creation():
             assert trick.stance in STANCES
 
 
-def test_trick_str_representation():
+def test_trick_str_representation() -> None:
     """Test the string formatting of a Trick, including the 'fakie' logic."""
     trick1 = Trick(direction="front", stance="open", move="gazelle")
     assert str(trick1) == "front open gazelle"
@@ -36,7 +36,7 @@ def test_trick_str_representation():
     assert str(trick3) == "forward soul slide"
 
 
-def test_trick_to_dict():
+def test_trick_to_dict() -> None:
     """Test the to_dict method includes the 'name' key."""
     trick = Trick(direction="front", stance="open", move="gazelle")
     trick_dict = trick.to_dict()
@@ -46,7 +46,7 @@ def test_trick_to_dict():
     assert trick_dict["move"] == "gazelle"
 
 
-def test_generate_combo_returns_list_of_dicts():
+def test_generate_combo_returns_list_of_dicts() -> None:
     """Test that generate_combo returns a list of trick dictionaries."""
     combo = generate_combo(3)
     assert isinstance(combo, list)
@@ -57,7 +57,7 @@ def test_generate_combo_returns_list_of_dicts():
         assert "move" in trick_dict
 
 
-def test_generate_combo_linking():
+def test_generate_combo_linking() -> None:
     """Test that tricks in a combo are linked by their exit/enter directions."""
     # Generate a long combo to increase the chance of seeing rotation
     combo = generate_combo(10)
@@ -67,7 +67,7 @@ def test_generate_combo_linking():
         assert current_trick["exit_from_trick"] == next_trick["enter_into_trick"]
 
 
-def test_generate_combo_only_first_rule():
+def test_generate_combo_only_first_rule() -> None:
     """Test that moves in 'only_first' do not appear after the first trick."""
     # Run multiple times to ensure rule is consistently applied
     for _ in range(10):
