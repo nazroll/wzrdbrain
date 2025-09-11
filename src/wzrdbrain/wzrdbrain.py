@@ -1,5 +1,5 @@
 import random
-from typing import Optional
+from typing import Optional, Any
 from dataclasses import dataclass, asdict
 
 # Trick data definitions
@@ -30,11 +30,7 @@ MOVES = (
     "back slide",
 )
 # Moves that only occurs as the first trick for a combo
-only_first = {
-    "predator",
-    "predator one",
-    "parallel"
-}
+only_first = {"predator", "predator one", "parallel"}
 
 # Moves that use "fakie" instead of "back"
 use_fakie = {
@@ -69,11 +65,11 @@ class Trick:
     enter_into_trick: Optional[str] = None
     exit_from_trick: Optional[str] = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """
         Validate inputs and set random defaults for any attributes that were not provided.
         """
-        # --- Input Validation ---
+        # Input validation
         if self.direction is not None and self.direction not in DIRECTIONS:
             raise ValueError(f"Invalid direction: '{self.direction}'. Must be one of {DIRECTIONS}")
         if self.stance is not None and self.stance not in STANCES:
@@ -81,7 +77,7 @@ class Trick:
         if self.move is not None and self.move not in MOVES:
             raise ValueError(f"Invalid move: '{self.move}'. Must be one of {MOVES}")
 
-        # --- Default Value Generation ---
+        # Generate default values
         if self.direction is None:
             self.direction = random.choice(DIRECTIONS)
 
@@ -105,7 +101,7 @@ class Trick:
             elif self.direction == "front":
                 self.exit_from_trick = "back"
 
-    def __str__(self):
+    def __str__(self) -> str:
         parts = []
         display_direction = self.direction
         # Handle fakie/forward display name
@@ -124,15 +120,15 @@ class Trick:
 
         return " ".join(parts)
 
-    def to_dict(self):
+    def to_dict(self) -> dict[str, Any]:
         """Returns a dictionary representation of the trick, including its full name."""
         data = asdict(self)
-        data['name'] = str(self)
+        data["name"] = str(self)
         return data
 
 
 # Generate a combination of tricks. Default is a random number from 2 until 5.
-def generate_combo(num_of_tricks: Optional[int] = None) -> list[dict]:
+def generate_combo(num_of_tricks: Optional[int] = None) -> list[dict[str, Any]]:
     if num_of_tricks is None:
         num_of_tricks = random.randint(2, 5)
 
@@ -140,19 +136,21 @@ def generate_combo(num_of_tricks: Optional[int] = None) -> list[dict]:
         return []
 
     trick_objects: list[Trick] = []
-    previous_trick = None
+    previous_trick: Optional[Trick] = None
 
     for _ in range(num_of_tricks):
-        if not previous_trick:
+        if previous_trick is None:
             # Generate the first trick without constraints
             new_trick = Trick()
         else:
             # Generate subsequent tricks based on the previous one's exit
             required_direction = previous_trick.exit_from_trick
-            new_trick = None
             # Loop until we generate a valid trick for this position
-            while new_trick is None or new_trick.move in only_first:
-                new_trick = Trick(direction=required_direction)
+            while True:
+                candidate_trick = Trick(direction=required_direction)
+                if candidate_trick.move not in only_first:
+                    new_trick = candidate_trick
+                    break
 
         trick_objects.append(new_trick)
         previous_trick = new_trick
