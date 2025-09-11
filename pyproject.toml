@@ -1,11 +1,11 @@
 [build-system]
-requires = ["hatchling>=1.25"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "wzrdbrain"
-version = "0.1.3"
-description = "A simple library to generate random trick combinations for wizard skating."
+version = "0.1.4"
+description = "A simple library to generate trick combinations for wizard skating."
 readme = "README.md"
 requires-python = ">=3.9"
 license = "Apache-2.0"
@@ -14,29 +14,18 @@ authors = [
 ]
 keywords = ["wizard skating", "tricks", "random", "generator", "inline skating"]
 classifiers = [
-  "Development Status :: 5 - Production/Stable",
-  "Intended Audience :: Developers",
-  "License :: OSI Approved :: Apache Software License",
-  "Programming Language :: Python",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.9",
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12",
-  "Programming Language :: Python :: 3.13",
-  "Typing :: Typed",
   "Topic :: Games/Entertainment",
   "Topic :: Software Development :: Libraries",
 ]
 
 [project.optional-dependencies]
 dev = [
-  "pytest>=8",
-  "ruff>=0.5",
-  "black>=24.3",
-  "mypy>=1.10",
-  "build>=1.2",
+    "pytest",
+    "ruff",
+    "black",
+    "mypy",
+    "build"
 ]
 
 [project.urls]
@@ -57,9 +46,12 @@ lint.extend-ignore = ["E501"]
 line-length = 100
 
 [tool.pytest.ini_options]
+pythonpath = ["src"]
 testpaths = ["tests"]
-addopts = "-q"
 
 [tool.mypy]
 strict = true
 warn_unused_ignores = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
