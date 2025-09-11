@@ -1,9 +1,10 @@
 import random
 from typing import Optional
+from dataclasses import dataclass, asdict
 
 # Trick data definitions
-direction = ("front", "back")
-stance = ("open", "closed")
+direction = ("front", "back", "null")
+stance = ("open", "closed", "switch")
 move = (
     "predator",
     "predator one",
@@ -50,6 +51,26 @@ exclude_stance = {
     "predator",
     "predator one",
 }.union(use_fakie)
+
+
+@dataclass
+class Trick:
+    direction: str
+    stance: Optional[str]
+    move: str
+    enter_into_trick: str
+    exit_from_trick: str
+
+    def __str__(self):
+        if self.stance:
+            return f"{self.direction} {self.stance} {self.move}"
+        return f"{self.direction} {self.move}"
+
+    def to_dict(self):
+        """Returns a dictionary representation of the trick, including its full name."""
+        data = asdict(self)
+        data['name'] = str(self)
+        return data
 
 
 # Generate a trick
