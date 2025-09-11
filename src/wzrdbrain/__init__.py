@@ -1,10 +1,10 @@
-from .wzrdbrain import generate_combo, generate_trick
+from .wzrdbrain import Trick, generate_combo
 
 """
 wzrdbrain: Basic APIs to generate tricks for wizard skating.
 """
 
 
-__all__ = ["generate_trick", "generate_combo"]
+__all__ = ["Trick", "generate_combo"]
 
-__version__ = "0.1.0"
+__version__ = "0.1.4"
