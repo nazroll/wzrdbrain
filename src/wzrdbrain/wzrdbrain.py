@@ -41,6 +41,8 @@ use_fakie = _TRICK_DATA.rules.use_fakie
 rotating_moves = _TRICK_DATA.rules.rotating_moves
 exclude_stance = _TRICK_DATA.rules.exclude_stance_base.union(use_fakie)
 
+# Pre-calculate the set of moves that are valid for subsequent tricks
+SUBSEQUENT_MOVES = set(MOVES) - only_first
 
 @dataclass
 class Trick:
@@ -123,22 +125,18 @@ def generate_combo(num_of_tricks: Optional[int] = None) -> list[dict[str, Any]]:
     trick_objects: list[Trick] = []
     previous_trick: Optional[Trick] = None
 
-    for _ in range(num_of_tricks):
-        if previous_trick is None:
-            # Generate the first trick without constraints
-            new_trick = Trick()
+    for i in range(num_of_tricks):
+        if i == 0:
+            # First trick: choose from all moves
+            move = random.choice(MOVES)
+            new_trick = Trick(move=move)
         else:
-            # Generate subsequent tricks based on the previous one's exit
+            # Subsequent tricks: choose from the pre-filtered set
             required_direction = previous_trick.exit_from_trick
-            # Loop until we generate a valid trick for this position
-            while True:
-                candidate_trick = Trick(direction=required_direction)
-                if candidate_trick.move not in only_first:
-                    new_trick = candidate_trick
-                    break
+            move = random.choice(list(SUBSEQUENT_MOVES)) # Choose from the valid set
+            new_trick = Trick(direction=required_direction, move=move)
 
         trick_objects.append(new_trick)
         previous_trick = new_trick
 
-    # Convert all trick objects to dictionaries for the final output
     return [trick.to_dict() for trick in trick_objects]
