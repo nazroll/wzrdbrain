@@ -5,20 +5,25 @@ from typing import Optional, Any
 from dataclasses import dataclass, asdict
 from pydantic import BaseModel, Field
 
+
 # Pydantic models for data validation
 class TrickRules(BaseModel):
     """Defines the structure of the 'RULES' object in tricks.json."""
+
     only_first: set[str] = Field(..., alias="ONLY_FIRST")
     use_fakie: set[str] = Field(..., alias="USE_FAKIE")
     rotating_moves: set[str] = Field(..., alias="ROTATING_MOVES")
     exclude_stance_base: set[str] = Field(..., alias="EXCLUDE_STANCE_BASE")
 
+
 class TrickData(BaseModel):
     """Defines the top-level structure of tricks.json."""
+
     directions: tuple[str, ...] = Field(..., alias="DIRECTIONS")
     stances: tuple[str, ...] = Field(..., alias="STANCES")
     moves: tuple[str, ...] = Field(..., alias="MOVES")
     rules: TrickRules = Field(..., alias="RULES")
+
 
 # Load trick data from JSON
 def _load_trick_data() -> TrickData:
@@ -43,6 +48,7 @@ exclude_stance = _TRICK_DATA.rules.exclude_stance_base.union(use_fakie)
 
 # Pre-calculate the set of moves that are valid for subsequent tricks
 SUBSEQUENT_MOVES = set(MOVES) - only_first
+
 
 @dataclass
 class Trick:
@@ -132,8 +138,9 @@ def generate_combo(num_of_tricks: Optional[int] = None) -> list[dict[str, Any]]:
             new_trick = Trick(move=move)
         else:
             # Subsequent tricks: choose from the pre-filtered set
+            assert previous_trick is not None 
             required_direction = previous_trick.exit_from_trick
-            move = random.choice(list(SUBSEQUENT_MOVES)) # Choose from the valid set
+            move = random.choice(list(SUBSEQUENT_MOVES))  # Choose from the valid set
             new_trick = Trick(direction=required_direction, move=move)
 
         trick_objects.append(new_trick)
