@@ -3,28 +3,44 @@ import json
 import importlib.resources
 from typing import Optional, Any
 from dataclasses import dataclass, asdict
+from pydantic import BaseModel, Field
+
+# Pydantic models for data validation
+class TrickRules(BaseModel):
+    """Defines the structure of the 'RULES' object in tricks.json."""
+    only_first: set[str] = Field(..., alias="ONLY_FIRST")
+    use_fakie: set[str] = Field(..., alias="USE_FAKIE")
+    rotating_moves: set[str] = Field(..., alias="ROTATING_MOVES")
+    exclude_stance_base: set[str] = Field(..., alias="EXCLUDE_STANCE_BASE")
+
+class TrickData(BaseModel):
+    """Defines the top-level structure of tricks.json."""
+    directions: tuple[str, ...] = Field(..., alias="DIRECTIONS")
+    stances: tuple[str, ...] = Field(..., alias="STANCES")
+    moves: tuple[str, ...] = Field(..., alias="MOVES")
+    rules: TrickRules = Field(..., alias="RULES")
 
 # Load trick data from JSON
-def _load_trick_data():
+def _load_trick_data() -> TrickData:
     """Loads trick definitions from the embedded tricks.json file."""
     with importlib.resources.open_text("wzrdbrain", "tricks.json") as f:
-        return json.load(f)
-    
+        data = json.load(f)
+        return TrickData.model_validate(data)
+
+
 _TRICK_DATA = _load_trick_data()
 
-# Trick data definitions loaded from JSON
-DIRECTIONS = tuple(_TRICK_DATA["DIRECTIONS"])
-STANCES = tuple(_TRICK_DATA["STANCES"])
-MOVES = tuple(_TRICK_DATA["MOVES"])
+# Trick data definitions
+DIRECTIONS = _TRICK_DATA.directions
+STANCES = _TRICK_DATA.stances
+MOVES = _TRICK_DATA.moves
 
-# Rules loaded from JSON
-_RULES = _TRICK_DATA["RULES"]
-only_first = set(_RULES["ONLY_FIRST"])
-use_fakie = set(_RULES["USE_FAKIE"])
-rotating_moves = set(_RULES["ROTATING_MOVES"])
+# Rules
+only_first = _TRICK_DATA.rules.only_first
+use_fakie = _TRICK_DATA.rules.use_fakie
+rotating_moves = _TRICK_DATA.rules.rotating_moves
+exclude_stance = _TRICK_DATA.rules.exclude_stance_base.union(use_fakie)
 
-# Moves that don't have an open/closed stance are derived from the JSON data
-exclude_stance = set(_RULES["EXCLUDE_STANCE_BASE"]).union(use_fakie)
 
 @dataclass
 class Trick:
@@ -64,7 +80,7 @@ class Trick:
             self.stance = random.choice(STANCES)
 
         # Update exit direction for moves that rotate the body
-        if self.move in ["gazelle", "lion", "180", "540"]:
+        if self.move in rotating_moves:
             if self.direction == "back":
                 self.exit_from_trick = "front"
             elif self.direction == "front":
