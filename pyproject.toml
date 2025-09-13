@@ -9,6 +9,9 @@ description = "A simple library to generate trick combinations for wizard skatin
 readme = "README.md"
 requires-python = ">=3.9"
 license = "Apache-2.0"
+dependencies = [
+    "pydantic"
+]
 authors = [
   { name = "nazroll" }
 ]
@@ -34,9 +37,6 @@ Documentation = "https://github.com/nazroll/wzrdbrain#readme"
 Repository = "https://github.com/nazroll/wzrdbrain"
 Issues = "https://github.com/nazroll/wzrdbrain/issues"
 
-[tool.hatch.build.targets.wheel]
-packages = ["src/wzrdbrain"]
-
 [tool.ruff]
 line-length = 100
 lint.extend-select = ["Q", "UP"]
@@ -52,6 +52,10 @@ testpaths = ["tests"]
 [tool.mypy]
 strict = true
 warn_unused_ignores = true
+plugins = "pydantic.mypy"
+
+[tool.setuptools]
+package-data = { "wzrdbrain" = ["tricks.json"] }
 
 [tool.setuptools.packages.find]
 where = ["src"]
