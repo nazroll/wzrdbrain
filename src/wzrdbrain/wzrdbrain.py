@@ -1,61 +1,28 @@
-import random
+import random, json, importlib.resources
 from typing import Optional, Any
 from dataclasses import dataclass, asdict
 
-# Trick data definitions
-DIRECTIONS = ("front", "back")
-STANCES = ("open", "closed")
-MOVES = (
-    "predator",
-    "predator one",
-    "parallel",
-    "tree",
-    "gazelle",
-    "gazelle s",
-    "lion",
-    "lion s",
-    "toe press",
-    "heel press",
-    "toe roll",
-    "heel roll",
-    "360",
-    "180",
-    "540",  # Added missing move
-    "parallel slide",
-    "soul slide",
-    "acid slide",
-    "mizu slide",
-    "star slide",
-    "fast slide",
-    "back slide",
-)
-# Moves that only occurs as the first trick for a combo
-only_first = {"predator", "predator one", "parallel"}
+# Load trick data from JSON
+def _load_trick_data():
+    """Loads trick definitions from the embedded tricks.json file."""
+    with importlib.resources.open_text("wzrdbrain", "tricks.json") as f:
+        return json.load(f)
+    
+_TRICK_DATA = _load_trick_data()
 
-# Moves that use "fakie" instead of "back"
-use_fakie = {
-    "toe press",
-    "toe roll",
-    "heel press",
-    "heel roll",
-    "360",
-    "180",
-    "540",
-    "parallel slide",
-    "soul slide",
-    "acid slide",
-    "mizu slide",
-    "star slide",
-    "fast slide",
-    "back slide",
-}
+# Trick data definitions loaded from JSON
+DIRECTIONS = tuple(_TRICK_DATA["DIRECTIONS"])
+STANCES = tuple(_TRICK_DATA["STANCES"])
+MOVES = tuple(_TRICK_DATA["MOVES"])
 
-# Moves that don't have an open/closed stance
-exclude_stance = {
-    "predator",
-    "predator one",
-}.union(use_fakie)
+# Rules loaded from JSON
+_RULES = _TRICK_DATA["RULES"]
+only_first = set(_RULES["ONLY_FIRST"])
+use_fakie = set(_RULES["USE_FAKIE"])
+rotating_moves = set(_RULES["ROTATING_MOVES"])
 
+# Moves that don't have an open/closed stance are derived from the JSON data
+exclude_stance = set(_RULES["EXCLUDE_STANCE_BASE"]).union(use_fakie)
 
 @dataclass
 class Trick:
