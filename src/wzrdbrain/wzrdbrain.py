@@ -1,4 +1,6 @@
-import random, json, importlib.resources
+import random
+import json
+import importlib.resources
 from typing import Optional, Any
 from dataclasses import dataclass, asdict
 
