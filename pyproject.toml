@@ -59,3 +59,4 @@ package-data = { "wzrdbrain" = ["tricks.json"] }
 
 [tool.setuptools.packages.find]
 where = ["src"]
+exclude = ["wzrdbrain/translate2js.py", "wzrdbrain/wzrdbrain.src.js", "wzrdbrain/wzrdbrain.base.js"]

@@ -114,7 +114,7 @@ def translate_code() -> str:
         ) from e
 
     # Extract the code from the markdown block
-    if response_content is not None and "```javascript" not in response_content:
+    if "```javascript" not in response_content:
         raise ValueError("Could not find a JavaScript markdown block in the AI response.")
 
     js_code_from_ai = response_content.split("```javascript\n", 1)[-1].split("```")[0]
