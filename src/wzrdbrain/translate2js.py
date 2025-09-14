@@ -1,5 +1,4 @@
 import os
-import json
 from pathlib import Path
 from google import genai
 
@@ -14,19 +13,19 @@ PYTHON_SOURCE_PATH = PROJECT_ROOT / "src" / "wzrdbrain" / "wzrdbrain.py"
 TRICK_DATA_PATH = PROJECT_ROOT / "src" / "wzrdbrain" / "tricks.json"
 JS_OUTPUT_PATH = PROJECT_ROOT / "src" / "wzrdbrain" / "wzrdbrain.src.js"
 JS_SOURCE_PATH = PROJECT_ROOT / "src" / "wzrdbrain" / "wzrdbrain.base.js"
-MODEL_NAME = "gemini-2.5-flash"
+MODEL_NAME = "gemini-2.5-pro"
 
 
 def read_file_content(filepath: Path) -> str:
     """Reads the content of a file."""
-    with open(filepath, 'r', encoding='utf-8') as f:
+    with open(filepath, encoding="utf-8") as f:
         return f.read()
 
 
-def write_file_content(filepath: Path, content: str):
+def write_file_content(filepath: Path, content: str) -> None:
     """Writes content to a file, creating directories if necessary."""
     filepath.parent.mkdir(parents=True, exist_ok=True)
-    with open(filepath, 'w', encoding='utf-8') as f:
+    with open(filepath, "w", encoding="utf-8") as f:
         f.write(content)
 
 
@@ -35,7 +34,7 @@ def construct_prompt(python_code: str, trick_data_json: str, js_code: str) -> st
     Constructs a comprehensive prompt for the AI model to translate Python code and associated JSON data
     into a self-contained JavaScript file. The prompt includes explicit translation requirements,
     the full contents of the Python source and tricks.json, and instructions for code structure, style,
-    and data handling. 
+    and data handling.
 
     Args:
         python_code (str): The full source code of the Python file to be translated.
@@ -102,28 +101,28 @@ def translate_code() -> str:
 
     print(f"Sending request to Google Gemini API using model '{MODEL_NAME}'...")
     client = genai.Client(api_key=GEMINI_API_KEY)
-    response = client.models.generate_content(
-        model=MODEL_NAME, contents=prompt
-    )
+    response = client.models.generate_content(model=MODEL_NAME, contents=prompt)
 
     # Add robust error handling for the API response
     try:
         # Accessing response.text can raise a ValueError if the response was blocked.
-        response_content = response.text
+        response_content = response.text if response.text is not None else ""
     except ValueError as e:
         # Provide more context on the error.
-        raise ValueError(f"API response was blocked or invalid. Reason: {response.prompt_feedback}") from e
+        raise ValueError(
+            f"API response was blocked or invalid. Reason: {response.prompt_feedback}"
+        ) from e
 
     # Extract the code from the markdown block
-    if '```javascript' not in response_content:
+    if response_content is not None and "```javascript" not in response_content:
         raise ValueError("Could not find a JavaScript markdown block in the AI response.")
 
-    js_code = response_content.split('```javascript\n', 1)[-1].split('```')[0]
+    js_code_from_ai = response_content.split("```javascript\n", 1)[-1].split("```")[0]
 
-    if not js_code.strip():
+    if not js_code_from_ai.strip():
         raise ValueError("Extracted JavaScript code is empty.")
 
-    return js_code.strip()
+    return js_code_from_ai.strip()
 
 
 if __name__ == "__main__":
