@@ -3,7 +3,7 @@
  * @license Apache-2.0
  */
 
-// Data from tricks.json
+// Data from tricks.json, embedded directly as a constant
 const DATA_JSON = {
   "DIRECTIONS": ["front", "back"],
   "STANCES": ["open", "closed"],
@@ -32,7 +32,7 @@ const STANCES = DATA_JSON.STANCES;
 /** @type {string[]} */
 const MOVES = DATA_JSON.MOVES;
 
-// Rules converted to Set for efficient lookups
+// Rules converted to Set for efficient lookups, mirroring Python's set usage
 /** @type {Set<string>} */
 const onlyFirst = new Set(DATA_JSON.RULES.ONLY_FIRST);
 /** @type {Set<string>} */
@@ -42,17 +42,18 @@ const rotatingMoves = new Set(DATA_JSON.RULES.ROTATING_MOVES);
 /** @type {Set<string>} */
 const excludeStanceBase = new Set(DATA_JSON.RULES.EXCLUDE_STANCE_BASE);
 
-// Derived rules
+// Derived rules, mirroring Python's `exclude_stance` and `SUBSEQUENT_MOVES`
 /**
  * A set of moves that exclude an automatically determined stance.
- * This is the union of EXCLUDE_STANCE_BASE and USE_FAKIE from the JSON rules.
+ * This is the union of EXCLUDE_STANCE_BASE and USE_FAKIE from the JSON rules,
+ * directly translating Python's `exclude_stance_base.union(use_fakie)`.
  * @type {Set<string>}
  */
 const excludeStance = new Set([...excludeStanceBase, ...useFakie]);
 
 /**
  * An array of moves that are valid for subsequent tricks (i.e., not "ONLY_FIRST").
- * This is pre-calculated for efficiency.
+ * This is pre-calculated for efficiency, directly translating Python's `set(MOVES) - only_first`.
  * @type {string[]}
  */
 const subsequentMoves = MOVES.filter(move => !onlyFirst.has(move));
@@ -67,7 +68,8 @@ const subsequentMoves = MOVES.filter(move => !onlyFirst.has(move));
 /**
  * Represents a single trick with its direction, stance, and move.
  * Automatically generates random values for unspecified properties
- * and adjusts properties like exit direction based on the move.
+ * and adjusts properties like exit direction based on the move,
+ * directly translating the Python `Trick` dataclass logic, especially its `__post_init__` method.
  */
 export class Trick {
   /** @type {Direction | null} */
@@ -83,6 +85,7 @@ export class Trick {
 
   /**
    * Creates an instance of Trick. Unspecified properties will be randomly generated.
+   * This constructor's logic directly translates the Python `__post_init__` method.
    *
    * @param {object} [props] - Optional properties for the trick.
    * @param {Direction | null} [props.direction=null] - The direction (e.g., 'front', 'back').
@@ -99,7 +102,7 @@ export class Trick {
     enterIntoTrick = null,
     exitFromTrick = null,
   } = {}) {
-    // 1. Input validation
+    // 1. Input validation, mirroring Python's `__post_init__` validation
     if (direction !== null && !DIRECTIONS.includes(direction)) {
       throw new Error(`Invalid direction: '${direction}'. Must be one of ${DIRECTIONS.join(', ')}`);
     }
@@ -117,7 +120,7 @@ export class Trick {
     this.enterIntoTrick = enterIntoTrick;
     this.exitFromTrick = exitFromTrick;
 
-    // 3. Generate default values if not provided
+    // 3. Generate default values if not provided, mirroring Python's `__post_init__`
     if (this.direction === null) {
       this.direction = DIRECTIONS[Math.floor(Math.random() * DIRECTIONS.length)];
     }
@@ -134,13 +137,13 @@ export class Trick {
       this.exitFromTrick = this.direction;
     }
 
-    // 4. Automatically determine stance if not provided and not excluded by move
-    if (this.stance === null && !excludeStance.has(this.move)) {
+    // 4. Automatically determine stance if not provided and not excluded by move, mirroring Python's logic
+    if (this.stance === null && this.move !== null && !excludeStance.has(this.move)) {
       this.stance = STANCES[Math.floor(Math.random() * STANCES.length)];
     }
 
-    // 5. Update exit direction for moves that rotate the body
-    if (rotatingMoves.has(this.move)) {
+    // 5. Update exit direction for moves that rotate the body, mirroring Python's logic
+    if (this.move !== null && rotatingMoves.has(this.move)) {
       if (this.direction === "back") {
         this.exitFromTrick = "front";
       } else if (this.direction === "front") {
@@ -150,7 +153,8 @@ export class Trick {
   }
 
   /**
-   * Returns a human-readable string representation of the trick.
+   * Returns a human-readable string representation of the trick,
+   * directly translating the Python `__str__` method.
    * This handles "fakie" / "forward" display names for relevant moves.
    * @returns {string} The formatted name of the trick.
    */
@@ -158,8 +162,8 @@ export class Trick {
     const parts = [];
     let displayDirection = this.direction;
 
-    // Handle fakie/forward display name
-    if (useFakie.has(this.move)) {
+    // Handle fakie/forward display name, mirroring Python's `__str__`
+    if (this.move !== null && useFakie.has(this.move)) {
       if (this.direction === "back") {
         displayDirection = "fakie";
       } else if (this.direction === "front") {
@@ -182,7 +186,8 @@ export class Trick {
 
   /**
    * Returns a plain JavaScript object representation of the trick,
-   * including all its properties and its full display name.
+   * including all its properties and its full display name,
+   * directly translating the Python `to_dict` method.
    * @returns {object} An object containing the trick's properties and its name.
    */
   toObject() {
@@ -198,16 +203,17 @@ export class Trick {
 }
 
 /**
- * Generates a combination (combo) of tricks.
+ * Generates a combination (combo) of tricks,
+ * directly translating the Python `generate_combo` function.
  *
  * @param {number | null} [numTricks=null] - The number of tricks to generate in the combo.
- *   If null, a random number between 2 and 5 (inclusive) will be chosen.
+ *   If null, a random number between 2 and 5 (inclusive) will be chosen, mirroring Python's `random.randint(2, 5)`.
  * @returns {object[]} A list of trick objects, each with their properties and a 'name' field.
  *   Returns an empty array if numTricks is 0 or less.
  */
 export function generateCombo(numTricks = null) {
+  // Mirroring Python's default num_of_tricks = random.randint(2, 5)
   if (numTricks === null) {
-    // Equivalent to random.randint(2, 5)
     numTricks = Math.floor(Math.random() * (5 - 2 + 1)) + 2;
   }
 
@@ -225,7 +231,7 @@ export function generateCombo(numTricks = null) {
     let newTrick;
 
     if (i === 0) {
-      // First trick: choose from all moves
+      // First trick: choose from all moves, mirroring Python's logic
       const move = MOVES[Math.floor(Math.random() * MOVES.length)];
       newTrick = new Trick({
         move
@@ -233,12 +239,15 @@ export function generateCombo(numTricks = null) {
     } else {
       // Subsequent tricks: respect exit direction of previous trick
       // and choose from moves not marked as ONLY_FIRST.
+      // Mirroring Python's logic `required_direction = previous_trick.exit_from_trick`
+      // and `move = random.choice(list(SUBSEQUENT_MOVES))`
       if (!previousTrick) {
-        // This should not happen if numTricks > 0 and i > 0
+        // This case should ideally not be reached if numTricks > 0 and i > 0,
+        // but included for robustness, similar to Python's implicit `assert`
         throw new Error("Previous trick is undefined for subsequent trick generation.");
       }
       const requiredDirection = previousTrick.exitFromTrick;
-      // Choose from the pre-filtered array of subsequent moves
+      // Choose from the pre-filtered array of subsequent moves for efficiency
       const move = subsequentMoves[Math.floor(Math.random() * subsequentMoves.length)];
       newTrick = new Trick({
         direction: requiredDirection,
@@ -250,5 +259,6 @@ export function generateCombo(numTricks = null) {
     previousTrick = newTrick;
   }
 
+  // Mirroring Python's `[trick.to_dict() for trick in trick_objects]`
   return trickObjects.map(trick => trick.toObject());
 }
