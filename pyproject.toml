@@ -28,7 +28,8 @@ dev = [
     "ruff",
     "black",
     "mypy",
-    "build"
+    "build",
+    "google-genai"
 ]
 
 [project.urls]
