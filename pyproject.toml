@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "wzrdbrain"
-version = "0.1.4"
+version = "0.1.5"
 description = "A simple library to generate trick combinations for wizard skating."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -60,4 +60,4 @@ package-data = { "wzrdbrain" = ["tricks.json"] }
 
 [tool.setuptools.packages.find]
 where = ["src"]
-exclude = ["wzrdbrain/translate2js.py", "wzrdbrain/wzrdbrain.src.js", "wzrdbrain/wzrdbrain.base.js"]
+exclude = ["wzrdbrain/wzrdbrain.src.js", "wzrdbrain/wzrdbrain.base.js"]
