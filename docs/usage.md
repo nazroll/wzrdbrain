@@ -123,7 +123,7 @@ print(trick_names)
 #### JavaScript: `generateCombo()`
 
 ```javascript
-import { generateCombo } from './wzrdbrain.src.js';
+import { generateCombo } from './wzrdbrain.js';
 
 // Generate a combo of 3 tricks
 const combo = generateCombo(3);
