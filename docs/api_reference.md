@@ -45,3 +45,60 @@ The implementation of the `Trick` object is nearly identical in both Python and 
 -   In JavaScript, it is a `class` that applies the same logic within its `constructor`.
 
 Both versions produce the same output and can be used interchangeably in their respective environments.
+
+## Generating Trick Combos
+
+The `generate_combo` function is the easiest way to create a sequence of random tricks. It is available in both the Python and JavaScript versions of the library.
+
+### Python: `generate_combo()`
+
+```python
+from wzrdbrain import generate_combo
+
+# Generate a combo of 3 tricks
+combo = generate_combo(3)
+
+# Get the names of the tricks
+trick_names = [trick['name'] for trick in combo]
+print(trick_names)
+# Example output: ['back open gazelle', 'front closed lion', 'back open predator']
+```
+
+#### Arguments
+
+-   `num_of_tricks` (optional, `int`): The number of tricks to generate. If not provided, a random number of tricks between 2 and 5 will be generated.
+
+#### Returns
+
+-   A `list` of `dict` objects, where each object represents a `Trick`.
+
+### JavaScript: `generateCombo()`
+
+```javascript
+import { generateCombo } from './wzrdbrain.src.js';
+
+// Generate a combo of 3 tricks
+const combo = generateCombo(3);
+
+// Get the names of the tricks
+const trickNames = combo.map(trick => trick.name);
+console.log(trickNames);
+// Example output: ['back open gazelle', 'front closed lion', 'back open predator']
+```
+
+#### Arguments
+
+-   `numTricks` (optional, `number`): The number of tricks to generate. If not provided (or `null`), a random number of tricks between 2 and 5 will be generated.
+
+#### Returns
+
+-   An `Array` of `Object` instances, where each object represents a `Trick`.
+
+### Logic
+
+The `generate_combo` function ensures that the generated sequence of tricks is logical:
+
+1.  **First Trick**: The first trick is chosen completely at random from all available moves.
+2.  **Subsequent Tricks**: For each subsequent trick, the function ensures that its `enter_into_trick` direction matches the `exit_from_trick` direction of the previous trick.
+3.  **Move Restrictions**: Certain moves (like `predator`) are only allowed to be the first trick in a combo. The function respects these restrictions.
+
