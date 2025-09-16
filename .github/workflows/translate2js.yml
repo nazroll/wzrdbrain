@@ -35,7 +35,9 @@ jobs:
         run: pip install google-genai
 
       - name: Translate Python to JavaScript
-        run: python scripts/translate.py
+        run: |
+          mkdir -p dist
+          python utils/translate2js.py
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
