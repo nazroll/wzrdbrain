@@ -3,44 +3,44 @@
  * @license Apache-2.0
  */
 
-// Data from tricks.json, embedded directly as constants.
-const DIRECTIONS_DATA = ["front", "back"];
-const STANCES_DATA = ["open", "closed"];
-const MOVES_DATA = [
-  "predator", "predator one", "parallel", "tree", "gazelle", "gazelle s",
-  "lion", "lion s", "toe press", "heel press", "toe roll", "heel roll",
-  "360", "180", "540", "parallel slide", "soul slide", "acid slide",
-  "mizu slide", "star slide", "fast slide", "back slide", "tsunami"
-];
-const RULES_DATA = {
-  "ONLY_FIRST": ["predator", "predator one", "parallel"],
-  "USE_FAKIE": [
-    "toe press", "toe roll", "heel press", "heel roll", "360", "180", "540",
-    "parallel slide", "soul slide", "acid slide", "mizu slide", "star slide",
-    "fast slide", "back slide"
+// Data from tricks.json, embedded directly as a constant
+const DATA_JSON = {
+  "DIRECTIONS": ["front", "back"],
+  "STANCES": ["open", "closed"],
+  "MOVES": [
+    "predator", "predator one", "parallel", "tree", "gazelle", "gazelle s",
+    "lion", "lion s", "toe press", "heel press", "toe roll", "heel roll",
+    "360", "180", "540", "parallel slide", "soul slide", "acid slide",
+    "mizu slide", "star slide", "fast slide", "back slide", "tsunami"
   ],
-  "EXCLUDE_STANCE_BASE": ["predator", "predator one"],
-  "ROTATING_MOVES": ["gazelle", "lion", "180", "540"]
+  "RULES": {
+    "ONLY_FIRST": ["predator", "predator one", "parallel"],
+    "USE_FAKIE": [
+      "toe press", "toe roll", "heel press", "heel roll", "360", "180", "540",
+      "parallel slide", "soul slide", "acid slide", "mizu slide", "star slide",
+      "fast slide", "back slide"
+    ],
+    "EXCLUDE_STANCE_BASE": ["predator", "predator one"],
+    "ROTATING_MOVES": ["gazelle", "lion", "180", "540"]
+  }
 };
 
-
-// Trick data definitions
 /** @type {string[]} */
-const DIRECTIONS = DIRECTIONS_DATA;
+const DIRECTIONS = DATA_JSON.DIRECTIONS;
 /** @type {string[]} */
-const STANCES = STANCES_DATA;
+const STANCES = DATA_JSON.STANCES;
 /** @type {string[]} */
-const MOVES = MOVES_DATA;
+const MOVES = DATA_JSON.MOVES;
 
 // Rules converted to Set for efficient lookups, mirroring Python's set usage
 /** @type {Set<string>} */
-const onlyFirst = new Set(RULES_DATA.ONLY_FIRST);
+const onlyFirst = new Set(DATA_JSON.RULES.ONLY_FIRST);
 /** @type {Set<string>} */
-const useFakie = new Set(RULES_DATA.USE_FAKIE);
+const useFakie = new Set(DATA_JSON.RULES.USE_FAKIE);
 /** @type {Set<string>} */
-const rotatingMoves = new Set(RULES_DATA.ROTATING_MOVES);
+const rotatingMoves = new Set(DATA_JSON.RULES.ROTATING_MOVES);
 /** @type {Set<string>} */
-const excludeStanceBase = new Set(RULES_DATA.EXCLUDE_STANCE_BASE);
+const excludeStanceBase = new Set(DATA_JSON.RULES.EXCLUDE_STANCE_BASE);
 
 // Derived rules, mirroring Python's `exclude_stance` and `SUBSEQUENT_MOVES`
 /**
