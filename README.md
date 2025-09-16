@@ -8,7 +8,7 @@ A library to generate random trick combinations for wizard skating.
 pip install wzrdbrain
 ```
 
-## Usage
+## Usage (Python)
 
 The primary function is `generate_combo`, which returns a list of trick dictionaries. You can also create `Trick` objects directly for more control.
 
@@ -41,7 +41,7 @@ print(trick_names)
 # Example output: ['front open gazelle', 'fakie 360', 'back open lion']
 ```
 
-### Creating a Trick Object
+### Creating a Trick object
 
 You can create a `Trick` object with specific attributes. Any attributes not provided will be randomly generated.
 
@@ -59,24 +59,27 @@ print(my_trick.to_dict())
 # }
 ```
 
-## Development
+## Usage (JavaScript)
+
+This library also provides a JavaScript version of the trick generation logic, which can be used in any environment that supports ES6 modules.
+
+```javascript
+import { generateCombo } from './src/wzrdbrain/wzrdbrain.src.js';
+
+// Generate a combo of 3 tricks
+const combo = generateCombo(3);
+
+// Get the names of the tricks
+const trickNames = combo.map(trick => trick.name);
+console.log(trickNames);
+```
+
+### JavaScript translation
+
+The JavaScript version of the library (`src/wzrdbrain/wzrdbrain.src.js`) is automatically generated from the Python source code using the `utils/translate2js.py` script. This script uses the Google Gemini API to perform the translation. To run the translation, you will need to have a `GEMINI_API_KEY` environment variable set.
+
+The translation is also handled automatically by a GitHub Actions workflow, which will run the script and commit the changes to the repository whenever there are changes to the Python source code.
+
+## Contribution
 
 To contribute to this project, please see the [Contributing Guide](CONTRIBUTING.md).
-
-First, clone the repository and install the project in editable mode with its development dependencies:
-
-```bash
-git clone https://github.com/nazroll/wzrdbrain.git
-cd wzrdbrain
-pip install -e .[dev]
-```
-
-You can run the test suite using `pytest`:
-
-```bash
-pytest
-```
-
-## List of wizard skating tricks
-
-The list of tricks in this library is not comprehensive. Please create an issue and give us your suggestions of new tricks
