@@ -5,7 +5,7 @@
 ## Table of contents
 
 - [About the project](#about-the-project)
-  - [Maintainers & contributors](#maintainers-and-contributors)
+- [Maintainers & contributors](#maintainers-and-contributors)
 - [Getting started](./usage.md)
   - [Python usage](./usage.md#python-usage)
   - [JavaScript usage](./usage.md#javascript-usage)
@@ -24,7 +24,7 @@ The project provides both a Python and a JavaScript version of the library.
 
 The JavaScript version is automatically generated from the Python source code using a translation script that leverages the Google Gemini API.
 
-### Maintainers & contributors
+## Maintainers & contributors
 
 [![contributors](https://contrib.rocks/image?repo=nazroll/wzrdbrain)](https://github.com/nazroll/wzrdbrain/graphs/contributors)
 
