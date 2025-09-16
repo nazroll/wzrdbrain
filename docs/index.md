@@ -11,6 +11,7 @@
   - [JavaScript Usage](./usage.md#javascript-usage)
 - [API Reference](./api_reference.md)
   - [The Trick Object](./api_reference#the-trick-object.md)
+- [Translating Python code to Javascript code](./translate2js.md)
 - [Credits](#credits)
 
 
@@ -44,4 +45,5 @@ Built with ❤️ by [nazroll](https://nazroll.com) & friends. Many thanks to th
 
 - Billy Arlew: for being a reliable source of inspiration and domain knowledge to the wizard tricks dictionary.
 - Eelco Soesman: for being a supportive Slightly Rockerd crew and early tester.
+- Bas Bavinck: for being the beacon of wizardry with his book and supporting this project.elco Soesman: for being a supportive Slightly Rockerd crew and early tester.
 - Bas Bavinck: for being the beacon of wizardry with his book and supporting this project.
