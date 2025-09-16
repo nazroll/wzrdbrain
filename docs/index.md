@@ -47,9 +47,8 @@ The JavaScript version of the library (`src/wzrdbrain/wzrdbrain.src.js`) is auto
 
 ## Credits
 
-Built with ❤️ by [nazroll](https://nazroll.com) & friends. Many thanks to the skaters and the wizard skating community for their valuable feedback and support. Special thanks to:
+Many thanks to the skaters and the wizard skating community for their valuable feedback and support. Special thanks to:
 
 - Billy Arlew: for being a reliable source of inspiration and domain knowledge to the wizard tricks dictionary.
 - Eelco Soesman: for being a supportive Slightly Rockerd crew and early tester.
-- Bas Bavinck: for being the beacon of wizardry with his book and supporting this project.elco Soesman: for being a supportive Slightly Rockerd crew and early tester.
 - Bas Bavinck: for being the beacon of wizardry with his book and supporting this project.
