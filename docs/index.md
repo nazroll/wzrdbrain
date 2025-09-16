@@ -24,7 +24,9 @@ The JavaScript version is automatically generated from the Python source code us
 
 ### Maintainers and contributors
 
-@nazroll
+_**Disclaimer:** AI coding assistant tools like Jules by Google and Github Copilot are used in this project._
+
+[![contributors](https://contrib.rocks/image?repo=nazroll/wzrdbrain)](https://github.com/nazroll/wzrdbrain/graphs/contributors)
 
 ## Getting started
 
