@@ -5,8 +5,7 @@ permissions:
 
 on:
   push:
-    branches: 
-      - wzrdbrainjs
+    branches: ["**"]
     paths:
       - 'src/wzrdbrain/wzrdbrain.py'
       - 'src/wzrdbrain/tricks.json'
