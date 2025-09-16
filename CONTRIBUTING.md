@@ -20,7 +20,7 @@ To add a new trick, follow these steps:
 2.  **Add your trick to the `MOVES` list**. Please keep the list in alphabetical order.
 3.  **Update the `RULES` if necessary**. If your trick has special properties, you may need to add it to one of the lists in the `RULES` section:
     *   `ONLY_FIRST`: Moves that can only appear as the first trick in a combo.
-    *   `USE_FAKIE`: Moves that should be prefixed with "fakie" instead of "forward" when the direction is "back".
+    *   `USE_FAKIE`: Moves that should be prefixed with "fakie" instead of "back".
     *   `EXCLUDE_STANCE_BASE`: Moves that do not have a stance (e.g., "open", "closed").
     *   `ROTATING_MOVES`: Moves that change the skater's rotation, affecting the next trick's entry.
 
