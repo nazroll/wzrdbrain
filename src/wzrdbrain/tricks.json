@@ -5,7 +5,7 @@
     "predator", "predator one", "parallel", "tree", "gazelle", "gazelle s",
     "lion", "lion s", "toe press", "heel press", "toe roll", "heel roll",
     "360", "180", "540", "parallel slide", "soul slide", "acid slide",
-    "mizu slide", "star slide", "fast slide", "back slide"
+    "mizu slide", "star slide", "fast slide", "back slide", "tsunami"
   ],
   "RULES": {
     "ONLY_FIRST": ["predator", "predator one", "parallel"],
