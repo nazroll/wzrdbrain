@@ -36,7 +36,7 @@ print(trick_names)
 The generated JavaScript module can be used in any JavaScript environment that supports ES6 modules.
 
 ```javascript
-import { generateCombo } from './wzrdbrain.src.js';
+import { generateCombo } from 'https://cdn.jsdelivr.net/gh/nazroll/wzrdbrain@latest/src/wzrdbrain/wzrdbrain.src.js';
 
 // Generate a combo of 3 tricks
 const combo = generateCombo(3);

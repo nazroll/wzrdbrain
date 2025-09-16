@@ -8,18 +8,18 @@ A library to generate random trick combinations for wizard skating.
 pip install wzrdbrain
 ```
 
-## Usage (Python)
+## Usage
 
+### Python
 The primary function is `generate_combo`, which returns a list of trick dictionaries. You can also create `Trick` objects directly for more control.
 
 ```python
 from wzrdbrain import generate_combo, Trick
 
 # Generate a combo of 3 tricks
-combo = generate_combo(3)
-
 # The output is a list of dictionaries, each representing a trick
-# print(combo)
+combo = generate_combo(3)
+print(combo)
 # Example output:
 # [
 #     {
@@ -39,6 +39,7 @@ combo = generate_combo(3)
 trick_names = [trick['name'] for trick in combo]
 print(trick_names)
 # Example output: ['front open gazelle', 'fakie 360', 'back open lion']
+#
 ```
 
 ### Creating a Trick object
@@ -59,12 +60,12 @@ print(my_trick.to_dict())
 # }
 ```
 
-## Usage (JavaScript)
+### JavaScript
 
 This library also provides a JavaScript version of the trick generation logic, which can be used in any environment that supports ES6 modules.
 
 ```javascript
-import { generateCombo } from './src/wzrdbrain/wzrdbrain.src.js';
+import { generateCombo } from 'https://cdn.jsdelivr.net/gh/nazroll/wzrdbrain@latest/src/wzrdbrain/wzrdbrain.src.js';
 
 // Generate a combo of 3 tricks
 const combo = generateCombo(3);
@@ -73,6 +74,8 @@ const combo = generateCombo(3);
 const trickNames = combo.map(trick => trick.name);
 console.log(trickNames);
 ```
+
+For more examples, read the [usage documentation](./docs/usage.md).
 
 ## Contribution
 
@@ -93,4 +96,4 @@ Many thanks to the skaters and the wizard skating community for their valuable f
 - Eelco Soesman: for being a supportive Slightly Rockerd crew and early tester.
 - Bas Bavinck: for being the beacon of wizardry with his book and supporting this project.
 
-Built with ❤️ by [nazroll](https://nazroll.com) & friends. 
+Built with ❤️
