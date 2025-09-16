@@ -40,8 +40,8 @@ For more detailed information about the data structures used in `wzrdbrain`, ple
 
 ## Credits
 
-Many thanks to the skaters and the wizard skating community for their valuable feedback and interest into this project. Special thanks to:
+Built with ❤️ by nazroll & friends. Many thanks to the skaters and the wizard skating community for their valuable feedback and support. Special thanks to:
 
-- Billy Arlew
-- Eelco Soesman
-- Bas Bavinck
+- Billy Arlew: for being a reliable source of inspiration and domain knowledge to the wizard tricks dictionary.
+- Eelco Soesman: for being a supportive Slightly Rockerd crew and early tester.
+- Bas Bavinck: for being the beacon of wizardry with his book and supporting this project.

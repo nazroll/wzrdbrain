@@ -82,4 +82,19 @@ The translation is also handled automatically by a GitHub Actions workflow, whic
 
 ## Contribution
 
-To contribute to this project, please see the [Contributing Guide](CONTRIBUTING.md).
+We welcome contributions! `wzrdbrain` is fully open source (Apache 2.0), and we encourage the community to:
+
+- Submit a new move/trick into the database.
+- Report bugs and suggest features
+- Improve documentation
+- Submit code improvements
+
+To contribute to this project, please read the [contributing guide](CONTRIBUTING.md).
+
+## Credits
+
+Built with ❤️ by nazroll & friends. Many thanks to the skaters and the wizard skating community for their valuable feedback and support. Special thanks to:
+
+- Billy Arlew: for being a reliable source of inspiration and domain knowledge to the wizard tricks dictionary.
+- Eelco Soesman: for being a supportive Slightly Rockerd crew and early tester.
+- Bas Bavinck: for being the beacon of wizardry with his book and supporting this project.
