@@ -93,7 +93,7 @@ To contribute to this project, please read the [contributing guide](CONTRIBUTING
 
 ## Credits
 
-Built with ❤️ by nazroll & friends. Many thanks to the skaters and the wizard skating community for their valuable feedback and support. Special thanks to:
+Built with ❤️ by [nazroll](https://nazroll.com) & friends. Many thanks to the skaters and the wizard skating community for their valuable feedback and support. Special thanks to:
 
 - Billy Arlew: for being a reliable source of inspiration and domain knowledge to the wizard tricks dictionary.
 - Eelco Soesman: for being a supportive Slightly Rockerd crew and early tester.
