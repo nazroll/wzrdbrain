@@ -1,9 +1,15 @@
 name: CI
 
+permissions:
+  contents: write
+
 on:
   push:
     branches: ["**"]
-  pull_request:
+    paths:
+      - 'src/wzrdbrain/wzrdbrain.py'
+      - 'src/wzrdbrain/tricks.json'
+      - '.github/workflows/ci.yml'
 
 jobs:
   test:
@@ -28,3 +34,65 @@ jobs:
         run: mypy .
       - name: Tests (pytest)
         run: pytest
+  translate:
+    needs: test
+    runs-on: ubuntu-latest
+    if: ${{ success() }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: pip install google-genai
+
+      - name: Translate Python to JavaScript
+        run: |
+          mkdir -p dist
+          python utils/translate2js.py
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
+      - name: Show first lines of generated file
+        run: |
+          echo "Preview of src/wzrdbrain/wzrdbrain.src.js:"
+          head -n 60 src/wzrdbrain/wzrdbrain.src.js || true
+      - name: Detect changes in generated file
+        id: diff
+        shell: bash
+        run: |
+          # Determine if src/wzrdbrain/wzrdbrain.src.js is new or modified
+          if git ls-files --error-unmatch src/wzrdbrain/wzrdbrain.src.js >/dev/null 2>&1; then
+            if git diff --quiet -- src/wzrdbrain/wzrdbrain.src.js; then
+              echo "changed=false" >> "$GITHUB_OUTPUT"
+            else
+              echo "changed=true" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            if [ -f src/wzrdbrain/wzrdbrain.src.js ]; then
+              echo "changed=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "changed=false" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+      - name: Upload artifact for review
+        uses: actions/upload-artifact@v4
+        with:
+          name: wzrdbrain-js
+          path: src/wzrdbrain/wzrdbrain.src.js
+
+      - name: Commit generated file to working branch
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          branch="${{ github.ref_name }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$branch"
+          git add src/wzrdbrain/wzrdbrain.src.js
+          git commit -m "chore: update src/wzrdbrain/wzrdbrain.src.js via utils/translate2js.py [skip ci]"
+          git push origin "$branch"

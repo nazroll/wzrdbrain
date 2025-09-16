@@ -1,60 +1,53 @@
 import random
+import json
+import importlib.resources
 from typing import Optional, Any
 from dataclasses import dataclass, asdict
+from pydantic import BaseModel, Field
+
+
+# Pydantic models for data validation
+class TrickRules(BaseModel):
+    """Defines the structure of the 'RULES' object in tricks.json."""
+
+    only_first: set[str] = Field(..., alias="ONLY_FIRST")
+    use_fakie: set[str] = Field(..., alias="USE_FAKIE")
+    rotating_moves: set[str] = Field(..., alias="ROTATING_MOVES")
+    exclude_stance_base: set[str] = Field(..., alias="EXCLUDE_STANCE_BASE")
+
+
+class TrickData(BaseModel):
+    """Defines the top-level structure of tricks.json."""
+
+    directions: tuple[str, ...] = Field(..., alias="DIRECTIONS")
+    stances: tuple[str, ...] = Field(..., alias="STANCES")
+    moves: tuple[str, ...] = Field(..., alias="MOVES")
+    rules: TrickRules = Field(..., alias="RULES")
+
+
+# Load trick data from JSON
+def _load_trick_data() -> TrickData:
+    """Loads trick definitions from the embedded tricks.json file."""
+    with importlib.resources.open_text("wzrdbrain", "tricks.json") as f:
+        data = json.load(f)
+        return TrickData.model_validate(data)
+
+
+_TRICK_DATA = _load_trick_data()
 
 # Trick data definitions
-DIRECTIONS = ("front", "back")
-STANCES = ("open", "closed")
-MOVES = (
-    "predator",
-    "predator one",
-    "parallel",
-    "tree",
-    "gazelle",
-    "gazelle s",
-    "lion",
-    "lion s",
-    "toe press",
-    "heel press",
-    "toe roll",
-    "heel roll",
-    "360",
-    "180",
-    "540",  # Added missing move
-    "parallel slide",
-    "soul slide",
-    "acid slide",
-    "mizu slide",
-    "star slide",
-    "fast slide",
-    "back slide",
-)
-# Moves that only occurs as the first trick for a combo
-only_first = {"predator", "predator one", "parallel"}
+DIRECTIONS = _TRICK_DATA.directions
+STANCES = _TRICK_DATA.stances
+MOVES = _TRICK_DATA.moves
 
-# Moves that use "fakie" instead of "back"
-use_fakie = {
-    "toe press",
-    "toe roll",
-    "heel press",
-    "heel roll",
-    "360",
-    "180",
-    "540",
-    "parallel slide",
-    "soul slide",
-    "acid slide",
-    "mizu slide",
-    "star slide",
-    "fast slide",
-    "back slide",
-}
+# Rules
+only_first = _TRICK_DATA.rules.only_first
+use_fakie = _TRICK_DATA.rules.use_fakie
+rotating_moves = _TRICK_DATA.rules.rotating_moves
+exclude_stance = _TRICK_DATA.rules.exclude_stance_base.union(use_fakie)
 
-# Moves that don't have an open/closed stance
-exclude_stance = {
-    "predator",
-    "predator one",
-}.union(use_fakie)
+# Pre-calculate the set of moves that are valid for subsequent tricks
+SUBSEQUENT_MOVES = set(MOVES) - only_first
 
 
 @dataclass
@@ -95,7 +88,7 @@ class Trick:
             self.stance = random.choice(STANCES)
 
         # Update exit direction for moves that rotate the body
-        if self.move in ["gazelle", "lion", "180", "540"]:
+        if self.move in rotating_moves:
             if self.direction == "back":
                 self.exit_from_trick = "front"
             elif self.direction == "front":
@@ -138,22 +131,19 @@ def generate_combo(num_of_tricks: Optional[int] = None) -> list[dict[str, Any]]:
     trick_objects: list[Trick] = []
     previous_trick: Optional[Trick] = None
 
-    for _ in range(num_of_tricks):
-        if previous_trick is None:
-            # Generate the first trick without constraints
-            new_trick = Trick()
+    for i in range(num_of_tricks):
+        if i == 0:
+            # First trick: choose from all moves
+            move = random.choice(MOVES)
+            new_trick = Trick(move=move)
         else:
-            # Generate subsequent tricks based on the previous one's exit
+            # Subsequent tricks: choose from the pre-filtered set
+            assert previous_trick is not None
             required_direction = previous_trick.exit_from_trick
-            # Loop until we generate a valid trick for this position
-            while True:
-                candidate_trick = Trick(direction=required_direction)
-                if candidate_trick.move not in only_first:
-                    new_trick = candidate_trick
-                    break
+            move = random.choice(list(SUBSEQUENT_MOVES))  # Choose from the valid set
+            new_trick = Trick(direction=required_direction, move=move)
 
         trick_objects.append(new_trick)
         previous_trick = new_trick
 
-    # Convert all trick objects to dictionaries for the final output
     return [trick.to_dict() for trick in trick_objects]
