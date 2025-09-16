@@ -2,7 +2,7 @@
 
 First off, thank you for considering contributing!
 
-## Submitting Changes
+## Submitting changes
 
 1.  Create a new branch for your feature or bug fix.
 2.  Make your changes and commit them.
@@ -10,15 +10,15 @@ First off, thank you for considering contributing!
 4.  Ensure all quality checks pass.
 5.  Push your branch and open a pull request.
 
-## Contributing a New Trick
+## Contributing a new move or trick
 
 We welcome contributions of new tricks to the library! The list of tricks is managed in the `src/wzrdbrain/tricks.json` file.
 
 To add a new trick, follow these steps:
 
-1.  **Open `src/wzrdbrain/tricks.json`**.
-2.  **Add your trick to the `MOVES` list**. Please keep the list in alphabetical order.
-3.  **Update the `RULES` if necessary**. If your trick has special properties, you may need to add it to one of the lists in the `RULES` section:
+1.  Open `src/wzrdbrain/tricks.json`.
+2.  Add your trick to the `MOVES` list. Please keep the list in alphabetical order.
+3.  Update the `RULES` if necessary. If your trick has special properties, you may need to add it to one of the lists in the `RULES` section:
     *   `ONLY_FIRST`: Moves that can only appear as the first trick in a combo.
     *   `USE_FAKIE`: Moves that should be prefixed with "fakie" instead of "back".
     *   `EXCLUDE_STANCE_BASE`: Moves that do not have a stance (e.g., "open", "closed").
@@ -28,7 +28,7 @@ After making your changes, be sure to run the test suite to ensure everything is
 
 Once you have verified your changes, please see the "Submitting Changes" section for instructions on how to open a pull request.
 
-## Development Setup
+## Development setup
 
 To get started with development, follow these steps:
 
@@ -50,11 +50,11 @@ To get started with development, follow these steps:
     pip install -e ".[dev]"
     ```
 
-## Running Quality Checks
+## Running quality checks
 
 Before submitting a pull request, please ensure your code passes all quality checks.
 
-### Linting and Formatting
+### Linting and formatting
 
 We use `ruff` for linting and `black` for formatting.
 
@@ -66,7 +66,7 @@ ruff check .
 black .
 ```
 
-### Type Checking
+### Type checking
 
 We use `mypy` for static type checking.
 
@@ -74,7 +74,7 @@ We use `mypy` for static type checking.
 mypy .
 ```
 
-### Running Tests
+### Running tests
 
 We use `pytest` for running unit tests.
 

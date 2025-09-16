@@ -74,12 +74,6 @@ const trickNames = combo.map(trick => trick.name);
 console.log(trickNames);
 ```
 
-### JavaScript translation
-
-The JavaScript version of the library (`src/wzrdbrain/wzrdbrain.src.js`) is automatically generated from the Python source code using the `utils/translate2js.py` script. This script uses the Google Gemini API to perform the translation. To run the translation, you will need to have a `GEMINI_API_KEY` environment variable set.
-
-The translation is also handled automatically by a GitHub Actions workflow, which will run the script and commit the changes to the repository whenever there are changes to the Python source code.
-
 ## Contribution
 
 We welcome contributions! `wzrdbrain` is fully open source (Apache 2.0), and we encourage the community to:
@@ -93,8 +87,10 @@ To contribute to this project, please read the [contributing guide](CONTRIBUTING
 
 ## Credits
 
-Built with ❤️ by [nazroll](https://nazroll.com) & friends. Many thanks to the skaters and the wizard skating community for their valuable feedback and support. Special thanks to:
+Many thanks to the skaters and the wizard skating community for their valuable feedback and support. Special thanks to:
 
 - Billy Arlew: for being a reliable source of inspiration and domain knowledge to the wizard tricks dictionary.
 - Eelco Soesman: for being a supportive Slightly Rockerd crew and early tester.
 - Bas Bavinck: for being the beacon of wizardry with his book and supporting this project.
+
+Built with ❤️ by [nazroll](https://nazroll.com) & friends. 

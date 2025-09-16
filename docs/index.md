@@ -43,7 +43,7 @@ For more detailed information about the data structures used in `wzrdbrain`, ple
 
 ## Python-to-JS code translation
 
-The JavaScript version is automatically generated from the Python source code. For more details on this process, read [Translating Python code to JavaScript code](./translate2js.md).
+The JavaScript version of the library (`src/wzrdbrain/wzrdbrain.src.js`) is automatically generated from the Python source code. For more details on this process, read [Translating Python code to JavaScript code](./translate2js.md).
 
 ## Credits
 
