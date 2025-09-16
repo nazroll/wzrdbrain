@@ -11,6 +11,7 @@ on:
       - 'src/wzrdbrain/wzrdbrain.py'
       - 'src/wzrdbrain/tricks.json'
       - '.github/workflows/ci.yml'
+      - 'pyproject.toml'
 
 jobs:
   test:
