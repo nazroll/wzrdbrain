@@ -3,15 +3,23 @@ name: AI Translate Python to JS
 on:
   push:
     branches:
-      - wzrdbrain # Matches the deploy workflow branch
+      - wzrdbrainjs # Matches the deploy workflow branch
     paths:
       - 'src/wzrdbrain/wzrdbrain.py'
       - 'src/wzrdbrain/tricks.json'
       - '.github/workflows/translate2js.yml'
   workflow_dispatch:
 
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: translate-wzrdbrain
+  cancel-in-progress: false
+  
 jobs:
-  translate_and_commit:
+  translate:
     runs-on: ubuntu-latest
 
     steps:
