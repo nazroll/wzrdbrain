@@ -10,6 +10,24 @@ First off, thank you for considering contributing!
 4.  Ensure all quality checks pass.
 5.  Push your branch and open a pull request.
 
+## Contributing a New Trick
+
+We welcome contributions of new tricks to the library! The list of tricks is managed in the `src/wzrdbrain/tricks.json` file.
+
+To add a new trick, follow these steps:
+
+1.  **Open `src/wzrdbrain/tricks.json`**.
+2.  **Add your trick to the `MOVES` list**. Please keep the list in alphabetical order.
+3.  **Update the `RULES` if necessary**. If your trick has special properties, you may need to add it to one of the lists in the `RULES` section:
+    *   `ONLY_FIRST`: Moves that can only appear as the first trick in a combo.
+    *   `USE_FAKIE`: Moves that should be prefixed with "fakie" instead of "back".
+    *   `EXCLUDE_STANCE_BASE`: Moves that do not have a stance (e.g., "open", "closed").
+    *   `ROTATING_MOVES`: Moves that change the skater's rotation, affecting the next trick's entry.
+
+After making your changes, be sure to run the test suite to ensure everything is working correctly. See the "Running Quality Checks" section for more details.
+
+Once you have verified your changes, please see the "Submitting Changes" section for instructions on how to open a pull request.
+
 ## Development Setup
 
 To get started with development, follow these steps:
