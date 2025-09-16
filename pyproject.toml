@@ -12,7 +12,6 @@ license = "Apache-2.0"
 dependencies = [
     "pydantic"
 ]
-package_data = { "wzrdbrain" = ["tricks.json"] }
 authors = [
   { name = "nazroll" }
 ]
@@ -55,6 +54,9 @@ testpaths = ["tests"]
 strict = true
 warn_unused_ignores = true
 plugins = "pydantic.mypy"
+
+[tool.setuptools]
+package-data = { "wzrdbrain" = ["tricks.json"] }
 
 [tool.setuptools.packages.find]
 where = ["src"]
