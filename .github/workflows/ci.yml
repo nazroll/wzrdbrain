@@ -35,8 +35,9 @@ jobs:
       - name: Tests (pytest)
         run: pytest
   translate:
+    needs: test
     runs-on: ubuntu-latest
-
+    if: ${{ success() }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
