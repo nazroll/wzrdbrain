@@ -1,8 +1,12 @@
 # wzrdbrain
 
-A Python and JavaScript libraries to generate random trick combinations for wizard skating. 
+A library to generate random trick combinations for wizard skating. This library is available in Python and JavaScript versions.
 
-These libraries are being used by [Rocker'd Magic Moves](https://rockerd.web.app) - a trick generator app for wizard skating.
+[Rocker'd Magic Moves](https://rockerd.web.app) - a trick generator app for wizard skating, is using both libraries.
+
+The mobile web app is utilizing the JavaScript library version. It runs offline.
+
+The [Rocker'd](https://rockerd.web.app) RESTFul API endpoints is using the Python library. Read the [API docs](https://rockerd.web.app/api/docs). 
 
 ## Usage
 
