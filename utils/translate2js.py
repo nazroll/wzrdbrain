@@ -8,7 +8,7 @@ if not GEMINI_API_KEY:
     raise ValueError("GEMINI_API_KEY environment variable not set.")
 
 # Use pathlib for more robust path handling
-PROJECT_ROOT = Path(__file__).parent.parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 PYTHON_SOURCE_PATH = PROJECT_ROOT / "src" / "wzrdbrain" / "wzrdbrain.py"
 TRICK_DATA_PATH = PROJECT_ROOT / "src" / "wzrdbrain" / "tricks.json"
 JS_OUTPUT_PATH = PROJECT_ROOT / "dist" / "wzrdbrain.src.js"
