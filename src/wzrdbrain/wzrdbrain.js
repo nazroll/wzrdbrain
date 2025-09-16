@@ -3,49 +3,30 @@
  * @license Apache-2.0
  */
 
-// Data from tricks.json, embedded directly as a constant
-const DATA_JSON = {
-  "DIRECTIONS": ["front", "back"],
-  "STANCES": ["open", "closed"],
-  "MOVES": [
-    "predator", "predator one", "parallel", "tree", "gazelle", "gazelle s",
-    "lion", "lion s", "toe press", "heel press", "toe roll", "heel roll",
-    "360", "180", "540", "parallel slide", "soul slide", "acid slide",
-    "mizu slide", "star slide", "fast slide", "back slide", "tsunami"
-  ],
-  "RULES": {
-    "ONLY_FIRST": ["predator", "predator one", "parallel"],
-    "USE_FAKIE": [
-      "toe press", "toe roll", "heel press", "heel roll", "360", "180", "540",
-      "parallel slide", "soul slide", "acid slide", "mizu slide", "star slide",
-      "fast slide", "back slide"
-    ],
-    "EXCLUDE_STANCE_BASE": ["predator", "predator one"],
-    "ROTATING_MOVES": ["gazelle", "lion", "180", "540"]
-  }
-};
-
-/** @type {string[]} */
-const DIRECTIONS = DATA_JSON.DIRECTIONS;
-/** @type {string[]} */
-const STANCES = DATA_JSON.STANCES;
-/** @type {string[]} */
-const MOVES = DATA_JSON.MOVES;
+// Data from tricks.json, embedded directly as constants
+const DIRECTIONS = ["front", "back"];
+const STANCES = ["open", "closed"];
+const MOVES = [
+  "predator", "predator one", "parallel", "tree", "gazelle", "gazelle s",
+  "lion", "lion s", "toe press", "heel press", "toe roll", "heel roll",
+  "360", "180", "540", "parallel slide", "soul slide", "acid slide",
+  "mizu slide", "star slide", "fast slide", "back slide", "tsunami"
+];
 
 // Rules converted to Set for efficient lookups, mirroring Python's set usage
-/** @type {Set<string>} */
-const onlyFirst = new Set(DATA_JSON.RULES.ONLY_FIRST);
-/** @type {Set<string>} */
-const useFakie = new Set(DATA_JSON.RULES.USE_FAKIE);
-/** @type {Set<string>} */
-const rotatingMoves = new Set(DATA_JSON.RULES.ROTATING_MOVES);
-/** @type {Set<string>} */
-const excludeStanceBase = new Set(DATA_JSON.RULES.EXCLUDE_STANCE_BASE);
+const onlyFirst = new Set(["predator", "predator one", "parallel"]);
+const useFakie = new Set([
+  "toe press", "toe roll", "heel press", "heel roll", "360", "180", "540",
+  "parallel slide", "soul slide", "acid slide", "mizu slide", "star slide",
+  "fast slide", "back slide"
+]);
+const excludeStanceBase = new Set(["predator", "predator one"]);
+const rotatingMoves = new Set(["gazelle", "lion", "180", "540"]);
 
 // Derived rules, mirroring Python's `exclude_stance` and `SUBSEQUENT_MOVES`
 /**
  * A set of moves that exclude an automatically determined stance.
- * This is the union of EXCLUDE_STANCE_BASE and USE_FAKIE from the JSON rules,
+ * This is the union of EXCLUDE_STANCE_BASE and USE_FAKIE,
  * directly translating Python's `exclude_stance_base.union(use_fakie)`.
  * @type {Set<string>}
  */

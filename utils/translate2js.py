@@ -11,7 +11,7 @@ if not GEMINI_API_KEY:
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 PYTHON_SOURCE_PATH = PROJECT_ROOT / "src" / "wzrdbrain" / "wzrdbrain.py"
 TRICK_DATA_PATH = PROJECT_ROOT / "src" / "wzrdbrain" / "tricks.json"
-JS_OUTPUT_PATH = PROJECT_ROOT / "src" / "wzrdbrain" / "wzrdbrain.src.js"
+JS_OUTPUT_PATH = PROJECT_ROOT / "src" / "wzrdbrain" / "wzrdbrain.js"
 JS_SOURCE_PATH = PROJECT_ROOT / "utils" / "wzrdbrain.base.js"
 MODEL_NAME = "gemini-2.5-pro"
 
@@ -50,7 +50,7 @@ You are an expert Python to JavaScript translator. Your task is to translate the
 **Translation Requirements:**
 
 1.  **Source of Truth:** The provided Python code and `tricks.json` data are the single source of truth for the logic. The generated JavaScript must be a direct and accurate translation of this logic.
-2.  **Reference Implementation:** An existing JavaScript file (`wzrdbrain.base.js`) is provided as a reference. The new code (`wzrdbrain.src.js`) should follow its overall structure, coding style, and conventions where applicable, but the core logic must come from the Python source.
+2.  **Reference Implementation:** An existing JavaScript file (`wzrdbrain.base.js`) is provided as a reference. The new code (`wzrdbrain.js`) should follow its overall structure, coding style, and conventions where applicable, but the core logic must come from the Python source.
 3.  **No External Dependencies:** The final JavaScript file must be pure, vanilla JavaScript with no external libraries or dependencies.
 4.  **ES6 Modules:** Use `export` for the `Trick` class and `generateCombo` function so they can be imported by other modules.
 5.  **Data Handling:**
@@ -85,7 +85,7 @@ You are an expert Python to JavaScript translator. Your task is to translate the
 {python_code}
 ```
 
-Now, generate the complete `wzrdbrain.src.js` file based on these instructions. Output ONLY the JavaScript code inside a single markdown block.
+Now, generate the complete `wzrdbrain.js` file based on these instructions. Output ONLY the JavaScript code inside a single markdown block.
 """
 
 

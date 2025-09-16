@@ -1,14 +1,21 @@
 # wzrdbrain
 
-A library to generate random trick combinations for wizard skating.
+A library to generate random trick combinations for wizard skating. This library is available in Python and JavaScript versions.
 
-## Installation
+[Rocker'd Magic Moves](https://rockerd.web.app) - a trick generator app for wizard skating, is using both libraries.
+
+The mobile web app is utilizing the JavaScript library version. It runs offline.
+
+The [Rocker'd](https://rockerd.web.app) RESTFul API endpoints is using the Python library. Read the [API docs](https://rockerd.web.app/api/docs). 
+
+## Usage
+
+### Python
+
 
 ```bash
 pip install wzrdbrain
 ```
-
-## Usage
 
 The primary function is `generate_combo`, which returns a list of trick dictionaries. You can also create `Trick` objects directly for more control.
 
@@ -16,67 +23,50 @@ The primary function is `generate_combo`, which returns a list of trick dictiona
 from wzrdbrain import generate_combo, Trick
 
 # Generate a combo of 3 tricks
-combo = generate_combo(3)
-
-# The output is a list of dictionaries, each representing a trick
-# print(combo)
-# Example output:
-# [
-#     {
-#         'direction': 'front', 'stance': 'open', 'move': 'gazelle', 
-#         'enter_into_trick': 'front', 'exit_from_trick': 'back', 
-#         'name': 'front open gazelle'
-#     },
-#     {
-#         'direction': 'back', 'stance': None, 'move': '360', 
-#         'enter_into_trick': 'back', 'exit_from_trick': 'back', 
-#         'name': 'fakie 360'
-#     },
-#     # ... and so on
-# ]
-
 # To get just the names of the tricks in the combo:
+combo = generate_combo(3)
 trick_names = [trick['name'] for trick in combo]
 print(trick_names)
 # Example output: ['front open gazelle', 'fakie 360', 'back open lion']
+#
 ```
 
-### Creating a Trick Object
+### JavaScript
 
-You can create a `Trick` object with specific attributes. Any attributes not provided will be randomly generated.
-
-```python
-# Create a trick with a specific move
-my_trick = Trick(move="lion s")
-
-# Print the full trick object as a dictionary
-print(my_trick.to_dict())
-# Example output:
-# {
-#     'direction': 'back', 'stance': 'closed', 'move': 'lion s', 
-#     'enter_into_trick': 'back', 'exit_from_trick': 'back', 
-#     'name': 'back closed lion s'
-# }
+```
+https://cdn.jsdelivr.net/gh/nazroll/wzrdbrain/src/wzrdbrain/wzrdbrain.min.js
 ```
 
-## Development
+This library also provides a JavaScript version of the trick generation logic, which can be used in any environment that supports ES6 modules.
 
-To contribute to this project, please see the [Contributing Guide](CONTRIBUTING.md).
+```javascript
+import { generateCombo } from 'https://cdn.jsdelivr.net/gh/nazroll/wzrdbrain/src/wzrdbrain/wzrdbrain.min.js';
 
-First, clone the repository and install the project in editable mode with its development dependencies:
+// Generate a combo of 3 tricks
+const combo = generateCombo(3);
 
-```bash
-git clone https://github.com/nazroll/wzrdbrain.git
-cd wzrdbrain
-pip install -e .[dev]
+// Get the names of the tricks
+const trickNames = combo.map(trick => trick.name);
+console.log(trickNames);
 ```
 
-You can run the test suite using `pytest`:
+For more examples, read the [usage documentation](./docs/usage.md).
 
-```bash
-pytest
-```
+## Contribution
 
-## List of wizard skating tricks
+We welcome contributions! `wzrdbrain` is fully open source (Apache 2.0), and we encourage the community to:
 
-The list of tricks in this library is not comprehensive. Please create an issue and give us your suggestions of new tricks
+- Submit a new move/trick into the database.
+- Report bugs and suggest features
+- Improve documentation
+- Submit code improvements
+
+To contribute to this project, please read the [contributing guide](CONTRIBUTING.md).
+
+## Credits
+
+Many thanks to the skaters and the wizard skating community for their valuable feedback and support. Special thanks to:
+
+- Billy Arlew: for being a reliable source of inspiration and domain knowledge to the wizard tricks dictionary.
+- Eelco Soesman: for being a supportive Slightly Rockerd crew and early tester.
+- Bas Bavinck: for being the beacon of wizardry with his book and supporting this project.
