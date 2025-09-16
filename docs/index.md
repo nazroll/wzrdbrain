@@ -9,9 +9,9 @@
 - [Getting started](./usage.md)
   - [Python usage](./usage.md#python-usage)
   - [JavaScript usage](./usage.md#javascript-usage)
-- [API reference](./api_reference.md)
-  - [The Trick object](./api_reference#the-trick-object.md)
-  - [Generating trick combos](./api_reference.md#generating-trick-combos)
+  - [API reference](usage.md#api-reference)
+    - [The Trick object](./usage.md#the-trick-object)
+    - [Generating trick combos](./usage.md#generating-trick-combos)
 - [Python-to-JS code translation](#python-to-js-code-translation)
 - [Credits](#credits)
 
