@@ -1,10 +1,11 @@
-# API Reference
+# API reference
 
 Data structures used in `wzrdbrain`:
 
-- [The Trick Object](#the-trick-object)
+- [The Trick object](#the-trick-object)
+- [Generating trick combos](#generating-trick-combos)
 
-## The Trick Object
+## The Trick object
 
 The `Trick` object is the core data structure in `wzrdbrain`, representing a single wizard skating trick. It is available in both the Python and JavaScript versions of the library.
 
@@ -21,7 +22,7 @@ A `Trick` object has the following properties:
 | `exit_from_trick`  | `string` | The direction the skater is moving when exiting the trick. This is influenced by rotating moves, which can change the exit direction.         |
 | `name`             | `string` | The full, human-readable name of the trick (e.g., `fakie open gazelle`). This is a computed property generated from the other attributes.      |
 
-### Behavior and Logic
+### Behavior & logic
 
 The `Trick` object is designed to be flexible. You can create a trick with specific attributes, or you can let the library generate a completely random one.
 
@@ -29,13 +30,13 @@ The `Trick` object is designed to be flexible. You can create a trick with speci
 
 If you create a `Trick` object without specifying all the properties, the library will automatically fill in the missing ones with random values. For example, if you only provide a `move`, the `direction` and `stance` will be chosen randomly.
 
-#### Rules Engine
+#### Rules engine
 
 The library uses a set of rules defined in `tricks.json` to ensure that the generated tricks are logical. These rules determine:
 
--   **Stance Exclusion**: Some moves, like `predator`, do not have a stance. The library will not assign a stance to these tricks.
--   **Rotation**: Moves like `gazelle` and `lion` are considered "rotating moves." If a trick uses one of these moves, the `exit_from_trick` direction will be the opposite of the `enter_into_trick` direction.
--   **"Fakie" and "Forward"**: Certain moves, when performed in the `back` direction, are referred to as `fakie`. Similarly, when performed in the `front` direction, they are called `forward`. The `name` property will reflect this.
+-   Some moves, like `predator`, do not have a stance. The library will not assign a stance to these tricks.
+-   Moves like `gazelle` and `lion` are considered "rotating moves." If a trick uses one of these moves, the `exit_from_trick` direction will be the opposite of the `enter_into_trick` direction.
+-   Certain moves, when performed in the `back` direction, are referred to as `fakie`. Similarly, when performed in the `front` direction, they are called `forward`. The `name` property will reflect this.
 
 ### Python vs. JavaScript
 
@@ -46,7 +47,7 @@ The implementation of the `Trick` object is nearly identical in both Python and 
 
 Both versions produce the same output and can be used interchangeably in their respective environments.
 
-## Generating Trick Combos
+## Generating trick combos
 
 The `generate_combo` function is the easiest way to create a sequence of random tricks. It is available in both the Python and JavaScript versions of the library.
 
@@ -98,7 +99,7 @@ console.log(trickNames);
 
 The `generate_combo` function ensures that the generated sequence of tricks is logical:
 
-1.  **First Trick**: The first trick is chosen completely at random from all available moves.
-2.  **Subsequent Tricks**: For each subsequent trick, the function ensures that its `enter_into_trick` direction matches the `exit_from_trick` direction of the previous trick.
-3.  **Move Restrictions**: Certain moves (like `predator`) are only allowed to be the first trick in a combo. The function respects these restrictions.
+1.  The first trick is chosen completely at random from all available moves.
+2.  For each subsequent trick, the function ensures that its `enter_into_trick` direction matches the `exit_from_trick` direction of the previous trick.
+3.  Certain moves (like `predator`) are only allowed to be the first trick in a combo. The function respects these restrictions.
 

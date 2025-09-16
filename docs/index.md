@@ -2,16 +2,17 @@
 
 `wzrdbrain` is a library for generating random trick combinations for wizard skating. This documentation provides a guide for developers who want to use and contribute to the project.
 
-## Table of Contents
+## Table of contents
 
-- [About The Project](#about-the-project)
-  - [Maintainers and contributors](#maintainers-and-contributors)
-- [Getting Started](./usage.md)
-  - [Python Usage](./usage.md#python-usage)
-  - [JavaScript Usage](./usage.md#javascript-usage)
-- [API Reference](./api_reference.md)
-  - [The Trick Object](./api_reference#the-trick-object.md)
-- [Translating Python code to Javascript code](./translate2js.md)
+- [About the project](#about-the-project)
+  - [Maintainers & contributors](#maintainers-and-contributors)
+- [Getting started](./usage.md)
+  - [Python usage](./usage.md#python-usage)
+  - [JavaScript usage](./usage.md#javascript-usage)
+- [API reference](./api_reference.md)
+  - [The Trick object](./api_reference#the-trick-object.md)
+  - [Generating trick combos](./api_reference.md#generating-trick-combos)
+- [Python-to-JS code translation](#python-to-js-code-translation)
 - [Credits](#credits)
 
 
@@ -27,17 +28,22 @@ The JavaScript version is automatically generated from the Python source code us
 
 [![contributors](https://contrib.rocks/image?repo=nazroll/wzrdbrain)](https://github.com/nazroll/wzrdbrain/graphs/contributors)
 
-_**Disclosure:** AI coding assistant tools like Jules by Google and Github Copilot are used in this project._
+_**Disclosure:** AI coding assistant tools like Google Gemini CLI, Jules by Google and Github Copilot are used in this project._
 
 ## Getting started
 
 For developers, read [usage.md](./usage.md) to learn how to install and use the library in Python and JavaScript.
 
-## API Reference
+## API reference
 
 For more detailed information about the data structures used in `wzrdbrain`, please refer to the following documents:
 
-- [The Trick Object](./api_reference.md#the-trick-object)
+- [The Trick object](./api_reference.md#the-trick-object)
+- [Generating trick combos](./api_reference.md#generating-trick-combos)
+
+## Python-to-JS code translation
+
+The JavaScript version is automatically generated from the Python source code. For more details on this process, read [Translating Python code to JavaScript code](./translate2js.md).
 
 ## Credits
 
