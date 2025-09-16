@@ -5,7 +5,7 @@
 ## Table of contents
 
 - [About the project](#about-the-project)
-- [Maintainers & contributors](#maintainers-and-contributors)
+- [Maintainers & contributors](#maintainers--contributors)
 - [Getting started](./usage.md)
   - [Python usage](./usage.md#python-usage)
   - [JavaScript usage](./usage.md#javascript-usage)
