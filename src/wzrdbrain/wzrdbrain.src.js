@@ -13,16 +13,18 @@ const MOVES_DATA = [
   "mizu slide", "star slide", "fast slide", "back slide", "tsunami"
 ];
 const RULES_DATA = {
-  ONLY_FIRST: ["predator", "predator one", "parallel"],
-  USE_FAKIE: [
+  "ONLY_FIRST": ["predator", "predator one", "parallel"],
+  "USE_FAKIE": [
     "toe press", "toe roll", "heel press", "heel roll", "360", "180", "540",
     "parallel slide", "soul slide", "acid slide", "mizu slide", "star slide",
     "fast slide", "back slide"
   ],
-  EXCLUDE_STANCE_BASE: ["predator", "predator one"],
-  ROTATING_MOVES: ["gazelle", "lion", "180", "540"]
+  "EXCLUDE_STANCE_BASE": ["predator", "predator one"],
+  "ROTATING_MOVES": ["gazelle", "lion", "180", "540"]
 };
 
+
+// Trick data definitions
 /** @type {string[]} */
 const DIRECTIONS = DIRECTIONS_DATA;
 /** @type {string[]} */
@@ -30,7 +32,7 @@ const STANCES = STANCES_DATA;
 /** @type {string[]} */
 const MOVES = MOVES_DATA;
 
-// Rules converted to Set for efficient lookups, mirroring Python's set usage.
+// Rules converted to Set for efficient lookups, mirroring Python's set usage
 /** @type {Set<string>} */
 const onlyFirst = new Set(RULES_DATA.ONLY_FIRST);
 /** @type {Set<string>} */
@@ -40,7 +42,7 @@ const rotatingMoves = new Set(RULES_DATA.ROTATING_MOVES);
 /** @type {Set<string>} */
 const excludeStanceBase = new Set(RULES_DATA.EXCLUDE_STANCE_BASE);
 
-// Derived rules, mirroring Python's `exclude_stance` and `SUBSEQUENT_MOVES`.
+// Derived rules, mirroring Python's `exclude_stance` and `SUBSEQUENT_MOVES`
 /**
  * A set of moves that exclude an automatically determined stance.
  * This is the union of EXCLUDE_STANCE_BASE and USE_FAKIE from the JSON rules,
@@ -55,6 +57,7 @@ const excludeStance = new Set([...excludeStanceBase, ...useFakie]);
  * @type {string[]}
  */
 const subsequentMoves = MOVES.filter(move => !onlyFirst.has(move));
+
 
 /**
  * @typedef {'front' | 'back'} Direction
@@ -99,7 +102,7 @@ export class Trick {
     enterIntoTrick = null,
     exitFromTrick = null,
   } = {}) {
-    // 1. Input validation, mirroring Python's `__post_init__` validation.
+    // 1. Input validation, mirroring Python's `__post_init__` validation
     if (direction !== null && !DIRECTIONS.includes(direction)) {
       throw new Error(`Invalid direction: '${direction}'. Must be one of ${DIRECTIONS.join(', ')}`);
     }
@@ -110,14 +113,14 @@ export class Trick {
       throw new Error(`Invalid move: '${move}'. Must be one of ${MOVES.join(', ')}`);
     }
 
-    // 2. Assign initial values from constructor arguments.
+    // 2. Assign initial values
     this.direction = direction;
     this.stance = stance;
     this.move = move;
     this.enterIntoTrick = enterIntoTrick;
     this.exitFromTrick = exitFromTrick;
 
-    // 3. Generate default values if not provided, mirroring Python's `__post_init__`.
+    // 3. Generate default values if not provided, mirroring Python's `__post_init__`
     if (this.direction === null) {
       this.direction = DIRECTIONS[Math.floor(Math.random() * DIRECTIONS.length)];
     }
@@ -134,12 +137,12 @@ export class Trick {
       this.exitFromTrick = this.direction;
     }
 
-    // 4. Automatically determine stance if not provided and not excluded by move, mirroring Python's logic.
+    // 4. Automatically determine stance if not provided and not excluded by move, mirroring Python's logic
     if (this.stance === null && this.move !== null && !excludeStance.has(this.move)) {
       this.stance = STANCES[Math.floor(Math.random() * STANCES.length)];
     }
 
-    // 5. Update exit direction for moves that rotate the body, mirroring Python's logic.
+    // 5. Update exit direction for moves that rotate the body, mirroring Python's logic
     if (this.move !== null && rotatingMoves.has(this.move)) {
       if (this.direction === "back") {
         this.exitFromTrick = "front";
@@ -159,7 +162,7 @@ export class Trick {
     const parts = [];
     let displayDirection = this.direction;
 
-    // Handle fakie/forward display name, mirroring Python's `__str__`.
+    // Handle fakie/forward display name, mirroring Python's `__str__`
     if (this.move !== null && useFakie.has(this.move)) {
       if (this.direction === "back") {
         displayDirection = "fakie";
@@ -209,7 +212,7 @@ export class Trick {
  *   Returns an empty array if numTricks is 0 or less.
  */
 export function generateCombo(numTricks = null) {
-  // Mirroring Python's default num_of_tricks = random.randint(2, 5).
+  // Mirroring Python's default num_of_tricks = random.randint(2, 5)
   if (numTricks === null) {
     numTricks = Math.floor(Math.random() * (5 - 2 + 1)) + 2;
   }
@@ -228,29 +231,34 @@ export function generateCombo(numTricks = null) {
     let newTrick;
 
     if (i === 0) {
-      // First trick: choose from all moves, mirroring Python's logic.
+      // First trick: choose from all moves, mirroring Python's logic
       const move = MOVES[Math.floor(Math.random() * MOVES.length)];
-      newTrick = new Trick({ move });
+      newTrick = new Trick({
+        move
+      });
     } else {
       // Subsequent tricks: respect exit direction of previous trick
       // and choose from moves not marked as ONLY_FIRST.
       // Mirroring Python's logic `required_direction = previous_trick.exit_from_trick`
-      // and `move = random.choice(list(SUBSEQUENT_MOVES))`.
+      // and `move = random.choice(list(SUBSEQUENT_MOVES))`
       if (!previousTrick) {
         // This case should ideally not be reached if numTricks > 0 and i > 0,
-        // but included for robustness, similar to Python's implicit `assert`.
+        // but included for robustness, similar to Python's implicit `assert`
         throw new Error("Previous trick is undefined for subsequent trick generation.");
       }
       const requiredDirection = previousTrick.exitFromTrick;
-      // Choose from the pre-filtered array of subsequent moves for efficiency.
+      // Choose from the pre-filtered array of subsequent moves for efficiency
       const move = subsequentMoves[Math.floor(Math.random() * subsequentMoves.length)];
-      newTrick = new Trick({ direction: requiredDirection, move });
+      newTrick = new Trick({
+        direction: requiredDirection,
+        move
+      });
     }
 
     trickObjects.push(newTrick);
     previousTrick = newTrick;
   }
 
-  // Mirroring Python's `[trick.to_dict() for trick in trick_objects]`.
+  // Mirroring Python's `[trick.to_dict() for trick in trick_objects]`
   return trickObjects.map(trick => trick.toObject());
 }
