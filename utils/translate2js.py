@@ -11,7 +11,7 @@ if not GEMINI_API_KEY:
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 PYTHON_SOURCE_PATH = PROJECT_ROOT / "src" / "wzrdbrain" / "wzrdbrain.py"
 TRICK_DATA_PATH = PROJECT_ROOT / "src" / "wzrdbrain" / "tricks.json"
-JS_OUTPUT_PATH = PROJECT_ROOT / "dist" / "wzrdbrain.src.js"
+JS_OUTPUT_PATH = PROJECT_ROOT / "src" / "wzrdbrain" /"wzrdbrain.src.js"
 JS_SOURCE_PATH = PROJECT_ROOT / "utils" / "wzrdbrain.base.js"
 MODEL_NAME = "gemini-2.5-pro"
 
