@@ -7,6 +7,7 @@ on:
   push:
     branches: ["**"]
     paths:
+      - 'utils/translate2js.py'
       - 'src/wzrdbrain/wzrdbrain.py'
       - 'src/wzrdbrain/tricks.json'
       - '.github/workflows/ci.yml'
@@ -59,21 +60,21 @@ jobs:
 
       - name: Show first lines of generated file
         run: |
-          echo "Preview of src/wzrdbrain/wzrdbrain.src.js:"
-          head -n 60 src/wzrdbrain/wzrdbrain.src.js || true
+          echo "Preview of src/wzrdbrain/wzrdbrain.js:"
+          head -n 60 src/wzrdbrain/wzrdbrain.js || true
       - name: Detect changes in generated file
         id: diff
         shell: bash
         run: |
-          # Determine if src/wzrdbrain/wzrdbrain.src.js is new or modified
-          if git ls-files --error-unmatch src/wzrdbrain/wzrdbrain.src.js >/dev/null 2>&1; then
-            if git diff --quiet -- src/wzrdbrain/wzrdbrain.src.js; then
+          # Determine if src/wzrdbrain/wzrdbrain.js is new or modified
+          if git ls-files --error-unmatch src/wzrdbrain/wzrdbrain.js >/dev/null 2>&1; then
+            if git diff --quiet -- src/wzrdbrain/wzrdbrain.js; then
               echo "changed=false" >> "$GITHUB_OUTPUT"
             else
               echo "changed=true" >> "$GITHUB_OUTPUT"
             fi
           else
-            if [ -f src/wzrdbrain/wzrdbrain.src.js ]; then
+            if [ -f src/wzrdbrain/wzrdbrain.js ]; then
               echo "changed=true" >> "$GITHUB_OUTPUT"
             else
               echo "changed=false" >> "$GITHUB_OUTPUT"
@@ -84,7 +85,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: wzrdbrain-js
-          path: src/wzrdbrain/wzrdbrain.src.js
+          path: src/wzrdbrain/wzrdbrain.js
 
       - name: Commit generated file to working branch
         if: steps.diff.outputs.changed == 'true'
@@ -93,6 +94,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -B "$branch"
-          git add src/wzrdbrain/wzrdbrain.src.js
-          git commit -m "chore: update src/wzrdbrain/wzrdbrain.src.js via utils/translate2js.py [skip ci]"
+          git add src/wzrdbrain/wzrdbrain.js
+          git commit -m "chore: update src/wzrdbrain/wzrdbrain.js via utils/translate2js.py [skip ci]"
           git push origin "$branch"

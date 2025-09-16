@@ -65,7 +65,7 @@ print(my_trick.to_dict())
 This library also provides a JavaScript version of the trick generation logic, which can be used in any environment that supports ES6 modules.
 
 ```javascript
-import { generateCombo } from 'https://cdn.jsdelivr.net/gh/nazroll/wzrdbrain@latest/src/wzrdbrain/wzrdbrain.src.js';
+import { generateCombo } from 'https://cdn.jsdelivr.net/gh/nazroll/wzrdbrain/src/wzrdbrain/wzrdbrain.min.js';
 
 // Generate a combo of 3 tricks
 const combo = generateCombo(3);

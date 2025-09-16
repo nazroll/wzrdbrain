@@ -56,7 +56,7 @@ warn_unused_ignores = true
 plugins = "pydantic.mypy"
 
 [tool.setuptools]
-package_data = { "wzrdbrain": ["tricks.json"] }
+package_data = { "wzrdbrain" = ["tricks.json"] }
 
 [tool.setuptools.packages.find]
 where = ["src"]
