@@ -9,8 +9,8 @@
 - [Getting Started](./usage.md)
   - [Python Usage](./usage.md#python-usage)
   - [JavaScript Usage](./usage.md#javascript-usage)
-- [API Reference](./apireference.md)
-  - [The Trick Object](./apireference#the-trick-object.md)
+- [API Reference](./api_reference.md)
+  - [The Trick Object](./api_reference#the-trick-object.md)
 - [Credits](#credits)
 
 
@@ -36,7 +36,7 @@ For developers, read [usage.md](./usage.md) to learn how to install and use the 
 
 For more detailed information about the data structures used in `wzrdbrain`, please refer to the following documents:
 
-- [The Trick Object](./apireference.md#the-trick-object)
+- [The Trick Object](./api_reference.md#the-trick-object)
 
 ## Credits
 
