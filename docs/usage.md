@@ -2,6 +2,15 @@
 
 Developers can integrate `wzrdbrain` into their Python and/or Javascript applications.
 
+## Table of contents
+
+
+- [Python](./usage.md#python)
+- [JavaScript](./usage.md#javascript)
+- [API reference](usage.md#api-reference)
+    - [The Trick object](./usage.md#the-trick-object)
+    - [Generating trick combos](./usage.md#generating-trick-combos)
+
 ## Python
 
 To get started with the Python version of `wzrdbrain`, first install the library using pip:
