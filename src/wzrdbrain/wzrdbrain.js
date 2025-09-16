@@ -13,26 +13,15 @@ const MOVES = [
   "mizu slide", "star slide", "fast slide", "back slide", "tsunami"
 ];
 
-const RULES = {
-  ONLY_FIRST: ["predator", "predator one", "parallel"],
-  USE_FAKIE: [
-    "toe press", "toe roll", "heel press", "heel roll", "360", "180", "540",
-    "parallel slide", "soul slide", "acid slide", "mizu slide", "star slide",
-    "fast slide", "back slide"
-  ],
-  EXCLUDE_STANCE_BASE: ["predator", "predator one"],
-  ROTATING_MOVES: ["gazelle", "lion", "180", "540"]
-};
-
 // Rules converted to Set for efficient lookups, mirroring Python's set usage
-/** @type {Set<string>} */
-const onlyFirst = new Set(RULES.ONLY_FIRST);
-/** @type {Set<string>} */
-const useFakie = new Set(RULES.USE_FAKIE);
-/** @type {Set<string>} */
-const rotatingMoves = new Set(RULES.ROTATING_MOVES);
-/** @type {Set<string>} */
-const excludeStanceBase = new Set(RULES.EXCLUDE_STANCE_BASE);
+const onlyFirst = new Set(["predator", "predator one", "parallel"]);
+const useFakie = new Set([
+  "toe press", "toe roll", "heel press", "heel roll", "360", "180", "540",
+  "parallel slide", "soul slide", "acid slide", "mizu slide", "star slide",
+  "fast slide", "back slide"
+]);
+const excludeStanceBase = new Set(["predator", "predator one"]);
+const rotatingMoves = new Set(["gazelle", "lion", "180", "540"]);
 
 // Derived rules, mirroring Python's `exclude_stance` and `SUBSEQUENT_MOVES`
 /**
@@ -50,6 +39,7 @@ const excludeStance = new Set([...excludeStanceBase, ...useFakie]);
  */
 const subsequentMoves = MOVES.filter(move => !onlyFirst.has(move));
 
+
 /**
  * @typedef {'front' | 'back'} Direction
  * @typedef {'open' | 'closed'} Stance
@@ -60,7 +50,7 @@ const subsequentMoves = MOVES.filter(move => !onlyFirst.has(move));
  * Represents a single trick with its direction, stance, and move.
  * Automatically generates random values for unspecified properties
  * and adjusts properties like exit direction based on the move,
- * directly translating the Python `Trick` dataclass logic, including its `__post_init__` method.
+ * directly translating the Python `Trick` dataclass logic, especially its `__post_init__` method.
  */
 export class Trick {
   /** @type {Direction | null} */
@@ -128,12 +118,12 @@ export class Trick {
       this.exitFromTrick = this.direction;
     }
 
-    // 4. Automatically determine stance if not provided and not excluded by move
+    // 4. Automatically determine stance if not provided and not excluded by move, mirroring Python's logic
     if (this.stance === null && this.move !== null && !excludeStance.has(this.move)) {
       this.stance = STANCES[Math.floor(Math.random() * STANCES.length)];
     }
 
-    // 5. Update exit direction for moves that rotate the body
+    // 5. Update exit direction for moves that rotate the body, mirroring Python's logic
     if (this.move !== null && rotatingMoves.has(this.move)) {
       if (this.direction === "back") {
         this.exitFromTrick = "front";
@@ -199,7 +189,7 @@ export class Trick {
  *
  * @param {number | null} [numTricks=null] - The number of tricks to generate in the combo.
  *   If null, a random number between 2 and 5 (inclusive) will be chosen, mirroring Python's `random.randint(2, 5)`.
- * @returns {object[]} An array of trick objects, each with their properties and a 'name' field.
+ * @returns {object[]} A list of trick objects, each with their properties and a 'name' field.
  *   Returns an empty array if numTricks is 0 or less.
  */
 export function generateCombo(numTricks = null) {
@@ -234,7 +224,7 @@ export function generateCombo(numTricks = null) {
       // and `move = random.choice(list(SUBSEQUENT_MOVES))`
       if (!previousTrick) {
         // This case should ideally not be reached if numTricks > 0 and i > 0,
-        // but included for robustness, mirroring Python's `assert`
+        // but included for robustness, similar to Python's implicit `assert`
         throw new Error("Previous trick is undefined for subsequent trick generation.");
       }
       const requiredDirection = previousTrick.exitFromTrick;
