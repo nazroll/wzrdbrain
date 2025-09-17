@@ -70,4 +70,4 @@ Many thanks to the wizard skating community for their valuable feedback and supp
 
 ## License
 
-This project is licensed under the Apache-2.0 License - see the [LICENSE](./LICENSE) file for details.
+This project is licensed under the Apache-2.0 Open Source Software License. See the [LICENSE](./LICENSE) file for details.
