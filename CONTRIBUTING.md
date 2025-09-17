@@ -61,7 +61,10 @@ If you'd like to fix a bug or add a new feature to the Python or JavaScript code
 
 ### Development setup
 
-1.  **Clone your fork:**
+1.  **If you haven't already, fork the repository on GitHub.**
+    * Go to https://github.com/wzrdbrain/wzrdbrain and click "Fork" in the top right.
+
+2.  **Clone your fork:**
     ```bash
     git clone <your-fork-url>
     cd wzrdbrain
