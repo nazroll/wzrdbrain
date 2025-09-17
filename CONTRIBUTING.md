@@ -1,6 +1,6 @@
 # Contributing to wzrdbrain
 
-First off, thank you for considering contributing! It's people like you that make this project better for the whole wizard skating community.
+First off, thank you for considering contributing! It's people like you that make this project better for the whole Wizard Skating community.
 
 This project follows the [Contributor Covenant](https://www.contributor-covenant.org/version/2/1/code_of_conduct/). By participating in this project, you agree to uphold this code.
 
