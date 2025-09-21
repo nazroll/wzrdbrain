@@ -10,7 +10,8 @@ const MOVES = [
   "predator", "predator one", "parallel", "tree", "gazelle", "gazelle s",
   "lion", "lion s", "toe press", "heel press", "toe roll", "heel roll",
   "360", "180", "540", "parallel slide", "soul slide", "acid slide",
-  "mizu slide", "star slide", "fast slide", "back slide", "tsunami"
+  "mizu slide", "star slide", "fast slide", "back slide", "stunami",
+  "ufo swivel", "toe pivot", "heel pivot"
 ];
 
 // Rules converted to Set for efficient lookups, mirroring Python's set usage
@@ -21,7 +22,7 @@ const useFakie = new Set([
   "fast slide", "back slide"
 ]);
 const excludeStanceBase = new Set(["predator", "predator one"]);
-const rotatingMoves = new Set(["gazelle", "lion", "180", "540"]);
+const rotatingMoves = new Set(["gazelle", "lion", "180", "540", "stunami", "ufo swivel"]);
 
 // Derived rules, mirroring Python's `exclude_stance` and `SUBSEQUENT_MOVES`
 /**
