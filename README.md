@@ -64,7 +64,7 @@ For more examples, see the [usage documentation](./docs/usage.md).
 
 Many thanks to the wizard skating community for their valuable feedback and support. Special thanks to:
 
-- Billy Arlew: for being a reliable source of inspiration and domain knowledge to the wizard tricks dictionary.
+- Billy Arlew: for being a reliable source of inspiration and as a [domain knowledge expert on the wizard skating tricks dictionary](https://eccentricinline.com/).
 - Eelco Soesman: for being a supportive Slightly Rockerd crew and early tester.
 - Bas Bavinck: for being the beacon of wizardry with his book and supporting this project.
 
