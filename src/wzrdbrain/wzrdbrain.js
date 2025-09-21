@@ -15,19 +15,24 @@ const MOVES = [
 ];
 
 // Rules converted to Set for efficient lookups, mirroring Python's set usage
+/** @type {Set<string>} */
 const onlyFirst = new Set(["predator", "predator one", "parallel"]);
+/** @type {Set<string>} */
 const useFakie = new Set([
   "toe press", "toe roll", "heel press", "heel roll", "360", "180", "540",
   "parallel slide", "soul slide", "acid slide", "mizu slide", "star slide",
   "fast slide", "back slide"
 ]);
+/** @type {Set<string>} */
 const excludeStanceBase = new Set(["predator", "predator one"]);
+/** @type {Set<string>} */
 const rotatingMoves = new Set(["gazelle", "lion", "180", "540", "stunami", "ufo swivel"]);
+
 
 // Derived rules, mirroring Python's `exclude_stance` and `SUBSEQUENT_MOVES`
 /**
  * A set of moves that exclude an automatically determined stance.
- * This is the union of EXCLUDE_STANCE_BASE and USE_FAKIE,
+ * This is the union of EXCLUDE_STANCE_BASE and USE_FAKIE from the JSON rules,
  * directly translating Python's `exclude_stance_base.union(use_fakie)`.
  * @type {Set<string>}
  */
@@ -119,12 +124,12 @@ export class Trick {
       this.exitFromTrick = this.direction;
     }
 
-    // 4. Automatically determine stance if not provided and not excluded by move, mirroring Python's logic
+    // 4. Automatically determine stance if not provided and not excluded by move
     if (this.stance === null && this.move !== null && !excludeStance.has(this.move)) {
       this.stance = STANCES[Math.floor(Math.random() * STANCES.length)];
     }
 
-    // 5. Update exit direction for moves that rotate the body, mirroring Python's logic
+    // 5. Update exit direction for moves that rotate the body
     if (this.move !== null && rotatingMoves.has(this.move)) {
       if (this.direction === "back") {
         this.exitFromTrick = "front";
@@ -215,17 +220,12 @@ export function generateCombo(numTricks = null) {
     if (i === 0) {
       // First trick: choose from all moves, mirroring Python's logic
       const move = MOVES[Math.floor(Math.random() * MOVES.length)];
-      newTrick = new Trick({
-        move
-      });
+      newTrick = new Trick({ move });
     } else {
       // Subsequent tricks: respect exit direction of previous trick
       // and choose from moves not marked as ONLY_FIRST.
-      // Mirroring Python's logic `required_direction = previous_trick.exit_from_trick`
-      // and `move = random.choice(list(SUBSEQUENT_MOVES))`
       if (!previousTrick) {
-        // This case should ideally not be reached if numTricks > 0 and i > 0,
-        // but included for robustness, similar to Python's implicit `assert`
+        // This case should ideally not be reached, mirroring Python's `assert`
         throw new Error("Previous trick is undefined for subsequent trick generation.");
       }
       const requiredDirection = previousTrick.exitFromTrick;
