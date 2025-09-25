@@ -130,6 +130,7 @@ def generate_combo(num_of_tricks: Optional[int] = None) -> list[dict[str, Any]]:
 
     trick_objects: list[Trick] = []
     previous_trick: Optional[Trick] = None
+    subsequent_moves_list = list(SUBSEQUENT_MOVES)
 
     for i in range(num_of_tricks):
         if i == 0:
@@ -140,7 +141,7 @@ def generate_combo(num_of_tricks: Optional[int] = None) -> list[dict[str, Any]]:
             # Subsequent tricks: choose from the pre-filtered set
             assert previous_trick is not None
             required_direction = previous_trick.exit_from_trick
-            move = random.choice(list(SUBSEQUENT_MOVES))  # Choose from the valid set
+            move = random.choice(subsequent_moves_list)  # Choose from the valid set
             new_trick = Trick(direction=required_direction, move=move)
 
         trick_objects.append(new_trick)

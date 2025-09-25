@@ -1,5 +1,7 @@
 # wzrdbrain
 
+[![Release](https://github.com/nazroll/wzrdbrain/actions/workflows/release.yml/badge.svg?branch=main)](https://github.com/nazroll/wzrdbrain/actions/workflows/release.yml)
+
 `wzrdbrain` is the engine behind applications that generate random trick combinations for wizard skating. It helps skaters discover new and creative sequences of moves.
 
 If you're a wizard skater, the best way to use this project is through the [**Rocker'd Magic Moves**](https://rockerd.web.app) app!
