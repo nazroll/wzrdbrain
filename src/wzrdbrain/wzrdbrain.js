@@ -3,7 +3,7 @@
  * @license Apache-2.0
  */
 
-// Data from tricks.json, embedded directly as constants
+// Data from tricks.json, embedded directly as constants.
 const DIRECTIONS = ["front", "back"];
 const STANCES = ["open", "closed"];
 const MOVES = [
@@ -13,23 +13,25 @@ const MOVES = [
   "mizu slide", "star slide", "fast slide", "back slide", "stunami",
   "ufo swivel", "toe pivot", "heel pivot"
 ];
+const RULES = {
+  ONLY_FIRST: ["predator", "predator one", "parallel"],
+  USE_FAKIE: [
+    "toe press", "toe roll", "heel press", "heel roll", "360", "180", "540",
+    "parallel slide", "soul slide", "acid slide", "mizu slide", "star slide",
+    "fast slide", "back slide"
+  ],
+  EXCLUDE_STANCE_BASE: ["predator", "predator one"],
+  ROTATING_MOVES: ["gazelle", "lion", "180", "540", "stunami", "ufo swivel"]
+};
 
-// Rules converted to Set for efficient lookups, mirroring Python's set usage
-/** @type {Set<string>} */
-const onlyFirst = new Set(["predator", "predator one", "parallel"]);
-/** @type {Set<string>} */
-const useFakie = new Set([
-  "toe press", "toe roll", "heel press", "heel roll", "360", "180", "540",
-  "parallel slide", "soul slide", "acid slide", "mizu slide", "star slide",
-  "fast slide", "back slide"
-]);
-/** @type {Set<string>} */
-const excludeStanceBase = new Set(["predator", "predator one"]);
-/** @type {Set<string>} */
-const rotatingMoves = new Set(["gazelle", "lion", "180", "540", "stunami", "ufo swivel"]);
+// Rules converted to Set for efficient lookups, mirroring Python's set usage.
+const onlyFirst = new Set(RULES.ONLY_FIRST);
+const useFakie = new Set(RULES.USE_FAKIE);
+const rotatingMoves = new Set(RULES.ROTATING_MOVES);
+const excludeStanceBase = new Set(RULES.EXCLUDE_STANCE_BASE);
 
+// Derived rules, mirroring Python's `exclude_stance` and `SUBSEQUENT_MOVES`.
 
-// Derived rules, mirroring Python's `exclude_stance` and `SUBSEQUENT_MOVES`
 /**
  * A set of moves that exclude an automatically determined stance.
  * This is the union of EXCLUDE_STANCE_BASE and USE_FAKIE from the JSON rules,
@@ -45,13 +47,6 @@ const excludeStance = new Set([...excludeStanceBase, ...useFakie]);
  */
 const subsequentMoves = MOVES.filter(move => !onlyFirst.has(move));
 
-
-/**
- * @typedef {'front' | 'back'} Direction
- * @typedef {'open' | 'closed'} Stance
- * @typedef {string} Move
- */
-
 /**
  * Represents a single trick with its direction, stance, and move.
  * Automatically generates random values for unspecified properties
@@ -59,15 +54,15 @@ const subsequentMoves = MOVES.filter(move => !onlyFirst.has(move));
  * directly translating the Python `Trick` dataclass logic, especially its `__post_init__` method.
  */
 export class Trick {
-  /** @type {Direction | null} */
+  /** @type {string | null} */
   direction;
-  /** @type {Stance | null} */
+  /** @type {string | null} */
   stance;
-  /** @type {Move | null} */
+  /** @type {string | null} */
   move;
-  /** @type {Direction | null} */
+  /** @type {string | null} */
   enterIntoTrick;
-  /** @type {Direction | null} */
+  /** @type {string | null} */
   exitFromTrick;
 
   /**
@@ -75,11 +70,11 @@ export class Trick {
    * This constructor's logic directly translates the Python `__post_init__` method.
    *
    * @param {object} [props] - Optional properties for the trick.
-   * @param {Direction | null} [props.direction=null] - The direction (e.g., 'front', 'back').
-   * @param {Stance | null} [props.stance=null] - The stance (e.g., 'open', 'closed').
-   * @param {Move | null} [props.move=null] - The specific trick move.
-   * @param {Direction | null} [props.enterIntoTrick=null] - The direction from which the trick is entered.
-   * @param {Direction | null} [props.exitFromTrick=null] - The direction into which the trick exits.
+   * @param {string | null} [props.direction=null] - The direction (e.g., 'front', 'back').
+   * @param {string | null} [props.stance=null] - The stance (e.g., 'open', 'closed').
+   * @param {string | null} [props.move=null] - The specific trick move.
+   * @param {string | null} [props.enterIntoTrick=null] - The direction from which the trick is entered.
+   * @param {string | null} [props.exitFromTrick=null] - The direction into which the trick exits.
    * @throws {Error} If an invalid direction, stance, or move is provided.
    */
   constructor({
@@ -124,12 +119,12 @@ export class Trick {
       this.exitFromTrick = this.direction;
     }
 
-    // 4. Automatically determine stance if not provided and not excluded by move
+    // 4. Automatically determine stance if not provided and not excluded by move, mirroring Python's logic
     if (this.stance === null && this.move !== null && !excludeStance.has(this.move)) {
       this.stance = STANCES[Math.floor(Math.random() * STANCES.length)];
     }
 
-    // 5. Update exit direction for moves that rotate the body
+    // 5. Update exit direction for moves that rotate the body, mirroring Python's logic
     if (this.move !== null && rotatingMoves.has(this.move)) {
       if (this.direction === "back") {
         this.exitFromTrick = "front";
@@ -224,8 +219,11 @@ export function generateCombo(numTricks = null) {
     } else {
       // Subsequent tricks: respect exit direction of previous trick
       // and choose from moves not marked as ONLY_FIRST.
+      // Mirroring Python's logic `required_direction = previous_trick.exit_from_trick`
+      // and `move = random.choice(subsequent_moves_list)`
       if (!previousTrick) {
-        // This case should ideally not be reached, mirroring Python's `assert`
+        // This case should ideally not be reached if numTricks > 0 and i > 0,
+        // but included for robustness, similar to Python's `assert`.
         throw new Error("Previous trick is undefined for subsequent trick generation.");
       }
       const requiredDirection = previousTrick.exitFromTrick;
