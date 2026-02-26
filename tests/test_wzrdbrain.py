@@ -75,3 +75,28 @@ def test_generate_combo_only_first_rule() -> None:
         # Check all tricks after the first one
         for trick_dict in combo[1:]:
             assert trick_dict["move"] not in only_first
+
+
+def test_rotating_move_flips_exit_direction() -> None:
+    # gazelle entering front should exit back, and vice versa
+    trick_front = Trick(direction="front", move="gazelle")
+    assert trick_front.exit_from_trick == "back"
+
+    trick_back = Trick(direction="back", move="gazelle")
+    assert trick_back.exit_from_trick == "front"
+
+
+def test_generate_combo_edge_cases() -> None:
+    assert generate_combo(0) == []
+    assert len(generate_combo(1)) == 1
+
+
+def test_stance_excluded_for_certain_moves() -> None:
+    # Predator moves should never have a stance
+    for _ in range(10):
+        trick = Trick(move="predator")
+        assert trick.stance is None
+
+    # USE_FAKIE moves should also have no stance
+    trick = Trick(move="360")
+    assert trick.stance is None

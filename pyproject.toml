@@ -41,7 +41,6 @@ Issues = "https://github.com/nazroll/wzrdbrain/issues"
 [tool.ruff]
 line-length = 100
 lint.extend-select = ["Q", "UP"]
-lint.extend-ignore = ["E501"]
 
 [tool.black]
 line-length = 100
