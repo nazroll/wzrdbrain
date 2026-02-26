@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "wzrdbrain"
 version = "0.2.1"
-description = "A simple library to generate trick combinations for wizard skating."
+description = "A simple library to generate trick combinations and moves for wizard style inline skating."
 readme = "README.md"
 requires-python = ">=3.9"
 license = "Apache-2.0"
@@ -26,7 +26,8 @@ classifiers = [
 dev = [
     "pytest",
     "ruff",
-    "black",
+    "black; python_version < '3.10'",
+    "black>=26.1.0; python_version >= '3.10'",
     "mypy",
     "build",
     "google-genai"
@@ -41,7 +42,6 @@ Issues = "https://github.com/nazroll/wzrdbrain/issues"
 [tool.ruff]
 line-length = 100
 lint.extend-select = ["Q", "UP"]
-lint.extend-ignore = ["E501"]
 
 [tool.black]
 line-length = 100

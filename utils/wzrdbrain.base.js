@@ -11,7 +11,8 @@ const DATA_JSON = {
     "predator", "predator one", "parallel", "tree", "gazelle", "gazelle s",
     "lion", "lion s", "toe press", "heel press", "toe roll", "heel roll",
     "360", "180", "540", "parallel slide", "soul slide", "acid slide",
-    "mizu slide", "star slide", "fast slide", "back slide"
+    "mizu slide", "star slide", "fast slide", "back slide", "stunami",
+    "ufo swivel", "toe pivot", "heel pivot"
   ],
   "RULES": {
     "ONLY_FIRST": ["predator", "predator one", "parallel"],
@@ -21,7 +22,7 @@ const DATA_JSON = {
       "fast slide", "back slide"
     ],
     "EXCLUDE_STANCE_BASE": ["predator", "predator one"],
-    "ROTATING_MOVES": ["gazelle", "lion", "180", "540"]
+    "ROTATING_MOVES": ["gazelle", "lion", "180", "540", "stunami", "ufo swivel"]
   }
 };
 
