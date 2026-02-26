@@ -50,7 +50,7 @@ print(trick_names)
 
 You can use the ES6 module directly from the JSDelivr CDN.
 ```javascript
-import { generateCombo } from 'https://cdn.jsdelivr.net/gh/nazroll/wzrdbrain/src/wzrdbrain/wzrdbrain.min.js';
+import { generateCombo } from 'https://cdn.jsdelivr.net/gh/nazroll/wzrdbrain@v0.2.2/src/wzrdbrain/wzrdbrain.js';
 
 // Generate a combo of 3 tricks and get their names
 const combo = generateCombo(3);

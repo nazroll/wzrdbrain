@@ -37,7 +37,7 @@ print(trick_names)
 The JavaScript version of the library can be used in any environment that supports ES6 modules.
 
 ```javascript
-import { generateCombo } from 'https://cdn.jsdelivr.net/gh/nazroll/wzrdbrain/src/wzrdbrain/wzrdbrain.min.js';
+import { generateCombo } from 'https://cdn.jsdelivr.net/gh/nazroll/wzrdbrain@v0.2.2/src/wzrdbrain/wzrdbrain.js';
 
 // Generate a combo of 3 tricks
 const combo = generateCombo(3);
