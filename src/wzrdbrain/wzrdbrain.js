@@ -4,30 +4,44 @@
  */
 
 // Data from tricks.json, embedded directly as constants
-const DIRECTIONS = ["front", "back"];
-const STANCES = ["open", "closed"];
-const MOVES = [
-  "predator", "predator one", "parallel", "tree", "gazelle", "gazelle s",
-  "lion", "lion s", "toe press", "heel press", "toe roll", "heel roll",
-  "360", "180", "540", "parallel slide", "soul slide", "acid slide",
-  "mizu slide", "star slide", "fast slide", "back slide", "stunami",
-  "ufo swivel", "toe pivot", "heel pivot"
-];
+const DATA_JSON = {
+  "DIRECTIONS": ["front", "back"],
+  "STANCES": ["open", "closed"],
+  "MOVES": [
+    "predator", "predator one", "parallel", "tree", "gazelle", "gazelle s",
+    "lion", "lion s", "toe press", "heel press", "toe roll", "heel roll",
+    "360", "180", "540", "parallel slide", "soul slide", "acid slide",
+    "mizu slide", "star slide", "fast slide", "back slide", "stunami",
+    "ufo swivel", "toe pivot", "heel pivot"
+  ],
+  "RULES": {
+    "ONLY_FIRST": ["predator", "predator one", "parallel"],
+    "USE_FAKIE": [
+      "toe press", "toe roll", "heel press", "heel roll", "360", "180", "540",
+      "parallel slide", "soul slide", "acid slide", "mizu slide", "star slide",
+      "fast slide", "back slide"
+    ],
+    "EXCLUDE_STANCE_BASE": ["predator", "predator one"],
+    "ROTATING_MOVES": ["gazelle", "lion", "180", "540", "stunami", "ufo swivel"]
+  }
+};
+
+/** @type {string[]} */
+const DIRECTIONS = DATA_JSON.DIRECTIONS;
+/** @type {string[]} */
+const STANCES = DATA_JSON.STANCES;
+/** @type {string[]} */
+const MOVES = DATA_JSON.MOVES;
 
 // Rules converted to Set for efficient lookups, mirroring Python's set usage
 /** @type {Set<string>} */
-const onlyFirst = new Set(["predator", "predator one", "parallel"]);
+const onlyFirst = new Set(DATA_JSON.RULES.ONLY_FIRST);
 /** @type {Set<string>} */
-const useFakie = new Set([
-  "toe press", "toe roll", "heel press", "heel roll", "360", "180", "540",
-  "parallel slide", "soul slide", "acid slide", "mizu slide", "star slide",
-  "fast slide", "back slide"
-]);
+const useFakie = new Set(DATA_JSON.RULES.USE_FAKIE);
 /** @type {Set<string>} */
-const excludeStanceBase = new Set(["predator", "predator one"]);
+const rotatingMoves = new Set(DATA_JSON.RULES.ROTATING_MOVES);
 /** @type {Set<string>} */
-const rotatingMoves = new Set(["gazelle", "lion", "180", "540", "stunami", "ufo swivel"]);
-
+const excludeStanceBase = new Set(DATA_JSON.RULES.EXCLUDE_STANCE_BASE);
 
 // Derived rules, mirroring Python's `exclude_stance` and `SUBSEQUENT_MOVES`
 /**
@@ -45,7 +59,6 @@ const excludeStance = new Set([...excludeStanceBase, ...useFakie]);
  */
 const subsequentMoves = MOVES.filter(move => !onlyFirst.has(move));
 
-
 /**
  * @typedef {'front' | 'back'} Direction
  * @typedef {'open' | 'closed'} Stance
@@ -56,7 +69,7 @@ const subsequentMoves = MOVES.filter(move => !onlyFirst.has(move));
  * Represents a single trick with its direction, stance, and move.
  * Automatically generates random values for unspecified properties
  * and adjusts properties like exit direction based on the move,
- * directly translating the Python `Trick` dataclass logic, especially its `__post_init__` method.
+ * directly translating the Python `Trick` dataclass logic and its `__post_init__` method.
  */
 export class Trick {
   /** @type {Direction | null} */
@@ -100,7 +113,7 @@ export class Trick {
       throw new Error(`Invalid move: '${move}'. Must be one of ${MOVES.join(', ')}`);
     }
 
-    // 2. Assign initial values
+    // 2. Assign initial values from parameters
     this.direction = direction;
     this.stance = stance;
     this.move = move;
@@ -124,12 +137,12 @@ export class Trick {
       this.exitFromTrick = this.direction;
     }
 
-    // 4. Automatically determine stance if not provided and not excluded by move
+    // 4. Automatically determine stance if not provided and not excluded by move, mirroring Python's logic
     if (this.stance === null && this.move !== null && !excludeStance.has(this.move)) {
       this.stance = STANCES[Math.floor(Math.random() * STANCES.length)];
     }
 
-    // 5. Update exit direction for moves that rotate the body
+    // 5. Update exit direction for moves that rotate the body, mirroring Python's logic
     if (this.move !== null && rotatingMoves.has(this.move)) {
       if (this.direction === "back") {
         this.exitFromTrick = "front";
@@ -220,12 +233,14 @@ export function generateCombo(numTricks = null) {
     if (i === 0) {
       // First trick: choose from all moves, mirroring Python's logic
       const move = MOVES[Math.floor(Math.random() * MOVES.length)];
-      newTrick = new Trick({ move });
+      newTrick = new Trick({
+        move
+      });
     } else {
       // Subsequent tricks: respect exit direction of previous trick
       // and choose from moves not marked as ONLY_FIRST.
       if (!previousTrick) {
-        // This case should ideally not be reached, mirroring Python's `assert`
+        // This case should not be reached if numTricks > 0 and i > 0
         throw new Error("Previous trick is undefined for subsequent trick generation.");
       }
       const requiredDirection = previousTrick.exitFromTrick;
