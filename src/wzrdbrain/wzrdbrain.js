@@ -46,7 +46,7 @@ const excludeStanceBase = new Set(DATA_JSON.RULES.EXCLUDE_STANCE_BASE);
 // Derived rules, mirroring Python's `exclude_stance` and `SUBSEQUENT_MOVES`
 /**
  * A set of moves that exclude an automatically determined stance.
- * This is the union of EXCLUDE_STANCE_BASE and USE_FAKIE from the JSON rules,
+ * This is the union of EXCLUDE_STANCE_BASE and USE_FAKIE,
  * directly translating Python's `exclude_stance_base.union(use_fakie)`.
  * @type {Set<string>}
  */
@@ -59,6 +59,7 @@ const excludeStance = new Set([...excludeStanceBase, ...useFakie]);
  */
 const subsequentMoves = MOVES.filter(move => !onlyFirst.has(move));
 
+
 /**
  * @typedef {'front' | 'back'} Direction
  * @typedef {'open' | 'closed'} Stance
@@ -69,7 +70,7 @@ const subsequentMoves = MOVES.filter(move => !onlyFirst.has(move));
  * Represents a single trick with its direction, stance, and move.
  * Automatically generates random values for unspecified properties
  * and adjusts properties like exit direction based on the move,
- * directly translating the Python `Trick` dataclass logic and its `__post_init__` method.
+ * directly translating the Python `Trick` dataclass logic, especially its `__post_init__` method.
  */
 export class Trick {
   /** @type {Direction | null} */
@@ -113,7 +114,7 @@ export class Trick {
       throw new Error(`Invalid move: '${move}'. Must be one of ${MOVES.join(', ')}`);
     }
 
-    // 2. Assign initial values from parameters
+    // 2. Assign initial values
     this.direction = direction;
     this.stance = stance;
     this.move = move;
@@ -188,7 +189,7 @@ export class Trick {
    * Returns a plain JavaScript object representation of the trick,
    * including all its properties and its full display name,
    * directly translating the Python `to_dict` method.
-   * @returns {object} An object containing the trick's properties and its name.
+   * @returns {{direction: Direction|null, stance: Stance|null, move: Move|null, enterIntoTrick: Direction|null, exitFromTrick: Direction|null, name: string}} An object containing the trick's properties and its name.
    */
   toObject() {
     return {
@@ -208,7 +209,7 @@ export class Trick {
  *
  * @param {number | null} [numTricks=null] - The number of tricks to generate in the combo.
  *   If null, a random number between 2 and 5 (inclusive) will be chosen, mirroring Python's `random.randint(2, 5)`.
- * @returns {object[]} A list of trick objects, each with their properties and a 'name' field.
+ * @returns {object[]} A list of trick objects, each as returned by `Trick.toObject()`.
  *   Returns an empty array if numTricks is 0 or less.
  */
 export function generateCombo(numTricks = null) {
@@ -239,8 +240,11 @@ export function generateCombo(numTricks = null) {
     } else {
       // Subsequent tricks: respect exit direction of previous trick
       // and choose from moves not marked as ONLY_FIRST.
+      // Mirroring Python's logic `required_direction = previous_trick.exit_from_trick`
+      // and `move = random.choice(list(SUBSEQUENT_MOVES))`
       if (!previousTrick) {
-        // This case should not be reached if numTricks > 0 and i > 0
+        // This case should not be reached if numTricks > 0 and i > 0,
+        // mirroring Python's implicit `assert previous_trick is not None`
         throw new Error("Previous trick is undefined for subsequent trick generation.");
       }
       const requiredDirection = previousTrick.exitFromTrick;
