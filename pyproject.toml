@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "wzrdbrain"
-version = "0.2.1"
+version = "0.2.2"
 description = "A simple library to generate trick combinations and moves for wizard style inline skating."
 readme = "README.md"
 requires-python = ">=3.9"
