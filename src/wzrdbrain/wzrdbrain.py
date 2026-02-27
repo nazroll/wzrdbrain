@@ -142,7 +142,7 @@ def generate_combo(num_of_tricks: Optional[int] = None, max_stage: int = 5) -> l
         return []
 
     combo: list[Trick] = []
-    
+
     # 1. Select the first trick (usually a Stage 1 move or random)
     valid_start_moves = [m for m in _LIBRARY.moves if m.stage <= max_stage]
     first_move = random.choice(valid_start_moves)
@@ -154,17 +154,19 @@ def generate_combo(num_of_tricks: Optional[int] = None, max_stage: int = 5) -> l
         # A move is compatible if its entry matches the current exit
         # Note: We allow an implicit 'edge shift' or 'reset' if no perfect match exists,
         # but for now we look for strict physical continuity.
-        
+
         candidates = []
         for move in _LIBRARY.moves:
             if move.stage > max_stage:
                 continue
-                
+
             # Strict continuity check
             # In a real skate session, you can shift edge/stance between moves easily.
             # Direction and Weight Point (Heel/Toe) are the hardest constraints.
-            if (move.entry.direction == current_trick.exit_direction and 
-                move.entry.point == current_trick.exit_point):
+            if (
+                move.entry.direction == current_trick.exit_direction
+                and move.entry.point == current_trick.exit_point
+            ):
                 candidates.append(move)
 
         if not candidates:

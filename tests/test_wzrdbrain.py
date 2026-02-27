@@ -7,13 +7,13 @@ def test_trick_creation_and_state_resolution() -> None:
     # Entry: [front, inside, open, heel]
     # Exit (Resolved): [back, outside, open, toe]
     trick = Trick("gazelle_f_o")
-    
+
     assert trick.move_id == "gazelle_f_o"
     assert trick.direction == "front"
     assert trick.edge == "inside"
     assert trick.stance == "open"
     assert trick.point == "heel"
-    
+
     assert trick.exit_direction == "back"
     assert trick.exit_edge == "outside"
     assert trick.exit_stance == "open"
@@ -42,7 +42,7 @@ def test_generate_combo_returns_list_of_dicts() -> None:
     """Test that generate_combo returns a list of trick dictionaries."""
     combo = generate_combo(3)
     assert isinstance(combo, list)
-    # It might be less than 3 if no compatible moves are found, 
+    # It might be less than 3 if no compatible moves are found,
     # but with the current library it should be fine.
     assert len(combo) > 0
     for trick_dict in combo:
@@ -58,7 +58,7 @@ def test_generate_combo_physical_continuity() -> None:
     for i in range(len(combo) - 1):
         current = combo[i]
         next_trick = combo[i + 1]
-        
+
         # Next trick must be able to start where the current one ends
         assert current["exit"]["direction"] == next_trick["entry"]["direction"]
         assert current["exit"]["point"] == next_trick["entry"]["point"]
