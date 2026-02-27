@@ -3,216 +3,218 @@
  * @license Apache-2.0
  */
 
-// Data from tricks.json, embedded directly as constants
-const DATA_JSON = {
-  "DIRECTIONS": ["front", "back"],
-  "STANCES": ["open", "closed"],
-  "MOVES": [
-    "predator", "predator one", "parallel", "tree", "gazelle", "gazelle s",
-    "lion", "lion s", "toe press", "heel press", "toe roll", "heel roll",
-    "360", "180", "540", "parallel slide", "soul slide", "acid slide",
-    "mizu slide", "star slide", "fast slide", "back slide", "stunami",
-    "ufo swivel", "toe pivot", "heel pivot"
-  ],
-  "RULES": {
-    "ONLY_FIRST": ["predator", "predator one", "parallel"],
-    "USE_FAKIE": [
-      "toe press", "toe roll", "heel press", "heel roll", "360", "180", "540",
-      "parallel slide", "soul slide", "acid slide", "mizu slide", "star slide",
-      "fast slide", "back slide"
-    ],
-    "EXCLUDE_STANCE_BASE": ["predator", "predator one"],
-    "ROTATING_MOVES": ["gazelle", "lion", "180", "540", "stunami", "ufo swivel"]
-  }
+// Move library from moves.json, embedded directly as a constant
+const MOVE_LIBRARY = {
+  "version": "1.0.0",
+  "moves": [
+    {
+      "id": "predator_f_o",
+      "name": "Front Predator (Open)",
+      "category": "base",
+      "stage": 1,
+      "mechanics": { "feet": 2, "is_rotation": false, "degrees": 0, "rotation_type": "neutral" },
+      "entry": { "direction": "front", "edge": "center", "stance": "open", "point": "heel" },
+      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "heel", "lead_foot": "same", "feet": 2 }
+    },
+    {
+      "id": "predator_b_o",
+      "name": "Back Predator (Open)",
+      "category": "base",
+      "stage": 1,
+      "mechanics": { "feet": 2, "is_rotation": false, "degrees": 0, "rotation_type": "neutral" },
+      "entry": { "direction": "back", "edge": "center", "stance": "open", "point": "toe" },
+      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "toe", "lead_foot": "same", "feet": 2 }
+    },
+    {
+      "id": "parallel_turn_o",
+      "name": "Parallel Turn (Outside)",
+      "category": "turn",
+      "stage": 2,
+      "mechanics": { "feet": 2, "is_rotation": false, "degrees": 90, "rotation_type": "natural" },
+      "entry": { "direction": "front", "edge": "outside", "stance": "open", "point": "heel" },
+      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "heel", "lead_foot": "same", "feet": 2 }
+    },
+    {
+      "id": "tree_turn_o",
+      "name": "Tree Turn (Outside)",
+      "category": "turn",
+      "stage": 2,
+      "mechanics": { "feet": 1, "is_rotation": false, "degrees": 90, "rotation_type": "natural" },
+      "entry": { "direction": "front", "edge": "outside", "stance": "open", "point": "heel" },
+      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "heel", "lead_foot": "same", "feet": 1 }
+    },
+    {
+      "id": "gazelle_f_o",
+      "name": "Front Gazelle (Open)",
+      "category": "transition",
+      "stage": 3,
+      "mechanics": { "feet": 2, "is_rotation": true, "degrees": 180, "rotation_type": "natural" },
+      "entry": { "direction": "front", "edge": "inside", "stance": "open", "point": "heel" },
+      "exit": { "direction": "opposite", "edge": "opposite", "stance": "same", "point": "toe", "lead_foot": "same", "feet": 2 },
+      "metadata": { "description": "Front-to-back transition with a 3-turn shape." }
+    },
+    {
+      "id": "lion_f_o",
+      "name": "Front Lion (Open)",
+      "category": "transition",
+      "stage": 3,
+      "mechanics": { "feet": 1, "is_rotation": true, "degrees": 180, "rotation_type": "natural" },
+      "entry": { "direction": "front", "edge": "inside", "stance": "open", "point": "heel" },
+      "exit": { "direction": "opposite", "edge": "opposite", "stance": "same", "point": "toe", "lead_foot": "same", "feet": 1 }
+    },
+    {
+      "id": "gazelle_s_f_o",
+      "name": "Front Gazelle S (Open)",
+      "category": "transition",
+      "stage": 3,
+      "mechanics": { "feet": 2, "is_rotation": true, "degrees": 180, "rotation_type": "natural" },
+      "entry": { "direction": "front", "edge": "inside", "stance": "open", "point": "heel" },
+      "exit": { "direction": "opposite", "edge": "opposite", "stance": "same", "point": "toe", "lead_foot": "same", "feet": 2 },
+      "metadata": { "aka": ["Inside Gazelle"] }
+    },
+    {
+      "id": "toe_pivot",
+      "name": "Toe Pivot",
+      "category": "pivot",
+      "stage": 4,
+      "mechanics": { "feet": 1, "is_rotation": true, "degrees": 180, "rotation_type": "neutral" },
+      "entry": { "direction": "front", "edge": "center", "stance": "neutral", "point": "toe" },
+      "exit": { "direction": "opposite", "edge": "same", "stance": "same", "point": "toe", "lead_foot": "opposite", "feet": 1 }
+    },
+    {
+      "id": "heel_pivot",
+      "name": "Heel Pivot",
+      "category": "pivot",
+      "stage": 4,
+      "mechanics": { "feet": 1, "is_rotation": true, "degrees": 180, "rotation_type": "neutral" },
+      "entry": { "direction": "back", "edge": "center", "stance": "neutral", "point": "heel" },
+      "exit": { "direction": "opposite", "edge": "same", "stance": "same", "point": "heel", "lead_foot": "opposite", "feet": 1 }
+    },
+    {
+      "id": "stunami_f",
+      "name": "Front Stunami",
+      "category": "manual",
+      "stage": 4,
+      "mechanics": { "feet": 2, "is_rotation": true, "degrees": 180, "rotation_type": "natural" },
+      "entry": { "direction": "front", "edge": "outside", "stance": "open", "point": "heel" },
+      "exit": { "direction": "opposite", "edge": "opposite", "stance": "same", "point": "toe", "lead_foot": "opposite", "feet": 2 }
+    },
+    {
+      "id": "ufo_swivel",
+      "name": "UFO Swivel",
+      "category": "transition",
+      "stage": 4,
+      "mechanics": { "feet": 2, "is_rotation": true, "degrees": 360, "rotation_type": "neutral" },
+      "entry": { "direction": "front", "edge": "inside", "stance": "closed", "point": "heel" },
+      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "heel", "lead_foot": "same", "feet": 2 }
+    }
+  ]
 };
 
-/** @type {string[]} */
-const DIRECTIONS = DATA_JSON.DIRECTIONS;
-/** @type {string[]} */
-const STANCES = DATA_JSON.STANCES;
-/** @type {string[]} */
-const MOVES = DATA_JSON.MOVES;
-
-// Rules converted to Set for efficient lookups, mirroring Python's set usage
-/** @type {Set<string>} */
-const onlyFirst = new Set(DATA_JSON.RULES.ONLY_FIRST);
-/** @type {Set<string>} */
-const useFakie = new Set(DATA_JSON.RULES.USE_FAKIE);
-/** @type {Set<string>} */
-const rotatingMoves = new Set(DATA_JSON.RULES.ROTATING_MOVES);
-/** @type {Set<string>} */
-const excludeStanceBase = new Set(DATA_JSON.RULES.EXCLUDE_STANCE_BASE);
-
-// Derived rules, mirroring Python's `exclude_stance` and `SUBSEQUENT_MOVES`
-/**
- * A set of moves that exclude an automatically determined stance.
- * This is the union of EXCLUDE_STANCE_BASE and USE_FAKIE from the JSON rules,
- * directly translating Python's `exclude_stance_base.union(use_fakie)`.
- * @type {Set<string>}
- */
-const excludeStance = new Set([...excludeStanceBase, ...useFakie]);
+const MOVES = Object.fromEntries(MOVE_LIBRARY.moves.map(m => [m.id, m]));
 
 /**
- * An array of moves that are valid for subsequent tricks (i.e., not "ONLY_FIRST").
- * This is pre-calculated for efficiency, directly translating Python's `set(MOVES) - only_first`.
- * @type {string[]}
- */
-const subsequentMoves = MOVES.filter(move => !onlyFirst.has(move));
-
-/**
- * @typedef {'front' | 'back'} Direction
- * @typedef {'open' | 'closed'} Stance
- * @typedef {string} Move
- */
-
-/**
- * Represents a single trick with its direction, stance, and move.
- * Automatically generates random values for unspecified properties
- * and adjusts properties like exit direction based on the move,
- * directly translating the Python `Trick` dataclass logic and its `__post_init__` method.
+ * Represents a single trick instance.
+ * It resolves the absolute entry and exit states based on a move's definition.
  */
 export class Trick {
-  /** @type {Direction | null} */
-  direction;
-  /** @type {Stance | null} */
-  stance;
-  /** @type {Move | null} */
-  move;
-  /** @type {Direction | null} */
-  enterIntoTrick;
-  /** @type {Direction | null} */
-  exitFromTrick;
-
   /**
-   * Creates an instance of Trick. Unspecified properties will be randomly generated.
-   * This constructor's logic directly translates the Python `__post_init__` method.
-   *
-   * @param {object} [props] - Optional properties for the trick.
-   * @param {Direction | null} [props.direction=null] - The direction (e.g., 'front', 'back').
-   * @param {Stance | null} [props.stance=null] - The stance (e.g., 'open', 'closed').
-   * @param {Move | null} [props.move=null] - The specific trick move.
-   * @param {Direction | null} [props.enterIntoTrick=null] - The direction from which the trick is entered.
-   * @param {Direction | null} [props.exitFromTrick=null] - The direction into which the trick exits.
-   * @throws {Error} If an invalid direction, stance, or move is provided.
+   * Creates an instance of a Trick.
+   * @param {string} moveId - The unique identifier for the move from the move library.
    */
-  constructor({
-    direction = null,
-    stance = null,
-    move = null,
-    enterIntoTrick = null,
-    exitFromTrick = null,
-  } = {}) {
-    // 1. Input validation, mirroring Python's `__post_init__` validation
-    if (direction !== null && !DIRECTIONS.includes(direction)) {
-      throw new Error(`Invalid direction: '${direction}'. Must be one of ${DIRECTIONS.join(', ')}`);
-    }
-    if (stance !== null && !STANCES.includes(stance)) {
-      throw new Error(`Invalid stance: '${stance}'. Must be one of ${STANCES.join(', ')}`);
-    }
-    if (move !== null && !MOVES.includes(move)) {
-      throw new Error(`Invalid move: '${move}'. Must be one of ${MOVES.join(', ')}`);
+  constructor(moveId) {
+    const move = MOVES[moveId];
+    if (!move) {
+      throw new Error(`Invalid move ID: ${moveId}`);
     }
 
-    // 2. Assign initial values from parameters
-    this.direction = direction;
-    this.stance = stance;
-    this.move = move;
-    this.enterIntoTrick = enterIntoTrick;
-    this.exitFromTrick = exitFromTrick;
+    this.moveId = moveId;
+    this.name = move.name;
+    this.category = move.category;
+    this.stage = move.stage;
 
-    // 3. Generate default values if not provided, mirroring Python's `__post_init__`
-    if (this.direction === null) {
-      this.direction = DIRECTIONS[Math.floor(Math.random() * DIRECTIONS.length)];
-    }
+    // Entry states are absolute in the library
+    this.direction = move.entry.direction;
+    this.edge = move.entry.edge;
+    this.stance = move.entry.stance;
+    this.point = move.entry.point;
 
-    if (this.move === null) {
-      this.move = MOVES[Math.floor(Math.random() * MOVES.length)];
-    }
-
-    if (this.enterIntoTrick === null) {
-      this.enterIntoTrick = this.direction;
-    }
-
-    if (this.exitFromTrick === null) {
-      this.exitFromTrick = this.direction;
-    }
-
-    // 4. Automatically determine stance if not provided and not excluded by move, mirroring Python's logic
-    if (this.stance === null && this.move !== null && !excludeStance.has(this.move)) {
-      this.stance = STANCES[Math.floor(Math.random() * STANCES.length)];
-    }
-
-    // 5. Update exit direction for moves that rotate the body, mirroring Python's logic
-    if (this.move !== null && rotatingMoves.has(this.move)) {
-      if (this.direction === "back") {
-        this.exitFromTrick = "front";
-      } else if (this.direction === "front") {
-        this.exitFromTrick = "back";
-      }
-    }
+    // Resolve Exit States from relative definitions
+    this.exitDirection = this._resolveRelative(move.exit.direction, this.direction);
+    this.exitEdge = this._resolveRelative(move.exit.edge, this.edge);
+    this.exitStance = this._resolveRelative(move.exit.stance, this.stance);
+    this.exitPoint = move.exit.point; // Point is always absolute
   }
 
   /**
-   * Returns a human-readable string representation of the trick,
-   * directly translating the Python `__str__` method.
-   * This handles "fakie" / "forward" display names for relevant moves.
-   * @returns {string} The formatted name of the trick.
+   * Resolves relative state values like "same" or "opposite" into absolute states.
+   * @private
+   * @param {string} value - The state value to resolve (e.g., "same", "opposite", "front").
+   * @param {string} base - The base state value to compare against (e.g., "front").
+   * @returns {string} The resolved, absolute state value.
    */
-  getName() {
-    const parts = [];
-    let displayDirection = this.direction;
-
-    // Handle fakie/forward display name, mirroring Python's `__str__`
-    if (this.move !== null && useFakie.has(this.move)) {
-      if (this.direction === "back") {
-        displayDirection = "fakie";
-      } else if (this.direction === "front") {
-        displayDirection = "forward";
-      }
+  _resolveRelative(value, base) {
+    if (value === "same") {
+      return base;
     }
-
-    if (displayDirection) {
-      parts.push(displayDirection);
+    if (value === "opposite") {
+      const opposites = {
+        front: "back",
+        back: "front",
+        inside: "outside",
+        outside: "inside",
+        open: "closed",
+        closed: "open",
+      };
+      return opposites[base] || base;
     }
-    if (this.stance) {
-      parts.push(this.stance);
-    }
-    if (this.move) {
-      parts.push(this.move);
-    }
-
-    return parts.join(" ");
+    return value;
   }
 
   /**
-   * Returns a plain JavaScript object representation of the trick,
-   * including all its properties and its full display name,
-   * directly translating the Python `to_dict` method.
-   * @returns {object} An object containing the trick's properties and its name.
+   * Returns the human-readable name of the trick.
+   * @returns {string} The name of the trick.
+   */
+  toString() {
+    return this.name;
+  }
+
+  /**
+   * Returns a plain object representation of the trick with its resolved states.
+   * @returns {object} A serializable object representing the trick.
    */
   toObject() {
     return {
-      direction: this.direction,
-      stance: this.stance,
-      move: this.move,
-      enterIntoTrick: this.enterIntoTrick,
-      exitFromTrick: this.exitFromTrick,
-      name: this.getName(),
+      id: this.moveId,
+      name: this.name,
+      category: this.category,
+      stage: this.stage,
+      entry: {
+        direction: this.direction,
+        edge: this.edge,
+        stance: this.stance,
+        point: this.point,
+      },
+      exit: {
+        direction: this.exitDirection,
+        edge: this.exitEdge,
+        stance: this.exitStance,
+        point: this.exitPoint,
+      },
     };
   }
 }
 
 /**
- * Generates a combination (combo) of tricks,
- * directly translating the Python `generate_combo` function.
+ * Generates a combination of tricks based on physical state transitions.
+ * It chains tricks together by matching the exit state of one trick to the
+ * entry state of the next, focusing on Direction and Weight Point for continuity.
  *
- * @param {number | null} [numTricks=null] - The number of tricks to generate in the combo.
- *   If null, a random number between 2 and 5 (inclusive) will be chosen, mirroring Python's `random.randint(2, 5)`.
- * @returns {object[]} A list of trick objects, each with their properties and a 'name' field.
- *   Returns an empty array if numTricks is 0 or less.
+ * @param {number|null} [numTricks=null] - The desired number of tricks in the combo. If null, a random number between 2 and 5 is chosen.
+ * @param {number} [maxStage=5] - The maximum skill stage of moves to include in the combo.
+ * @returns {object[]} An array of trick objects representing the generated combo.
  */
-export function generateCombo(numTricks = null) {
-  // Mirroring Python's default num_of_tricks = random.randint(2, 5)
+export function generateCombo(numTricks = null, maxStage = 5) {
   if (numTricks === null) {
     numTricks = Math.floor(Math.random() * (5 - 2 + 1)) + 2;
   }
@@ -221,41 +223,39 @@ export function generateCombo(numTricks = null) {
     return [];
   }
 
-  /** @type {Trick[]} */
-  const trickObjects = [];
-  /** @type {Trick | null} */
-  let previousTrick = null;
+  const combo = [];
 
-  for (let i = 0; i < numTricks; i++) {
-    /** @type {Trick} */
-    let newTrick;
+  // 1. Select the first trick
+  const validStartMoves = MOVE_LIBRARY.moves.filter(m => m.stage <= maxStage);
+  if (validStartMoves.length === 0) {
+    return [];
+  }
+  
+  const firstMove = validStartMoves[Math.floor(Math.random() * validStartMoves.length)];
+  let currentTrick = new Trick(firstMove.id);
+  combo.push(currentTrick);
 
-    if (i === 0) {
-      // First trick: choose from all moves, mirroring Python's logic
-      const move = MOVES[Math.floor(Math.random() * MOVES.length)];
-      newTrick = new Trick({
-        move
-      });
-    } else {
-      // Subsequent tricks: respect exit direction of previous trick
-      // and choose from moves not marked as ONLY_FIRST.
-      if (!previousTrick) {
-        // This case should not be reached if numTricks > 0 and i > 0
-        throw new Error("Previous trick is undefined for subsequent trick generation.");
+  // 2. Iteratively find compatible moves
+  for (let i = 0; i < numTricks - 1; i++) {
+    // A move is compatible if its entry Direction and Point match the current exit state.
+    const candidates = MOVE_LIBRARY.moves.filter(move => {
+      if (move.stage > maxStage) {
+        return false;
       }
-      const requiredDirection = previousTrick.exitFromTrick;
-      // Choose from the pre-filtered array of subsequent moves for efficiency
-      const move = subsequentMoves[Math.floor(Math.random() * subsequentMoves.length)];
-      newTrick = new Trick({
-        direction: requiredDirection,
-        move
-      });
+      return (
+        move.entry.direction === currentTrick.exitDirection &&
+        move.entry.point === currentTrick.exitPoint
+      );
+    });
+
+    if (candidates.length === 0) {
+      break; // End combo if no physically compatible move is found
     }
 
-    trickObjects.push(newTrick);
-    previousTrick = newTrick;
+    const nextMove = candidates[Math.floor(Math.random() * candidates.length)];
+    currentTrick = new Trick(nextMove.id);
+    combo.push(currentTrick);
   }
 
-  // Mirroring Python's `[trick.to_dict() for trick in trick_objects]`
-  return trickObjects.map(trick => trick.toObject());
+  return combo.map(t => t.toObject());
 }
