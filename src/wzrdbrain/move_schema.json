@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/nazroll/wzrdbrain/move_schema.json",
+  "title": "Wizard Skating Move Schema",
+  "description": "A state-transition model for wizard skating tricks and transitions.",
+  "type": "object",
+  "required": ["moves"],
+  "properties": {
+    "version": { "type": "string" },
+    "moves": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "category", "stage", "mechanics", "entry", "exit"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "category": { "enum": ["base", "turn", "transition", "manual", "pivot", "slide", "air"] },
+          "stage": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "mechanics": {
+            "type": "object",
+            "properties": {
+              "feet": { "enum": [1, 2] },
+              "is_rotation": { "type": "boolean" },
+              "degrees": { "type": "integer" },
+              "rotation_type": { "enum": ["natural", "switch", "neutral"] }
+            }
+          },
+          "entry": {
+            "type": "object",
+            "properties": {
+              "direction": { "enum": ["front", "back"] },
+              "edge": { "enum": ["inside", "outside", "center"] },
+              "stance": { "enum": ["open", "closed", "neutral"] },
+              "point": { "enum": ["toe", "heel", "all", "none"] }
+            }
+          },
+          "exit": {
+            "type": "object",
+            "properties": {
+              "direction": { "enum": ["same", "opposite", "front", "back"] },
+              "edge": { "enum": ["same", "opposite", "inside", "outside", "center"] },
+              "stance": { "enum": ["same", "opposite", "open", "closed", "neutral"] },
+              "point": { "enum": ["toe", "heel", "all", "none"] },
+              "lead_foot": { "enum": ["same", "opposite"] },
+              "feet": { "enum": [1, 2] }
+            }
+          },
+          "metadata": {
+            "type": "object",
+            "properties": {
+              "is_fakie_variant": { "type": "boolean" },
+              "description": { "type": "string" },
+              "aka": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        }
+      }
+    }
+  }
+}

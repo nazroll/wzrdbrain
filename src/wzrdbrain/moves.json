@@ -1,0 +1,106 @@
+{
+  "version": "1.0.0",
+  "moves": [
+    {
+      "id": "predator_f_o",
+      "name": "Front Predator (Open)",
+      "category": "base",
+      "stage": 1,
+      "mechanics": { "feet": 2, "is_rotation": false, "degrees": 0, "rotation_type": "neutral" },
+      "entry": { "direction": "front", "edge": "center", "stance": "open", "point": "heel" },
+      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "heel", "lead_foot": "same", "feet": 2 }
+    },
+    {
+      "id": "predator_b_o",
+      "name": "Back Predator (Open)",
+      "category": "base",
+      "stage": 1,
+      "mechanics": { "feet": 2, "is_rotation": false, "degrees": 0, "rotation_type": "neutral" },
+      "entry": { "direction": "back", "edge": "center", "stance": "open", "point": "toe" },
+      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "toe", "lead_foot": "same", "feet": 2 }
+    },
+    {
+      "id": "parallel_turn_o",
+      "name": "Parallel Turn (Outside)",
+      "category": "turn",
+      "stage": 2,
+      "mechanics": { "feet": 2, "is_rotation": false, "degrees": 90, "rotation_type": "natural" },
+      "entry": { "direction": "front", "edge": "outside", "stance": "open", "point": "heel" },
+      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "heel", "lead_foot": "same", "feet": 2 }
+    },
+    {
+      "id": "tree_turn_o",
+      "name": "Tree Turn (Outside)",
+      "category": "turn",
+      "stage": 2,
+      "mechanics": { "feet": 1, "is_rotation": false, "degrees": 90, "rotation_type": "natural" },
+      "entry": { "direction": "front", "edge": "outside", "stance": "open", "point": "heel" },
+      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "heel", "lead_foot": "same", "feet": 1 }
+    },
+    {
+      "id": "gazelle_f_o",
+      "name": "Front Gazelle (Open)",
+      "category": "transition",
+      "stage": 3,
+      "mechanics": { "feet": 2, "is_rotation": true, "degrees": 180, "rotation_type": "natural" },
+      "entry": { "direction": "front", "edge": "inside", "stance": "open", "point": "heel" },
+      "exit": { "direction": "opposite", "edge": "opposite", "stance": "same", "point": "toe", "lead_foot": "same", "feet": 2 },
+      "metadata": { "description": "Front-to-back transition with a 3-turn shape." }
+    },
+    {
+      "id": "lion_f_o",
+      "name": "Front Lion (Open)",
+      "category": "transition",
+      "stage": 3,
+      "mechanics": { "feet": 1, "is_rotation": true, "degrees": 180, "rotation_type": "natural" },
+      "entry": { "direction": "front", "edge": "inside", "stance": "open", "point": "heel" },
+      "exit": { "direction": "opposite", "edge": "opposite", "stance": "same", "point": "toe", "lead_foot": "same", "feet": 1 }
+    },
+    {
+      "id": "gazelle_s_f_o",
+      "name": "Front Gazelle S (Open)",
+      "category": "transition",
+      "stage": 3,
+      "mechanics": { "feet": 2, "is_rotation": true, "degrees": 180, "rotation_type": "natural" },
+      "entry": { "direction": "front", "edge": "inside", "stance": "open", "point": "heel" },
+      "exit": { "direction": "opposite", "edge": "opposite", "stance": "same", "point": "toe", "lead_foot": "same", "feet": 2 },
+      "metadata": { "aka": ["Inside Gazelle"] }
+    },
+    {
+      "id": "toe_pivot",
+      "name": "Toe Pivot",
+      "category": "pivot",
+      "stage": 4,
+      "mechanics": { "feet": 1, "is_rotation": true, "degrees": 180, "rotation_type": "neutral" },
+      "entry": { "direction": "front", "edge": "center", "stance": "neutral", "point": "toe" },
+      "exit": { "direction": "opposite", "edge": "same", "stance": "same", "point": "toe", "lead_foot": "opposite", "feet": 1 }
+    },
+    {
+      "id": "heel_pivot",
+      "name": "Heel Pivot",
+      "category": "pivot",
+      "stage": 4,
+      "mechanics": { "feet": 1, "is_rotation": true, "degrees": 180, "rotation_type": "neutral" },
+      "entry": { "direction": "back", "edge": "center", "stance": "neutral", "point": "heel" },
+      "exit": { "direction": "opposite", "edge": "same", "stance": "same", "point": "heel", "lead_foot": "opposite", "feet": 1 }
+    },
+    {
+      "id": "stunami_f",
+      "name": "Front Stunami",
+      "category": "manual",
+      "stage": 4,
+      "mechanics": { "feet": 2, "is_rotation": true, "degrees": 180, "rotation_type": "natural" },
+      "entry": { "direction": "front", "edge": "outside", "stance": "open", "point": "heel" },
+      "exit": { "direction": "opposite", "edge": "opposite", "stance": "same", "point": "toe", "lead_foot": "opposite", "feet": 2 }
+    },
+    {
+      "id": "ufo_swivel",
+      "name": "UFO Swivel",
+      "category": "transition",
+      "stage": 4,
+      "mechanics": { "feet": 2, "is_rotation": true, "degrees": 360, "rotation_type": "neutral" },
+      "entry": { "direction": "front", "edge": "inside", "stance": "closed", "point": "heel" },
+      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "heel", "lead_foot": "same", "feet": 2 }
+    }
+  ]
+}
