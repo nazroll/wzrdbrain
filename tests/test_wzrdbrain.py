@@ -1,5 +1,4 @@
-import pytest
-from wzrdbrain.wzrdbrain import Trick, generate_combo, MOVES
+from wzrdbrain.wzrdbrain import Trick, generate_combo
 
 
 def test_trick_creation_and_state_resolution() -> None:

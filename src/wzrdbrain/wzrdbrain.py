@@ -1,7 +1,7 @@
 import random
 import json
 import importlib.resources
-from typing import Optional, Any, Union
+from typing import Optional, Any
 from dataclasses import dataclass, field
 from pydantic import BaseModel, Field
 
