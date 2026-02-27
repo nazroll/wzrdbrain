@@ -1,0 +1,55 @@
+# WzrdBrain SLM Configuration
+
+model:
+  name: "Qwen/Qwen2.5-1.5B-Instruct"
+  max_seq_length: 1024
+  dtype: "float16"
+  load_in_4bit: true
+
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules:
+    - "q_proj"
+    - "k_proj"
+    - "v_proj"
+    - "o_proj"
+    - "gate_proj"
+    - "up_proj"
+    - "down_proj"
+
+training:
+  num_epochs: 3
+  learning_rate: 2.0e-4
+  lr_scheduler: "cosine"
+  per_device_batch_size: 4
+  gradient_accumulation_steps: 4  # effective batch size = 16
+  warmup_ratio: 0.05
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  seed: 42
+  logging_steps: 10
+  save_steps: 100
+  eval_steps: 100
+
+data:
+  train_file: "data/train.jsonl"
+  val_file: "data/val.jsonl"
+  test_file: "data/test.jsonl"
+  system_prompt: >
+    You are WzrdBrain, an expert wizard skating trick combo generator.
+    You know all 26 wizard skating moves and the rules for combining them into valid combos.
+    Tricks flow by linking exit directions to entry directions.
+    You can generate combos, explain tricks, and suggest learning progressions.
+
+hub:
+  repo_id: "nazroll/wzrdbrain-slm"
+  space_repo_id: "nazroll/wzrdbrain-slm-demo"
+
+generation:
+  combo_count: 5000
+  constrained_count: 3000
+  explanation_count: 500
+  rule_count: 300
+  progression_count: 200
