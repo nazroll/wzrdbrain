@@ -1,0 +1,85 @@
+{
+  "tiers": [
+    {
+      "level": 1,
+      "name": "Foundation",
+      "description": "Core stances and basic movement patterns. Focus on balance and comfort on wheels.",
+      "moves": ["predator", "parallel", "tree", "toe pivot", "heel pivot"],
+      "skills": ["Basic balance", "Forward skating", "Stopping", "Weight transfer"],
+      "suggested_combos": [
+        "Start with predator stance to build confidence",
+        "Practice parallel into tree transitions",
+        "Work on toe pivot and heel pivot for direction changes"
+      ]
+    },
+    {
+      "level": 2,
+      "name": "Transitions",
+      "description": "Learn to change direction and stance while moving. Introduction to rotation.",
+      "moves": ["gazelle", "gazelle s", "lion", "lion s", "ufo swivel", "predator one"],
+      "skills": ["180-degree transitions", "Crossover steps", "One-footed balance", "Rotational awareness"],
+      "suggested_combos": [
+        "Tree into gazelle for a basic front-to-back transition",
+        "Lion into gazelle s for chained rotational flow",
+        "Practice ufo swivel as a standalone direction change"
+      ]
+    },
+    {
+      "level": 3,
+      "name": "Presses & Pivots",
+      "description": "Develop wheel control with presses and more dynamic pivoting.",
+      "moves": ["toe press", "heel press", "fast slide", "parallel slide"],
+      "skills": ["Toe-wheel balance", "Heel-wheel balance", "Speed control", "Basic slides"],
+      "suggested_combos": [
+        "Gazelle into forward toe press for a flowing sequence",
+        "Tree into fast slide for practical speed control",
+        "Combine heel press with parallel slide"
+      ]
+    },
+    {
+      "level": 4,
+      "name": "Spins & Rolls",
+      "description": "Full rotations and sustained rolling techniques. Requires strong foundation.",
+      "moves": ["180", "360", "toe roll", "heel roll", "stunami"],
+      "skills": ["Full rotation spins", "Sustained wheel rolls", "Momentum management", "Spotting technique"],
+      "suggested_combos": [
+        "Tree into forward 180 for a basic spin combo",
+        "Gazelle into fakie 360 for advanced flow",
+        "Stunami into toe roll for dynamic chaining"
+      ]
+    },
+    {
+      "level": 5,
+      "name": "Advanced Slides",
+      "description": "Technical slide variations requiring precise foot positioning and edge control.",
+      "moves": ["soul slide", "acid slide", "mizu slide", "star slide", "back slide"],
+      "skills": ["Soul foot positioning", "Acid angle control", "Edge awareness", "Slide commitment"],
+      "suggested_combos": [
+        "Lion into forward soul slide for an aggressive line",
+        "Gazelle into fakie acid slide for style points",
+        "Chain multiple slides: mizu slide into star slide"
+      ]
+    },
+    {
+      "level": 6,
+      "name": "Expert",
+      "description": "The pinnacle of wizard skating. 540 spins and complex multi-trick combos.",
+      "moves": ["540"],
+      "skills": ["Extended rotation", "Combo creativity", "Flow state", "Style expression"],
+      "suggested_combos": [
+        "Tree into forward 540 for maximum rotation",
+        "Gazelle into fakie 540 into toe roll for a 3-trick expert combo",
+        "Build 4-5 trick combos mixing all categories"
+      ]
+    }
+  ],
+  "progression_tips": [
+    "Master each tier before moving to the next",
+    "Always warm up with foundation moves",
+    "Practice both front and back directions for every move",
+    "For moves with open/closed stances, learn both variations",
+    "Rotating moves (gazelle, lion, 180, 540, stunami, ufo swivel) change your facing direction — plan your combo accordingly",
+    "ONLY_FIRST moves (predator, predator one, parallel) can only start a combo, never appear mid-combo",
+    "USE_FAKIE moves display as 'fakie' when going back and 'forward' when going front"
+  ]
+}

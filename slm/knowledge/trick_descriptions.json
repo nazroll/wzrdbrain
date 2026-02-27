@@ -1,0 +1,205 @@
+{
+  "predator": {
+    "name": "predator",
+    "description": "A wide scissor stance with one foot forward and one back, knees bent low. The classic wizard skating power stance.",
+    "difficulty": "beginner",
+    "category": "stance",
+    "notes": "No open/closed stance variation. Can only appear as the first trick in a combo.",
+    "rules": ["ONLY_FIRST", "EXCLUDE_STANCE_BASE"]
+  },
+  "predator one": {
+    "name": "predator one",
+    "description": "A one-footed predator stance, balancing on a single skate in the scissor position. Tests balance and core strength.",
+    "difficulty": "intermediate",
+    "category": "stance",
+    "notes": "No open/closed stance variation. Can only appear as the first trick in a combo.",
+    "rules": ["ONLY_FIRST", "EXCLUDE_STANCE_BASE"]
+  },
+  "parallel": {
+    "name": "parallel",
+    "description": "Both feet side by side, rolling in parallel. A foundational position that sets up many transitions.",
+    "difficulty": "beginner",
+    "category": "stance",
+    "notes": "Can only appear as the first trick in a combo.",
+    "rules": ["ONLY_FIRST"]
+  },
+  "tree": {
+    "name": "tree",
+    "description": "One foot is placed perpendicular to the other in a T-shape, creating a tree-like stance while rolling.",
+    "difficulty": "beginner",
+    "category": "stance",
+    "notes": "Has open/closed stance variations."
+  },
+  "gazelle": {
+    "name": "gazelle",
+    "description": "A spinning crossover step that rotates the body 180 degrees while maintaining momentum. Elegant and flowing.",
+    "difficulty": "intermediate",
+    "category": "transition",
+    "notes": "Rotating move: entry direction is opposite to exit direction. Has open/closed stance variations.",
+    "rules": ["ROTATING_MOVES"]
+  },
+  "gazelle s": {
+    "name": "gazelle s",
+    "description": "A sustained gazelle where the skater holds the crossed position longer before completing the rotation. The 's' stands for sustained.",
+    "difficulty": "intermediate",
+    "category": "transition",
+    "notes": "Non-rotating variant of gazelle. Has open/closed stance variations."
+  },
+  "lion": {
+    "name": "lion",
+    "description": "A powerful rotational move where the skater pivots on the front wheels, swinging the body around 180 degrees.",
+    "difficulty": "intermediate",
+    "category": "transition",
+    "notes": "Rotating move: entry direction is opposite to exit direction. Has open/closed stance variations.",
+    "rules": ["ROTATING_MOVES"]
+  },
+  "lion s": {
+    "name": "lion s",
+    "description": "A sustained lion where the pivot position is held longer. The 's' stands for sustained.",
+    "difficulty": "intermediate",
+    "category": "transition",
+    "notes": "Non-rotating variant of lion. Has open/closed stance variations."
+  },
+  "toe press": {
+    "name": "toe press",
+    "description": "Rolling on the toe wheels of both skates, pressing forward with the balls of the feet. Uses forward/fakie direction naming.",
+    "difficulty": "intermediate",
+    "category": "press",
+    "notes": "Uses fakie/forward direction display. No stance variation.",
+    "rules": ["USE_FAKIE"]
+  },
+  "heel press": {
+    "name": "heel press",
+    "description": "Rolling on the heel wheels of both skates, leaning back with weight on the heels. Uses forward/fakie direction naming.",
+    "difficulty": "intermediate",
+    "category": "press",
+    "notes": "Uses fakie/forward direction display. No stance variation.",
+    "rules": ["USE_FAKIE"]
+  },
+  "toe roll": {
+    "name": "toe roll",
+    "description": "A continuous roll on toe wheels with a fluid, flowing motion. More dynamic than a toe press.",
+    "difficulty": "advanced",
+    "category": "roll",
+    "notes": "Uses fakie/forward direction display. No stance variation.",
+    "rules": ["USE_FAKIE"]
+  },
+  "heel roll": {
+    "name": "heel roll",
+    "description": "A continuous roll on heel wheels with sustained balance and flow. More dynamic than a heel press.",
+    "difficulty": "advanced",
+    "category": "roll",
+    "notes": "Uses fakie/forward direction display. No stance variation.",
+    "rules": ["USE_FAKIE"]
+  },
+  "360": {
+    "name": "360",
+    "description": "A full 360-degree spin while rolling, completing one full rotation. A signature wizard skating move.",
+    "difficulty": "advanced",
+    "category": "spin",
+    "notes": "Uses fakie/forward direction display. No stance variation.",
+    "rules": ["USE_FAKIE"]
+  },
+  "180": {
+    "name": "180",
+    "description": "A half spin (180 degrees) that reverses the skater's facing direction. Rotating move that changes exit direction.",
+    "difficulty": "intermediate",
+    "category": "spin",
+    "notes": "Rotating move: entry direction is opposite to exit direction. Uses fakie/forward direction display. No stance variation.",
+    "rules": ["USE_FAKIE", "ROTATING_MOVES"]
+  },
+  "540": {
+    "name": "540",
+    "description": "A one-and-a-half spin (540 degrees), combining a full rotation with an additional half turn. Highly technical.",
+    "difficulty": "expert",
+    "category": "spin",
+    "notes": "Rotating move: entry direction is opposite to exit direction. Uses fakie/forward direction display. No stance variation.",
+    "rules": ["USE_FAKIE", "ROTATING_MOVES"]
+  },
+  "parallel slide": {
+    "name": "parallel slide",
+    "description": "A powerslide with both feet parallel, sliding sideways to scrub speed. Uses forward/fakie direction naming.",
+    "difficulty": "intermediate",
+    "category": "slide",
+    "notes": "Uses fakie/forward direction display. No stance variation.",
+    "rules": ["USE_FAKIE"]
+  },
+  "soul slide": {
+    "name": "soul slide",
+    "description": "A slide with one foot in soul position (sideways on the frame) and the other supporting. Classic aggressive skating influence.",
+    "difficulty": "advanced",
+    "category": "slide",
+    "notes": "Uses fakie/forward direction display. No stance variation.",
+    "rules": ["USE_FAKIE"]
+  },
+  "acid slide": {
+    "name": "acid slide",
+    "description": "A slide variation where the lead foot is angled inward in an acid position. Stylish and technical.",
+    "difficulty": "advanced",
+    "category": "slide",
+    "notes": "Uses fakie/forward direction display. No stance variation.",
+    "rules": ["USE_FAKIE"]
+  },
+  "mizu slide": {
+    "name": "mizu slide",
+    "description": "A flowing slide named after water (mizu), characterized by a smooth, liquid-like sideways motion.",
+    "difficulty": "advanced",
+    "category": "slide",
+    "notes": "Uses fakie/forward direction display. No stance variation.",
+    "rules": ["USE_FAKIE"]
+  },
+  "star slide": {
+    "name": "star slide",
+    "description": "A wide, star-shaped slide with legs spread apart. Visually impressive and requires good balance.",
+    "difficulty": "advanced",
+    "category": "slide",
+    "notes": "Uses fakie/forward direction display. No stance variation.",
+    "rules": ["USE_FAKIE"]
+  },
+  "fast slide": {
+    "name": "fast slide",
+    "description": "A quick, snappy slide performed at speed. Emphasizes quick execution over sustained hold.",
+    "difficulty": "intermediate",
+    "category": "slide",
+    "notes": "Uses fakie/forward direction display. No stance variation.",
+    "rules": ["USE_FAKIE"]
+  },
+  "back slide": {
+    "name": "back slide",
+    "description": "A slide performed while moving backwards, with the skater sliding on the rear portion of the wheels.",
+    "difficulty": "advanced",
+    "category": "slide",
+    "notes": "Uses fakie/forward direction display. No stance variation.",
+    "rules": ["USE_FAKIE"]
+  },
+  "stunami": {
+    "name": "stunami",
+    "description": "A powerful rotational move combining a spin with a wave-like body motion. Rotates the skater 180 degrees.",
+    "difficulty": "advanced",
+    "category": "transition",
+    "notes": "Rotating move: entry direction is opposite to exit direction. Has open/closed stance variations.",
+    "rules": ["ROTATING_MOVES"]
+  },
+  "ufo swivel": {
+    "name": "ufo swivel",
+    "description": "A swiveling rotation where the skater spins on both feet simultaneously, creating a UFO-like spinning motion. Rotates 180 degrees.",
+    "difficulty": "intermediate",
+    "category": "transition",
+    "notes": "Rotating move: entry direction is opposite to exit direction. Has open/closed stance variations.",
+    "rules": ["ROTATING_MOVES"]
+  },
+  "toe pivot": {
+    "name": "toe pivot",
+    "description": "A pivot turn on the toe wheels, using the front of the skate as the rotation point.",
+    "difficulty": "beginner",
+    "category": "pivot",
+    "notes": "Has open/closed stance variations."
+  },
+  "heel pivot": {
+    "name": "heel pivot",
+    "description": "A pivot turn on the heel wheels, using the back of the skate as the rotation point.",
+    "difficulty": "beginner",
+    "category": "pivot",
+    "notes": "Has open/closed stance variations."
+  }
+}
