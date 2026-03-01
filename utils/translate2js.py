@@ -10,7 +10,7 @@ if not GEMINI_API_KEY:
 # Use pathlib for more robust path handling
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 PYTHON_SOURCE_PATH = PROJECT_ROOT / "src" / "wzrdbrain" / "wzrdbrain.py"
-TRICK_DATA_PATH = PROJECT_ROOT / "src" / "wzrdbrain" / "tricks.json"
+TRICK_DATA_PATH = PROJECT_ROOT / "src" / "wzrdbrain" / "moves.json"
 JS_OUTPUT_PATH = PROJECT_ROOT / "src" / "wzrdbrain" / "wzrdbrain.js"
 JS_SOURCE_PATH = PROJECT_ROOT / "utils" / "wzrdbrain.base.js"
 MODEL_NAME = "gemini-2.5-pro"
@@ -33,7 +33,7 @@ def construct_prompt(python_code: str, trick_data_json: str, js_code: str) -> st
     """
     Constructs a comprehensive prompt for the AI model to translate Python code and associated JSON data
     into a self-contained JavaScript file. The prompt includes explicit translation requirements,
-    the full contents of the Python source and tricks.json, and instructions for code structure, style,
+    the full contents of the Python source and moves.json, and instructions for code structure, style,
     and data handling.
 
     Args:
@@ -49,28 +49,27 @@ You are an expert Python to JavaScript translator. Your task is to translate the
 
 **Translation Requirements:**
 
-1.  **Source of Truth:** The provided Python code and `tricks.json` data are the single source of truth for the logic. The generated JavaScript must be a direct and accurate translation of this logic.
+1.  **Source of Truth:** The provided Python code and `moves.json` data are the single source of truth for the logic. The generated JavaScript must be a direct and accurate translation of this logic.
 2.  **Reference Implementation:** An existing JavaScript file (`wzrdbrain.base.js`) is provided as a reference. The new code (`wzrdbrain.js`) should follow its overall structure, coding style, and conventions where applicable, but the core logic must come from the Python source.
 3.  **No External Dependencies:** The final JavaScript file must be pure, vanilla JavaScript with no external libraries or dependencies.
 4.  **ES6 Modules:** Use `export` for the `Trick` class and `generateCombo` function so they can be imported by other modules.
 5.  **Data Handling:**
-    *   The contents of `tricks.json` are provided below. Do NOT attempt to `fetch` this data in the JavaScript code.
-    *   Instead, convert the JSON data into JavaScript `const` variables at the top of the file.
-    *   The `RULES` from the JSON should be converted into JavaScript `Set` objects for efficient lookups, just like the Python version.
+    *   The contents of `moves.json` are provided below. Do NOT attempt to `fetch` this data in the JavaScript code.
+    *   Instead, convert the JSON data into a JavaScript `const` variable at the top of the file.
 6.  **Class Translation:**
-    *   Translate the Python `Trick` dataclass into a JavaScript `class Trick`.
-    *   The constructor should handle default random values for unspecified properties, mirroring the `__post_init__` logic.
-    *   Implement a `getName()` method equivalent to the Python `__str__` method.
+    *   Translate the Python `Trick` class into a JavaScript `class Trick`.
+    *   The constructor should handle state resolution (including relative states like "same" or "opposite"), mirroring the Python logic.
+    *   Implement a `toString()` method equivalent to the Python `__str__` method.
     *   Implement a `toObject()` method equivalent to the Python `to_dict()` method.
 7.  **Function Translation:**
     *   Translate the `generate_combo` Python function into a `generateCombo` JavaScript function.
-    *   Ensure the logic for generating subsequent tricks is efficient. Pre-calculate the set of valid subsequent moves and pick randomly from that set, just like the Python `SUBSEQUENT_MOVES` implementation. Avoid inefficient `while(true)` loops.
+    *   Ensure the logic for generating subsequent tricks uses the physical state continuity logic (Direction and Weight Point matching), just like the Python implementation.
 8.  **Code Style & Comments:**
     *   Maintain clean, readable code consistent with the reference file.
     *   Include JSDoc comments for the exported class and function, explaining what they do, their parameters, and what they return.
     *   Add a header comment with author and license information: `@author Nazrul Kamaruddin` and `@license Apache-2.0`.
 
-**`tricks.json` Data:**
+**`moves.json` Data:**
 ```json
 {trick_data_json}
 ```

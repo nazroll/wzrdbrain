@@ -2,148 +2,178 @@ import random
 import json
 import importlib.resources
 from typing import Optional, Any
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, field
 from pydantic import BaseModel, Field
 
 
-# Pydantic models for data validation
-class TrickRules(BaseModel):
-    """Defines the structure of the 'RULES' object in tricks.json."""
-
-    only_first: set[str] = Field(..., alias="ONLY_FIRST")
-    use_fakie: set[str] = Field(..., alias="USE_FAKIE")
-    rotating_moves: set[str] = Field(..., alias="ROTATING_MOVES")
-    exclude_stance_base: set[str] = Field(..., alias="EXCLUDE_STANCE_BASE")
+# Pydantic models for the new state-transition schema
+class Mechanics(BaseModel):
+    feet: int
+    is_rotation: bool
+    degrees: int
+    rotation_type: str
 
 
-class TrickData(BaseModel):
-    """Defines the top-level structure of tricks.json."""
-
-    directions: tuple[str, ...] = Field(..., alias="DIRECTIONS")
-    stances: tuple[str, ...] = Field(..., alias="STANCES")
-    moves: tuple[str, ...] = Field(..., alias="MOVES")
-    rules: TrickRules = Field(..., alias="RULES")
+class State(BaseModel):
+    direction: str
+    edge: str
+    stance: str
+    point: str
 
 
-# Load trick data from JSON
-def _load_trick_data() -> TrickData:
-    """Loads trick definitions from the embedded tricks.json file."""
-    with importlib.resources.open_text("wzrdbrain", "tricks.json") as f:
+class ExitState(BaseModel):
+    direction: str
+    edge: str
+    stance: str
+    point: str
+    lead_foot: str
+    feet: int
+
+
+class Metadata(BaseModel):
+    is_fakie_variant: Optional[bool] = False
+    description: Optional[str] = None
+    aka: Optional[list[str]] = []
+
+
+class Move(BaseModel):
+    id: str
+    name: str
+    category: str
+    stage: int
+    mechanics: Mechanics
+    entry: State
+    exit: ExitState
+    metadata: Metadata = Field(default_factory=Metadata)
+
+
+class MoveLibrary(BaseModel):
+    version: str
+    moves: list[Move]
+
+
+# Load move library from JSON
+def _load_move_library() -> MoveLibrary:
+    """Loads move definitions from the embedded moves.json file."""
+    with importlib.resources.open_text("wzrdbrain", "moves.json") as f:
         data = json.load(f)
-        return TrickData.model_validate(data)
+        return MoveLibrary.model_validate(data)
 
 
-_TRICK_DATA = _load_trick_data()
-
-# Trick data definitions
-DIRECTIONS = _TRICK_DATA.directions
-STANCES = _TRICK_DATA.stances
-MOVES = _TRICK_DATA.moves
-
-# Rules
-only_first = _TRICK_DATA.rules.only_first
-use_fakie = _TRICK_DATA.rules.use_fakie
-rotating_moves = _TRICK_DATA.rules.rotating_moves
-exclude_stance = _TRICK_DATA.rules.exclude_stance_base.union(use_fakie)
-
-# Pre-calculate the set of moves that are valid for subsequent tricks
-SUBSEQUENT_MOVES = set(MOVES) - only_first
+_LIBRARY = _load_move_library()
+MOVES = {move.id: move for move in _LIBRARY.moves}
 
 
 @dataclass
 class Trick:
-    direction: Optional[str] = None
-    stance: Optional[str] = None
-    move: Optional[str] = None
-    enter_into_trick: Optional[str] = None
-    exit_from_trick: Optional[str] = None
+    move_id: str
+    # Resolved states
+    direction: str = field(init=False)
+    edge: str = field(init=False)
+    stance: str = field(init=False)
+    point: str = field(init=False)
+    exit_direction: str = field(init=False)
+    exit_edge: str = field(init=False)
+    exit_stance: str = field(init=False)
+    exit_point: str = field(init=False)
 
     def __post_init__(self) -> None:
-        """
-        Validate inputs and set random defaults for any attributes that were not provided.
-        """
-        # Input validation
-        if self.direction is not None and self.direction not in DIRECTIONS:
-            raise ValueError(f"Invalid direction: '{self.direction}'. Must be one of {DIRECTIONS}")
-        if self.stance is not None and self.stance not in STANCES:
-            raise ValueError(f"Invalid stance: '{self.stance}'. Must be one of {STANCES}")
-        if self.move is not None and self.move not in MOVES:
-            raise ValueError(f"Invalid move: '{self.move}'. Must be one of {MOVES}")
+        move = MOVES[self.move_id]
+        # Entry states are absolute in the library for now
+        self.direction = move.entry.direction
+        self.edge = move.entry.edge
+        self.stance = move.entry.stance
+        self.point = move.entry.point
 
-        # Generate default values
-        if self.direction is None:
-            self.direction = random.choice(DIRECTIONS)
+        # Resolve Exit States
+        self.exit_direction = self._resolve_relative(move.exit.direction, self.direction)
+        self.exit_edge = self._resolve_relative(move.exit.edge, self.edge)
+        self.exit_stance = self._resolve_relative(move.exit.stance, self.stance)
+        self.exit_point = move.exit.point  # Point is always absolute
 
-        if self.move is None:
-            self.move = random.choice(MOVES)
-
-        if self.enter_into_trick is None:
-            self.enter_into_trick = self.direction
-
-        if self.exit_from_trick is None:
-            self.exit_from_trick = self.direction
-
-        # Automatically determine stance if not provided
-        if self.stance is None and self.move not in exclude_stance:
-            self.stance = random.choice(STANCES)
-
-        # Update exit direction for moves that rotate the body
-        if self.move in rotating_moves:
-            if self.direction == "back":
-                self.exit_from_trick = "front"
-            elif self.direction == "front":
-                self.exit_from_trick = "back"
+    def _resolve_relative(self, value: str, base: str) -> str:
+        if value == "same":
+            return base
+        if value == "opposite":
+            opposites = {
+                "front": "back",
+                "back": "front",
+                "inside": "outside",
+                "outside": "inside",
+                "open": "closed",
+                "closed": "open",
+            }
+            return opposites.get(base, base)
+        return value
 
     def __str__(self) -> str:
-        parts = []
-        display_direction = self.direction
-        # Handle fakie/forward display name
-        if self.move in use_fakie:
-            if self.direction == "back":
-                display_direction = "fakie"
-            elif self.direction == "front":
-                display_direction = "forward"
-
-        if display_direction:
-            parts.append(display_direction)
-        if self.stance:
-            parts.append(self.stance)
-        if self.move:
-            parts.append(self.move)
-
-        return " ".join(parts)
+        return MOVES[self.move_id].name
 
     def to_dict(self) -> dict[str, Any]:
-        """Returns a dictionary representation of the trick, including its full name."""
-        data = asdict(self)
-        data["name"] = str(self)
-        return data
+        move = MOVES[self.move_id]
+        return {
+            "id": self.move_id,
+            "name": move.name,
+            "category": move.category,
+            "stage": move.stage,
+            "entry": {
+                "direction": self.direction,
+                "edge": self.edge,
+                "stance": self.stance,
+                "point": self.point,
+            },
+            "exit": {
+                "direction": self.exit_direction,
+                "edge": self.exit_edge,
+                "stance": self.exit_stance,
+                "point": self.exit_point,
+            },
+        }
 
 
-# Generate a combination of tricks. Default is a random number from 2 until 5.
-def generate_combo(num_of_tricks: Optional[int] = None) -> list[dict[str, Any]]:
+def generate_combo(num_of_tricks: Optional[int] = None, max_stage: int = 5) -> list[dict[str, Any]]:
+    """
+    Generates a combination of tricks based on physical state transitions.
+    """
     if num_of_tricks is None:
         num_of_tricks = random.randint(2, 5)
 
     if num_of_tricks <= 0:
         return []
 
-    trick_objects: list[Trick] = []
-    previous_trick: Optional[Trick] = None
+    combo: list[Trick] = []
 
-    for i in range(num_of_tricks):
-        if i == 0:
-            # First trick: choose from all moves
-            move = random.choice(MOVES)
-            new_trick = Trick(move=move)
-        else:
-            # Subsequent tricks: choose from the pre-filtered set
-            assert previous_trick is not None
-            required_direction = previous_trick.exit_from_trick
-            move = random.choice(list(SUBSEQUENT_MOVES))  # Choose from the valid set
-            new_trick = Trick(direction=required_direction, move=move)
+    # 1. Select the first trick (usually a Stage 1 move or random)
+    valid_start_moves = [m for m in _LIBRARY.moves if m.stage <= max_stage]
+    first_move = random.choice(valid_start_moves)
+    current_trick = Trick(first_move.id)
+    combo.append(current_trick)
 
-        trick_objects.append(new_trick)
-        previous_trick = new_trick
+    # 2. Iteratively find compatible moves
+    for _ in range(num_of_tricks - 1):
+        # A move is compatible if its entry matches the current exit
+        # Note: We allow an implicit 'edge shift' or 'reset' if no perfect match exists,
+        # but for now we look for strict physical continuity.
 
-    return [trick.to_dict() for trick in trick_objects]
+        candidates = []
+        for move in _LIBRARY.moves:
+            if move.stage > max_stage:
+                continue
+
+            # Strict continuity check
+            # In a real skate session, you can shift edge/stance between moves easily.
+            # Direction and Weight Point (Heel/Toe) are the hardest constraints.
+            if (
+                move.entry.direction == current_trick.exit_direction
+                and move.entry.point == current_trick.exit_point
+            ):
+                candidates.append(move)
+
+        if not candidates:
+            break  # End combo if no physical flow is possible
+
+        next_move = random.choice(candidates)
+        current_trick = Trick(next_move.id)
+        combo.append(current_trick)
+
+    return [t.to_dict() for t in combo]
