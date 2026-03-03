@@ -9,7 +9,7 @@ on:
     paths:
       - 'utils/translate2js.py'
       - 'src/wzrdbrain/wzrdbrain.py'
-      - 'src/wzrdbrain/tricks.json'
+      - 'src/wzrdbrain/moves.json'
       - '.github/workflows/ci.yml'
       - 'pyproject.toml'
 
