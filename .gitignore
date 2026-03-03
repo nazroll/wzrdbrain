@@ -14,6 +14,9 @@ dist/
 htmlcov/
 .ruff_cache/
 venv/
+# macOS
+.DS_Store
+
 # Editors
 .vscode/
 .idea/
