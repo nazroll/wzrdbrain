@@ -19,13 +19,40 @@ const MOVES = Object.fromEntries(MOVE_LIBRARY.moves.map(m => [m.id, m]));
  */
 export class Trick {
   /**
-   * @param {string} moveId - The unique identifier for the move.
+   * @param {string|object} args - The unique identifier for the move, or a legacy options object.
    */
-  constructor(moveId) {
-    const move = MOVES[moveId];
-    if (!move) throw new Error(`Invalid move ID: ${moveId}`);
+  constructor(args) {
+    let resolvedMoveId = "predator_f_o"; // Default fallback
 
-    this.moveId = moveId;
+    if (typeof args === "string") {
+      resolvedMoveId = args;
+    } else if (typeof args === "object" && args !== null) {
+      console.warn("Instantiating Trick with legacy object ({ move, direction, stance }) is deprecated. Use a specific 'moveId' string instead.");
+      const { move, direction, stance } = args;
+      
+      if (move) {
+        const dirPart = direction === "back" ? "_b" : "_f";
+        const stancePart = stance === "closed" ? "_c" : "_o";
+        const formattedMove = move.replace(/ /g, "_");
+        
+        const possibleId = `${formattedMove}${dirPart}${stancePart}`;
+        if (MOVES[possibleId]) {
+          resolvedMoveId = possibleId;
+        } else {
+          // Fallback to finding the base move without specific stance/dir if exact match fails
+          const keys = Object.keys(MOVES);
+          const fallbackKey = keys.find(k => k.includes(formattedMove));
+          if (fallbackKey) {
+            resolvedMoveId = fallbackKey;
+          }
+        }
+      }
+    }
+
+    const move = MOVES[resolvedMoveId];
+    if (!move) throw new Error(`Invalid move ID: ${resolvedMoveId}`);
+
+    this.moveId = resolvedMoveId;
     this.name = move.name;
     this.category = move.category;
     this.stage = move.stage;
@@ -119,14 +146,22 @@ export function generateCombo(numTricks = null, maxStage = 5) {
   let currentTrick = new Trick(currentMove.id);
   combo.push(currentTrick);
 
-  // 2. Iteratively find compatible moves
+  // 2. Iteratively find compatible moves using two-tier matching
   for (let i = 0; i < numTricks - 1; i++) {
-    const candidates = validMoves.filter(m => 
+    // Tier 1 — strict: direction + point must both match the current exit state
+    const strictCandidates = validMoves.filter(m => 
       m.entry.direction === currentTrick.exitDirection &&
       m.entry.point === currentTrick.exitPoint
     );
 
-    if (candidates.length === 0) break;
+    // Tier 2 — relaxed: direction only (implicit edge/point shift between tricks)
+    const relaxedCandidates = validMoves.filter(m =>
+      m.entry.direction === currentTrick.exitDirection
+    );
+
+    const candidates = strictCandidates.length > 0 ? strictCandidates : relaxedCandidates;
+
+    if (candidates.length === 0) break; // Should theoretically not happen with a complete library
 
     const nextMove = candidates[Math.floor(Math.random() * candidates.length)];
     currentTrick = new Trick(nextMove.id);

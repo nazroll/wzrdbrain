@@ -1,0 +1,20 @@
+{
+  "DIRECTIONS": ["front", "back"],
+  "STANCES": ["open", "closed"],
+  "MOVES": [
+    "predator", "predator one", "parallel", "tree", "gazelle", "gazelle s",
+    "lion", "lion s", "toe press", "heel press", "toe roll", "heel roll",
+    "360", "180", "540", "parallel slide", "soul slide", "acid slide",
+    "mizu slide", "star slide", "fast slide", "back slide", "tsunami"
+  ],
+  "RULES": {
+    "ONLY_FIRST": ["predator", "predator one", "parallel"],
+    "USE_FAKIE": [
+      "toe press", "toe roll", "heel press", "heel roll", "360", "180", "540",
+      "parallel slide", "soul slide", "acid slide", "mizu slide", "star slide",
+      "fast slide", "back slide"
+    ],
+    "EXCLUDE_STANCE_BASE": ["predator", "predator one"],
+    "ROTATING_MOVES": ["gazelle", "lion", "180", "540"]
+  }
+}

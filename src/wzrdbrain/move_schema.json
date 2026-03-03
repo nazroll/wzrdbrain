@@ -15,7 +15,7 @@
         "properties": {
           "id": { "type": "string" },
           "name": { "type": "string" },
-          "category": { "enum": ["base", "turn", "transition", "manual", "pivot", "slide", "air"] },
+          "category": { "enum": ["base", "turn", "transition", "manual", "pivot", "slide", "swivel", "air"] },
           "stage": { "type": "integer", "minimum": 1, "maximum": 5 },
           "mechanics": {
             "type": "object",
