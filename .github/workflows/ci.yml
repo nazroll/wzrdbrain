@@ -2,6 +2,7 @@ name: CI
 
 permissions:
   contents: write
+  pull-requests: write
 
 on:
   push:
@@ -89,13 +90,26 @@ jobs:
           name: wzrdbrain-js
           path: src/wzrdbrain/wzrdbrain.js
 
-      - name: Commit generated file to working branch
+      - name: Commit generated file
         if: steps.diff.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          branch="${{ github.ref_name }}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout -B "$branch"
           git add src/wzrdbrain/wzrdbrain.js
-          git commit -m "chore: update src/wzrdbrain/wzrdbrain.js via utils/translate2js.py [skip ci]"
-          git push origin "$branch"
+          git commit -m "chore: update wzrdbrain.js via translate2js.py [skip ci]"
+
+          branch="${{ github.ref_name }}"
+          if [ "$branch" = "main" ]; then
+            update_branch="chore/update-wzrdbrain-js-$(date +%s)"
+            git checkout -b "$update_branch"
+            git push origin "$update_branch"
+            gh pr create \
+              --base main \
+              --head "$update_branch" \
+              --title "chore: update wzrdbrain.js" \
+              --body "Auto-generated JS translation from \`translate2js.py\`."
+          else
+            git push origin HEAD:"$branch"
+          fi
