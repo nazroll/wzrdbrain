@@ -18,26 +18,28 @@ If you're not comfortable with editing files or using Git, the best way to contr
 2.  Click "New Issue".
 3.  Give it a title like "Add trick: [Your Trick Name]".
 4.  In the description, please provide as much detail as you can about the trick. For example:
-    *   Does it have a stance (open/closed)?
-    *   Is it a rotating move (does it spin you 180 degrees)?
-    *   Is it called "fakie" when done backward?
+    *   What direction are you traveling? (front or back)
+    *   What stance are you in? (open or closed)
+    *   What edge is the leading foot on? (inside, outside, or center)
+    *   Does the trick rotate you? (e.g., 180 degrees, changing front to back)
+    *   How many feet are on the ground? (1 or 2)
 5.  Submit the issue, and we'll take care of adding it to the library!
 
-### The hands-on way: Edit the tricks.json file directly
+### The hands-on way: Edit the moves.json file directly
 
 If you're feeling a bit more adventurous, you can add the trick yourself directly on GitHub. You don't need to install anything on your computer.
 
-1.  Go to `src/wzrdbrain/tricks.json`.
-2.  Click the pencil icon (✏️) in the top right corner to start editing.
-3.  **Add your trick**:
-    *   Scroll down to the `"MOVES"` list.
-    *   Add your trick's name in quotes. **Please keep the list in alphabetical order.**
-4.  **Update the rules (if needed)**:
-    *   After the `MOVES` list, there's a `RULES` section. You might need to add your trick to one of these lists. Here’s what they mean in plain English:
-        *   `ONLY_FIRST`: For tricks that only make sense at the start of a combo (e.g., `predator`).
-        *   `USE_FAKIE`: For tricks called "fakie" when skating backward (instead of "back").
-        *   `EXCLUDE_STANCE_BASE`: For tricks that don't have an "open" or "closed" stance (e.g., `360`).
-        *   `ROTATING_MOVES`: For tricks that spin you 180 degrees, changing your direction for the next move (e.g., `gazelle`, `lion`).
+1.  Go to `src/wzrdbrain/moves.json`.
+2.  Click the pencil icon in the top right corner to start editing.
+3.  **Add your move** as a new entry in the `"moves"` array. Each move needs:
+    *   `id`: A unique identifier (e.g., `"my_trick_f_o"` for front + open)
+    *   `name`: Human-readable name (e.g., `"Front My Trick (Open)"`)
+    *   `category`: One of `base`, `turn`, `transition`, `manual`, `pivot`, `slide`, `swivel`
+    *   `stage`: Difficulty tier from 1 (beginner) to 5 (advanced)
+    *   `mechanics`: `feet` (1 or 2), `is_rotation` (true/false), `degrees` (0, 90, 180, 360, 540), `rotation_type` (`natural`, `switch`, or `neutral`)
+    *   `entry`: The physical state required to start the trick — `direction`, `edge`, `stance`, `point`
+    *   `exit`: How the trick changes the skater's state — using `same`/`opposite` for relative changes or absolute values
+4.  **Tip**: Copy an existing move that's similar to yours and modify the values.
 5.  **Propose the change**:
     *   Scroll to the bottom of the page.
     *   In the first box, type a short message like `feat: add [trick name]`.
@@ -45,6 +47,8 @@ If you're feeling a bit more adventurous, you can add the trick yourself directl
     *   Click "Create pull request".
 
 That's it! You don't need to worry about running tests. We'll review your change, run the quality checks, and merge it into the project.
+
+For more details on the state model and edge conventions, see [the research doc](./docs/moves_research.md).
 
 ---
 
