@@ -590,17 +590,15 @@ const MOVE_LIBRARY = {
   ]
 };
 
-// Create a lookup map for efficient access by move ID
 const MOVES = Object.fromEntries(MOVE_LIBRARY.moves.map(m => [m.id, m]));
 
 /**
- * Represents a single trick with its resolved entry and exit states.
- * This class translates a move from the library into a concrete instance
- * within a sequence, resolving relative state changes.
+ * Represents a single trick instance, resolving its entry and exit states based on a move definition.
+ * @class
  */
 export class Trick {
   /**
-   * @param {string} moveId - The unique identifier for the move.
+   * @param {string} moveId The unique identifier for the move from the move library.
    */
   constructor(moveId) {
     const move = MOVES[moveId];
@@ -608,7 +606,7 @@ export class Trick {
 
     this.moveId = moveId;
 
-    // Entry states are absolute in the library
+    // Entry states are absolute
     this.direction = move.entry.direction;
     this.edge = move.entry.edge;
     this.stance = move.entry.stance;
@@ -618,14 +616,14 @@ export class Trick {
     this.exitDirection = this._resolveRelative(move.exit.direction, this.direction);
     this.exitEdge = this._resolveRelative(move.exit.edge, this.edge);
     this.exitStance = this._resolveRelative(move.exit.stance, this.stance);
-    this.exitPoint = move.exit.point; // Point is always absolute, not relative
+    this.exitPoint = move.exit.point; // Exit point is always absolute
   }
 
   /**
-   * Resolves relative state values like "same" or "opposite" to absolute values.
+   * Resolves a state value that can be relative (e.g., "same", "opposite").
    * @private
-   * @param {string} value - The state value from the move definition (e.g., "same", "opposite", "front").
-   * @param {string} base - The corresponding entry state value to compare against.
+   * @param {string} value The state value from the move definition (e.g., "same", "front").
+   * @param {string} base The corresponding entry state to compare against.
    * @returns {string} The resolved, absolute state value.
    */
   _resolveRelative(value, base) {
@@ -647,8 +645,8 @@ export class Trick {
   }
 
   /**
-   * Returns the human-readable name of the trick.
-   * @returns {string} The name of the trick's move.
+   * Returns the human-readable name of the trick's move.
+   * @returns {string} The name of the move.
    */
   toString() {
     return MOVES[this.moveId].name;
@@ -656,7 +654,7 @@ export class Trick {
 
   /**
    * Returns a plain object representation of the trick instance.
-   * @returns {{id: string, name: string, category: string, stage: number, entry: object, exit: object}} Plain object representation of the trick.
+   * @returns {object} An object containing the trick's resolved properties.
    */
   toObject() {
     const move = MOVES[this.moveId];
@@ -683,16 +681,14 @@ export class Trick {
 
 /**
  * Generates a combination of tricks based on physical state transitions.
- * It ensures that the entry state of a trick is compatible with the exit
- * state of the preceding trick.
  *
- * @param {number|null} [numTricks=null] - Number of tricks to generate. Defaults to a random number between 2 and 5.
- * @param {number} [maxStage=5] - Maximum skill stage of moves to include.
+ * @param {number|null} [numTricks=null] - Number of tricks to generate. If null, a random number between 2 and 5 is chosen.
+ * @param {number} [maxStage=5] - The maximum difficulty stage for moves to be included in the combo.
  * @returns {object[]} An array of trick objects representing the generated combo.
  */
 export function generateCombo(numTricks = null, maxStage = 5) {
   if (numTricks === null) {
-    numTricks = Math.floor(Math.random() * (5 - 2 + 1)) + 2; // Random int between 2 and 5
+    numTricks = Math.floor(Math.random() * (5 - 2 + 1)) + 2;
   }
 
   if (numTricks <= 0) {
@@ -700,34 +696,34 @@ export function generateCombo(numTricks = null, maxStage = 5) {
   }
 
   const combo = [];
-  const validMoves = MOVE_LIBRARY.moves.filter(m => m.stage <= maxStage);
 
-  if (validMoves.length === 0) {
-    return [];
-  }
+  // 1. Select the first trick
+  const validStartMoves = MOVE_LIBRARY.moves.filter(m => m.stage <= maxStage);
+  if (validStartMoves.length === 0) return [];
 
-  // 1. Select the first trick from all valid moves
-  const firstMove = validMoves[Math.floor(Math.random() * validMoves.length)];
+  const firstMove = validStartMoves[Math.floor(Math.random() * validStartMoves.length)];
   let currentTrick = new Trick(firstMove.id);
   combo.push(currentTrick);
 
-  // 2. Iteratively find compatible subsequent moves
+  // 2. Iteratively find compatible moves using two-tier matching
   for (let i = 0; i < numTricks - 1; i++) {
-    // Tier 1 — Strict match: Direction AND Weight Point must both match the current exit state.
-    const strictCandidates = validMoves.filter(m =>
+    const eligible = MOVE_LIBRARY.moves.filter(m => m.stage <= maxStage);
+
+    // Tier 1 — strict: direction + point must both match the current exit state
+    const strictCandidates = eligible.filter(m =>
       m.entry.direction === currentTrick.exitDirection &&
       m.entry.point === currentTrick.exitPoint
     );
 
-    // Tier 2 — Relaxed match: Only Direction must match (implies an implicit shift of weight point).
-    const relaxedCandidates = validMoves.filter(m =>
+    // Tier 2 — relaxed: direction only (implicit edge/point shift between tricks)
+    const relaxedCandidates = eligible.filter(m =>
       m.entry.direction === currentTrick.exitDirection
     );
 
     const candidates = strictCandidates.length > 0 ? strictCandidates : relaxedCandidates;
 
     if (candidates.length === 0) {
-      break; // No compatible moves found, end combo generation.
+      break; // No compatible move found, end the combo here.
     }
 
     const nextMove = candidates[Math.floor(Math.random() * candidates.length)];
