@@ -593,16 +593,18 @@ const MOVE_LIBRARY = {
 const MOVES = Object.fromEntries(MOVE_LIBRARY.moves.map(m => [m.id, m]));
 
 /**
- * Represents a single trick instance, resolving its entry and exit states based on a move definition.
- * @class
+ * Represents a single trick, resolving its entry and exit states based on
+ * the move definition from the library.
  */
 export class Trick {
   /**
-   * @param {string} moveId The unique identifier for the move from the move library.
+   * @param {string} moveId The unique identifier for the move.
    */
   constructor(moveId) {
     const move = MOVES[moveId];
-    if (!move) throw new Error(`Invalid move ID: ${moveId}`);
+    if (!move) {
+      throw new Error(`Move with ID "${moveId}" not found in library.`);
+    }
 
     this.moveId = moveId;
 
@@ -612,7 +614,7 @@ export class Trick {
     this.stance = move.entry.stance;
     this.point = move.entry.point;
 
-    // Resolve Exit States based on entry state
+    // Resolve Exit States based on entry states
     this.exitDirection = this._resolveRelative(move.exit.direction, this.direction);
     this.exitEdge = this._resolveRelative(move.exit.edge, this.edge);
     this.exitStance = this._resolveRelative(move.exit.stance, this.stance);
@@ -620,11 +622,12 @@ export class Trick {
   }
 
   /**
-   * Resolves a state value that can be relative (e.g., "same", "opposite").
+   * Resolves a relative state value (e.g., "same" or "opposite") into an
+   * absolute state (e.g., "front", "back").
+   * @param {string} value The relative value ("same", "opposite", or an absolute value).
+   * @param {string} base The base absolute value to compare against.
+   * @returns {string} The resolved absolute state.
    * @private
-   * @param {string} value The state value from the move definition (e.g., "same", "front").
-   * @param {string} base The corresponding entry state to compare against.
-   * @returns {string} The resolved, absolute state value.
    */
   _resolveRelative(value, base) {
     if (value === "same") {
@@ -632,12 +635,12 @@ export class Trick {
     }
     if (value === "opposite") {
       const opposites = {
-        front: "back",
-        back: "front",
-        inside: "outside",
-        outside: "inside",
-        open: "closed",
-        closed: "open",
+        "front": "back",
+        "back": "front",
+        "inside": "outside",
+        "outside": "inside",
+        "open": "closed",
+        "closed": "open",
       };
       return opposites[base] || base;
     }
@@ -653,27 +656,28 @@ export class Trick {
   }
 
   /**
-   * Returns a plain object representation of the trick instance.
-   * @returns {object} An object containing the trick's resolved properties.
+   * Returns a plain object representation of the trick, including its
+   * resolved entry and exit states.
+   * @returns {object} A plain object representation.
    */
   toObject() {
     const move = MOVES[this.moveId];
     return {
-      id: this.moveId,
-      name: move.name,
-      category: move.category,
-      stage: move.stage,
-      entry: {
-        direction: this.direction,
-        edge: this.edge,
-        stance: this.stance,
-        point: this.point,
+      "id": this.moveId,
+      "name": move.name,
+      "category": move.category,
+      "stage": move.stage,
+      "entry": {
+        "direction": this.direction,
+        "edge": this.edge,
+        "stance": this.stance,
+        "point": this.point,
       },
-      exit: {
-        direction: this.exitDirection,
-        edge: this.exitEdge,
-        stance: this.exitStance,
-        point: this.exitPoint,
+      "exit": {
+        "direction": this.exitDirection,
+        "edge": this.exitEdge,
+        "stance": this.exitStance,
+        "point": this.exitPoint,
       },
     };
   }
@@ -681,9 +685,11 @@ export class Trick {
 
 /**
  * Generates a combination of tricks based on physical state transitions.
- *
+ * It attempts to find a subsequent trick whose entry state strictly matches
+ * the previous trick's exit state (direction and weight point), falling back
+ * to a relaxed match (direction only) if needed.
  * @param {number|null} [numTricks=null] - Number of tricks to generate. If null, a random number between 2 and 5 is chosen.
- * @param {number} [maxStage=5] - The maximum difficulty stage for moves to be included in the combo.
+ * @param {number} [maxStage=5] - The maximum skill stage of moves to include in the combo.
  * @returns {object[]} An array of trick objects representing the generated combo.
  */
 export function generateCombo(numTricks = null, maxStage = 5) {
@@ -705,25 +711,25 @@ export function generateCombo(numTricks = null, maxStage = 5) {
   let currentTrick = new Trick(firstMove.id);
   combo.push(currentTrick);
 
-  // 2. Iteratively find compatible moves using two-tier matching
+  // 2. Iteratively find compatible subsequent moves
   for (let i = 0; i < numTricks - 1; i++) {
-    const eligible = MOVE_LIBRARY.moves.filter(m => m.stage <= maxStage);
+    const eligibleMoves = MOVE_LIBRARY.moves.filter(m => m.stage <= maxStage);
 
-    // Tier 1 — strict: direction + point must both match the current exit state
-    const strictCandidates = eligible.filter(m =>
+    // Tier 1 — Strict match: direction AND weight point must both match
+    const strictCandidates = eligibleMoves.filter(m =>
       m.entry.direction === currentTrick.exitDirection &&
       m.entry.point === currentTrick.exitPoint
     );
 
-    // Tier 2 — relaxed: direction only (implicit edge/point shift between tricks)
-    const relaxedCandidates = eligible.filter(m =>
+    // Tier 2 — Relaxed match: only direction must match
+    const relaxedCandidates = eligibleMoves.filter(m =>
       m.entry.direction === currentTrick.exitDirection
     );
 
     const candidates = strictCandidates.length > 0 ? strictCandidates : relaxedCandidates;
 
     if (candidates.length === 0) {
-      break; // No compatible move found, end the combo here.
+      break; // Stop if no compatible move can be found
     }
 
     const nextMove = candidates[Math.floor(Math.random() * candidates.length)];
