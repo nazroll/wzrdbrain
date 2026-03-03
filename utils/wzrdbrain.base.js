@@ -19,40 +19,13 @@ const MOVES = Object.fromEntries(MOVE_LIBRARY.moves.map(m => [m.id, m]));
  */
 export class Trick {
   /**
-   * @param {string|object} args - The unique identifier for the move, or a legacy options object.
+   * @param {string} moveId - The unique identifier for the move.
    */
-  constructor(args) {
-    let resolvedMoveId = "predator_f_o"; // Default fallback
+  constructor(moveId) {
+    const move = MOVES[moveId];
+    if (!move) throw new Error(`Invalid move ID: ${moveId}`);
 
-    if (typeof args === "string") {
-      resolvedMoveId = args;
-    } else if (typeof args === "object" && args !== null) {
-      console.warn("Instantiating Trick with legacy object ({ move, direction, stance }) is deprecated. Use a specific 'moveId' string instead.");
-      const { move, direction, stance } = args;
-      
-      if (move) {
-        const dirPart = direction === "back" ? "_b" : "_f";
-        const stancePart = stance === "closed" ? "_c" : "_o";
-        const formattedMove = move.replace(/ /g, "_");
-        
-        const possibleId = `${formattedMove}${dirPart}${stancePart}`;
-        if (MOVES[possibleId]) {
-          resolvedMoveId = possibleId;
-        } else {
-          // Fallback to finding the base move without specific stance/dir if exact match fails
-          const keys = Object.keys(MOVES);
-          const fallbackKey = keys.find(k => k.includes(formattedMove));
-          if (fallbackKey) {
-            resolvedMoveId = fallbackKey;
-          }
-        }
-      }
-    }
-
-    const move = MOVES[resolvedMoveId];
-    if (!move) throw new Error(`Invalid move ID: ${resolvedMoveId}`);
-
-    this.moveId = resolvedMoveId;
+    this.moveId = moveId;
     this.name = move.name;
     this.category = move.category;
     this.stage = move.stage;
