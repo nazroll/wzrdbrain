@@ -2,7 +2,6 @@ import pytest
 
 from wzrdbrain.wzrdbrain import Trick, generate_combo, MOVES, _LIBRARY
 
-
 # --- Existing tests (updated for corrected data) ---
 
 
