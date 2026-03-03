@@ -59,11 +59,9 @@ In both Gazelle and Lion transitions, three things change simultaneously:
 
 This is confirmed by Eccentric Inline's FOG description showing entry on outside/heel transitioning to exit on inside/toe.
 
-### Data correction needed
+### Resolution
 
-The current `moves.json` has `gazelle_f_o` with entry edge `inside`. Per Eccentric Inline's FOG page, this should be `outside`. The research doc's Section 5 correctly states "a Front Gazelle requires an `outside` edge" but the data contradicts this.
-
-**Recommended fix**: For two-footed moves, the `edge` property should represent the *leading foot's* edge. This makes FOG entry = `outside` (leading foot on outside edge) and keeps Lions consistent (FOL entry = `inside`).
+The `edge` property uses the **leading-foot convention**: for two-footed moves, `edge` refers to the leading foot's edge. This makes FOG entry = `outside` (leading foot on outside edge) and keeps Lions consistent (FOL entry = `inside`). All gazelle variants in `moves.json` now use `outside` edge entry; all open-stance lion variants use `inside` edge entry.
 
 ## 5. Move Categorization
 
@@ -76,16 +74,16 @@ The current `moves.json` has `gazelle_f_o` with entry edge `inside`. Per Eccentr
 | 3 | Transitions | Gazelles, Lions | Core wizard skating (3-turns) |
 | 4 | Advanced | Pivots, Same-Edge Swivels, Manuals | Isolated wheel/edge work |
 
-### Category corrections from source verification
+### Category corrections (applied)
 
-| Move | PR #23 category | Eccentric Inline category | Correct category |
-|------|----------------|--------------------------|-----------------|
-| Stunami | `manual` | Same-Edge Swivel | `swivel` |
-| UFO Swivel | `transition` | Same-Edge Swivel | `swivel` |
-| Toe Press | (not defined) | Two-Footed Manual | `manual` |
-| Heel Press | (not defined) | Two-Footed Manual | `manual` |
+| Move | Was | Now | Source |
+|------|-----|-----|--------|
+| Stunami | `manual` | `swivel` | Eccentric Inline Bonus (Same-Edge Swivels) |
+| UFO Swivel | `transition` | `swivel` | Eccentric Inline Bonus (Same-Edge Swivels) |
+| Toe Press | (not defined) | `manual` | Eccentric Inline Bonus (Two-Footed Manuals) |
+| Heel Press | (not defined) | `manual` | Eccentric Inline Bonus (Two-Footed Manuals) |
 
-The schema's `category` enum should include `swivel` alongside `base`, `turn`, `transition`, `manual`, `pivot`, `slide`.
+The schema's `category` enum now includes `swivel` alongside `base`, `turn`, `transition`, `manual`, `pivot`, `slide`.
 
 ## 6. The State-Transition Model
 
@@ -107,59 +105,49 @@ Exit states use relative values (`same`, `opposite`) resolved against the entry:
 4. If no match exists → insert a **State Reset** step (see Section 7) or end the combo
 5. Repeat until desired length is reached
 
-## 7. Open Problems
+## 7. Resolved Design Decisions
 
-### 7a. Dead-ends and State Resets
+### 7a. Dead-ends → Two-tier matching
 
-With strict state matching, the generator can reach states where no valid next move exists (e.g., backward + toe point with few candidates). Three approaches:
+The generator uses two-tier candidate matching to guarantee `generate_combo(N)` always returns exactly N tricks:
 
-1. **Document the behavior**: API returns *up to* N tricks. Callers handle short combos.
-2. **State Reset steps**: Insert implicit transitions (e.g., "shift edge from inside to outside") that represent the skater adjusting their body between tricks. These are physically real — skaters do this constantly.
-3. **Relaxed matching**: Match on direction only, treating edge/point as soft preferences. Simpler but less physically accurate.
+1. **Strict** (preferred): next move's entry direction AND point must match current exit state
+2. **Relaxed** (fallback): next move's entry direction must match current exit direction
 
-**Recommendation**: Option 2 (State Resets) best preserves physical accuracy while avoiding dead-ends. A reset step changes the skater's state without constituting a named trick.
+The relaxed tier represents implicit state shifts (edge/point adjustments) that skaters naturally perform between tricks. This preserves direction continuity while avoiding dead-ends.
 
-### 7b. Two-footed edge representation
+### 7b. Two-footed edge → Leading-foot convention
 
-The current schema uses a single `edge` string. For two-footed moves, this is ambiguous because each foot is on a different edge. Options:
+The `edge` property represents the **leading foot's** edge. For two-footed moves like gazelles, both feet are on corresponding edges (e.g., lead on outside, trail on inside), but only the lead foot's edge is recorded. This is documented in `move_schema.json`.
 
-1. **Leading-foot convention**: `edge` refers to the leading foot's edge (current implicit approach)
-2. **Dual-edge object**: `{"lead": "outside", "trail": "inside"}` — more accurate but adds complexity
-3. **Derived from stance**: Since open+gazelle always implies a specific edge pairing, edge could be computed from stance + move type
+### 7c. Randomness → Explicit variant enumeration
 
-**Recommendation**: Option 1 (leading-foot convention) for simplicity, explicitly documented. Option 2 if the engine later needs to validate foot-specific positioning.
+All direction × stance combinations are defined as separate move entries (e.g., `gazelle_f_o`, `gazelle_f_c`, `gazelle_b_o`, `gazelle_b_c`). This provides full variety through the candidate pool without runtime parameterization.
 
-### 7c. Randomness and variety
+### 7d. Move coverage → 64 variants
 
-The old system randomly chose direction and stance per trick. The new system only produces states defined in `moves.json`. To restore variety:
+The library now defines 64 move variants covering all 26 base move types from the old `tricks.json`:
 
-- Each move definition covers one direction+stance combination (e.g., `gazelle_f_o` = front open)
-- All variants must be defined: `gazelle_f_c`, `gazelle_b_o`, `gazelle_b_c` etc.
-- Alternatively, define moves with parameterized entries and resolve variants at generation time
-
-### 7d. Move coverage gap
-
-The current `moves.json` defines 11 moves. The old `tricks.json` had 26 (with direction/stance applied dynamically). To reach parity:
-
-| Category | Defined | Needed | Missing |
-|----------|---------|--------|---------|
-| Base (Predators) | 2 | 3+ | predator one, closed variants |
-| Turns | 2 | 4+ | closed and back variants |
-| Transitions (Gazelle/Lion) | 3 | 12+ | all closed/back variants |
-| Spins | 0 | 3 | 180, 360, 540 |
-| Slides | 0 | 7 | parallel, soul, acid, mizu, star, fast, back |
-| Presses | 0 | 2 | toe press, heel press |
-| Rolls | 0 | 2 | toe roll, heel roll |
-| Pivots | 2 | 8 | closed and additional direction variants |
-| Swivels | 2 | 4+ | back variants |
+| Category | Count | Moves |
+|----------|-------|-------|
+| Base | 4 | Predator (f/b), Predator One (f/b) |
+| Turn | 4 | Parallel Turn (o/c), Tree Turn (o/c) |
+| Transition | 22 | Gazelle (4), Gazelle S (4), Lion (4), Lion S (4), 180 (2), 360 (2), 540 (2) |
+| Pivot | 8 | Toe Pivot (f/b × o/c), Heel Pivot (f/b × o/c) |
+| Swivel | 4 | Stunami (f/b), UFO Swivel (f/b) |
+| Manual | 8 | Toe/Heel Press (f/b), Toe/Heel Roll (f/b) |
+| Slide | 14 | Parallel, Soul, Acid, Mizu, Star, Fast, Back (each f/b) |
 
 ## 8. Schema Definition
 
-The formal structural rules are published in `src/wzrdbrain/move_schema.json`. The schema should be updated to:
+The formal structural rules are published in `src/wzrdbrain/move_schema.json`. The schema includes:
 
-1. Add `swivel` to the category enum
-2. Document the leading-foot edge convention for two-footed moves
-3. Consider adding an optional `edges` object for dual-foot specificity
+- `swivel` in the category enum alongside `base`, `turn`, `transition`, `manual`, `pivot`, `slide`, `air`
+- Leading-foot edge convention for two-footed moves (see Section 7b)
+
+### Future consideration
+
+An optional `edges` object (`{"lead": "outside", "trail": "inside"}`) could be added for dual-foot specificity if the engine later needs to validate foot-specific positioning.
 
 ## 9. References
 

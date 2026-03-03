@@ -108,3 +108,24 @@ The review notes that the new system lacks the randomness of the old system, pro
 
 ### Conclusion
 The verdict of **"Do not merge as-is"** is correct due to SemVer violations, incomplete data, and test regressions. However, fixing it requires refining the schema to handle two-footed edges and adding deliberate state-reset mechanisms, rather than simply relaxing rules to force combo lengths.
+
+---
+
+## Resolution (v0.3.0)
+
+All 6 recommendations from the review have been addressed:
+
+| # | Recommendation | Resolution |
+|---|---------------|------------|
+| 1 | Fix gazelle edge entry | Corrected to `outside` (leading-foot convention) for all gazelle variants |
+| 2 | Add all 26 moves | Expanded to 64 move variants covering all 26 base types with direction/stance combos |
+| 3 | Guarantee combo count | Two-tier matching (strict direction+point, relaxed direction-only fallback) — `generate_combo(N)` always returns N |
+| 4 | Bump version to 0.3.0 | Version bumped in `__init__.py` and `pyproject.toml`, package-data updated |
+| 5 | Restore test coverage | 21 tests covering state resolution, rotation physics, dead-ends, schema validation, variety |
+| 6 | Fix stunami category | Both stunami and UFO swivel now use `swivel` category; schema enum updated |
+
+Additional fixes applied:
+- Removed `tricks.json` (no longer loaded)
+- Added `swivel` to `move_schema.json` category enum
+- Expanded pivots to 8 variants (all direction × stance combos per Eccentric Inline)
+- Removed unrelated files from PR (dart/, slm/, PLAN.md, .DS_Store)
