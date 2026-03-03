@@ -12,6 +12,7 @@ on:
       - 'src/wzrdbrain/moves.json'
       - '.github/workflows/ci.yml'
       - 'pyproject.toml'
+      - 'tests/**'
 
 jobs:
   test:
