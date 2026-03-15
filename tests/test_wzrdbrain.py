@@ -1,6 +1,6 @@
 import pytest
 
-from wzrdbrain.wzrdbrain import Trick, generate_combo, MOVES, _LIBRARY
+from wzrdbrain.wzrdbrain import Trick, generate_combo, MOVES, _LIBRARY, _apply_realism_filters
 
 # --- Existing tests (updated for corrected data) ---
 
@@ -212,6 +212,41 @@ def test_swivel_category_exists() -> None:
     assert MOVES["ufo_swivel_b"].category == "swivel"
 
 
+def test_no_consecutive_duplicate_tricks() -> None:
+    """No adjacent tricks in a combo should be the same move."""
+    for _ in range(100):
+        combo = generate_combo(5)
+        for i in range(len(combo) - 1):
+            assert (
+                combo[i]["id"] != combo[i + 1]["id"]
+            ), f"Consecutive duplicate: {combo[i]['name']} at positions {i} and {i + 1}"
+
+
+def test_max_consecutive_same_category() -> None:
+    """No more than 2 consecutive tricks from the same category."""
+    for _ in range(100):
+        combo = generate_combo(5)
+        for i in range(len(combo) - 2):
+            cats = [combo[i]["category"], combo[i + 1]["category"], combo[i + 2]["category"]]
+            assert not (cats[0] == cats[1] == cats[2]), (
+                f"3 consecutive same category '{cats[0]}': "
+                f"{combo[i]['name']}, {combo[i+1]['name']}, {combo[i+2]['name']}"
+            )
+
+
+def test_no_consecutive_high_rotation() -> None:
+    """No adjacent tricks should both have degrees >= 360."""
+    for _ in range(100):
+        combo = generate_combo(5)
+        for i in range(len(combo) - 1):
+            curr_deg = MOVES[combo[i]["id"]].mechanics.degrees
+            next_deg = MOVES[combo[i + 1]["id"]].mechanics.degrees
+            assert not (curr_deg >= 360 and next_deg >= 360), (
+                f"Consecutive high-rotation: {combo[i]['name']} ({curr_deg}°) → "
+                f"{combo[i+1]['name']} ({next_deg}°)"
+            )
+
+
 def test_gazelle_entry_edge_is_outside() -> None:
     """Gazelles (two-footed) should enter on outside edge (leading-foot convention)."""
     for move_id in ["gazelle_f_o", "gazelle_b_o", "gazelle_s_f_o", "gazelle_s_b_o"]:
@@ -233,3 +268,47 @@ def test_move_count_covers_old_library() -> None:
     # Old library had 26 moves (without direction/stance variants)
     # New library enumerates all variants explicitly, so it should be larger
     assert len(_LIBRARY.moves) >= 26, f"Expected at least 26 moves, got {len(_LIBRARY.moves)}"
+
+
+def test_realism_filters_does_not_bypass_duplicates_on_category_failure() -> None:
+    """
+    If the engine is forced to repeat a category (because no other valid transitions exist),
+    it must STILL apply the duplicate and spin filters via a soft fallback.
+    """
+    # Use 'turn' category moves so we trigger Constraint 1, but not the hard slide cap
+    combo = [Trick("parallel_turn_o"), Trick("tree_turn_c")]
+
+    candidates = [
+        MOVES["tree_turn_c"],  # Duplicate of last move
+        MOVES["parallel_turn_c"],  # Valid new move in the same category
+    ]
+
+    # We pass hard_category=False to simulate the fallback behavior in generate_combo
+    filtered = _apply_realism_filters(candidates, combo, hard_category=False)
+
+    assert MOVES["tree_turn_c"] not in filtered, "Filter bypassed Constraint 2 (Duplicates)!"
+    assert (
+        MOVES["parallel_turn_c"] in filtered
+    ), "Filter dropped all candidates instead of falling back to soft constraints!"
+
+
+def test_slide_probability_constraint() -> None:
+    """Test that a third consecutive slide is strictly forbidden, even with soft fallback."""
+    combo = [Trick("parallel_slide_f"), Trick("back_slide_f")]
+    candidates = [MOVES["mizu_slide_f"]]  # Valid state transition, but it's a 3rd slide
+
+    # Even on soft fallback, it should return [] if the only option is a 3rd slide.
+    filtered = _apply_realism_filters(candidates, combo, hard_category=False)
+    assert not filtered, "Filter allowed a 3rd consecutive slide!"
+
+
+def test_realism_filters_soft_fallback_keeps_options() -> None:
+    """Test that if category constraint fails, we still get non-duplicate options back."""
+    combo = [Trick("predator_f_o")]
+
+    # Suppose the only valid next moves are base moves again
+    candidates = [MOVES["predator_f_o"], MOVES["predator_one_f"]]  # Duplicate  # New
+
+    filtered = _apply_realism_filters(candidates, combo, hard_category=False)
+    assert len(filtered) == 1
+    assert filtered[0].id == "predator_one_f"

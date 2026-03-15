@@ -131,6 +131,63 @@ class Trick:
         }
 
 
+def _apply_realism_filters(
+    candidates: list[Move], combo: list[Trick], hard_category: bool = True
+) -> list[Move]:
+    """
+    Applies realism constraints to candidate moves.
+    If hard_category is True and category diversity cannot be satisfied,
+    returns empty list signalling the caller to try a wider candidate pool.
+    If hard_category is False, applies other constraints even if category repeats.
+    """
+    if not candidates or not combo:
+        return candidates
+
+    last_move = MOVES[combo[-1].move_id]
+    filtered = candidates
+
+    # Constraint 1: Max 2 consecutive same category (general)
+    if len(combo) >= 2:
+        prev_category = MOVES[combo[-2].move_id].category
+        if prev_category == last_move.category and last_move.category != "slide":
+            no_cat = [m for m in filtered if m.category != last_move.category]
+            if not no_cat and hard_category:
+                return []
+            if no_cat:
+                filtered = no_cat
+
+    # Constraint 1b: Specific slide probability
+    if last_move.category == "slide":
+        # Hard cap at 2 slides (absolute, ignores hard_category flag)
+        if len(combo) >= 2 and MOVES[combo[-2].move_id].category == "slide":
+            no_slide = [m for m in filtered if m.category != "slide"]
+            if not no_slide:  # Absolute hard cap, never soft-fallback back into slides
+                return []
+            filtered = no_slide
+        else:
+            # 10% chance to allow consecutive slides if we haven't hit the cap
+            # If random check fails, we try to force a non-slide
+            if random.random() > 0.10:
+                no_slide = [m for m in filtered if m.category != "slide"]
+                if not no_slide and hard_category:
+                    return []
+                if no_slide:
+                    filtered = no_slide
+
+    # Constraint 2: No consecutive same move
+    no_dup = [m for m in filtered if m.id != last_move.id]
+    if no_dup:
+        filtered = no_dup
+
+    # Constraint 3: No consecutive high-rotation (degrees >= 360)
+    if last_move.mechanics.degrees >= 360:
+        no_spin = [m for m in filtered if m.mechanics.degrees < 360]
+        if no_spin:
+            filtered = no_spin
+
+    return filtered
+
+
 def generate_combo(num_of_tricks: Optional[int] = None, max_stage: int = 5) -> list[dict[str, Any]]:
     """
     Generates a combination of tricks based on physical state transitions.
@@ -164,7 +221,22 @@ def generate_combo(num_of_tricks: Optional[int] = None, max_stage: int = 5) -> l
         # Tier 2 — relaxed: direction only (implicit edge/point shift between tricks)
         relaxed = [m for m in eligible if m.entry.direction == current_trick.exit_direction]
 
-        candidates = strict if strict else relaxed
+        # Apply realism constraints to strict pool first, widen to relaxed if needed
+        strict_filtered = (
+            _apply_realism_filters(strict, combo, hard_category=True) if strict else []
+        )
+        relaxed_filtered = _apply_realism_filters(relaxed, combo, hard_category=True)
+
+        if strict_filtered:
+            candidates = strict_filtered
+        elif relaxed_filtered:
+            candidates = relaxed_filtered
+        else:
+            candidates = _apply_realism_filters(relaxed, combo, hard_category=False)
+
+        if not candidates:
+            # Absolute worst-case fallback, should rarely be hit given the library size
+            candidates = relaxed
 
         next_move = random.choice(candidates)
         current_trick = Trick(next_move.id)
