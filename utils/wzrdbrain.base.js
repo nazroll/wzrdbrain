@@ -97,27 +97,44 @@ export class Trick {
 
 /**
  * Applies realism constraints to candidate moves.
- * Returns empty array if category diversity cannot be satisfied,
- * signalling the caller to try a wider candidate pool.
+ * If hardCategory is true and category diversity cannot be satisfied,
+ * returns an empty array to signal the caller to try a wider candidate pool.
+ * If hardCategory is false, applies other constraints even if the category repeats.
  * @private
  * @param {object[]} candidates - Array of move objects.
  * @param {Trick[]} combo - Tricks selected so far.
+ * @param {boolean} [hardCategory=true] - Whether to enforce strict category diversity.
  * @returns {object[]} Filtered candidates.
  */
-function _applyRealismFilters(candidates, combo) {
-  if (combo.length === 0) return candidates;
+function _applyRealismFilters(candidates, combo, hardCategory = true) {
+  if (candidates.length === 0 || combo.length === 0) return candidates;
 
   const lastMove = MOVES[combo[combo.length - 1].moveId];
   let filtered = candidates;
 
-  // Constraint 1 (highest priority): Max 2 consecutive same category
-  // Returns empty if unsatisfiable so the caller widens the pool.
+  // Constraint 1: Max 2 consecutive same category (general, excludes slides)
   if (combo.length >= 2) {
     const prevMove = MOVES[combo[combo.length - 2].moveId];
-    if (prevMove.category === lastMove.category) {
+    if (prevMove.category === lastMove.category && lastMove.category !== "slide") {
       const noCat = filtered.filter(m => m.category !== lastMove.category);
-      if (noCat.length === 0) return [];
-      filtered = noCat;
+      if (noCat.length === 0 && hardCategory) return [];
+      if (noCat.length > 0) filtered = noCat;
+    }
+  }
+
+  // Constraint 1b: Specific slide probability
+  if (lastMove.category === "slide") {
+    // Hard cap at 2 consecutive slides (absolute, ignores hardCategory flag)
+    if (combo.length >= 2 && MOVES[combo[combo.length - 2].moveId].category === "slide") {
+      const noSlide = filtered.filter(m => m.category !== "slide");
+      return noSlide.length > 0 ? noSlide : [];
+    } else {
+      // 10% chance to allow a second consecutive slide
+      if (Math.random() > 0.10) {
+        const noSlide = filtered.filter(m => m.category !== "slide");
+        if (noSlide.length === 0 && hardCategory) return [];
+        if (noSlide.length > 0) filtered = noSlide;
+      }
     }
   }
 
@@ -173,9 +190,9 @@ export function generateCombo(numTricks = null, maxStage = 5) {
 
     if (relaxedCandidates.length === 0) break; // Should theoretically not happen with a complete library
 
-    // Apply realism constraints to strict pool first, widen to relaxed if needed
-    const strictFiltered = strictCandidates.length > 0 ? _applyRealismFilters(strictCandidates, combo) : [];
-    const relaxedFiltered = _applyRealismFilters(relaxedCandidates, combo);
+    // Apply realism constraints with tiered fallback
+    const strictFiltered = strictCandidates.length > 0 ? _applyRealismFilters(strictCandidates, combo, true) : [];
+    const relaxedFiltered = _applyRealismFilters(relaxedCandidates, combo, true);
 
     let candidates;
     if (strictFiltered.length > 0) {
@@ -183,7 +200,14 @@ export function generateCombo(numTricks = null, maxStage = 5) {
     } else if (relaxedFiltered.length > 0) {
       candidates = relaxedFiltered;
     } else {
+      // Soft fallback: relax category enforcement but keep dedup and spin limits
+      candidates = _applyRealismFilters(relaxedCandidates, combo, false);
+    }
+
+    if (candidates.length === 0) {
+      // Absolute worst-case fallback
       candidates = relaxedCandidates;
+      if (candidates.length === 0) break;
     }
 
     const nextMove = candidates[Math.floor(Math.random() * candidates.length)];
