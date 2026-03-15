@@ -1,6 +1,6 @@
 import pytest
 
-from wzrdbrain.wzrdbrain import Trick, generate_combo, MOVES, _LIBRARY
+from wzrdbrain.wzrdbrain import Trick, generate_combo, MOVES, _LIBRARY, _apply_realism_filters
 
 # --- Existing tests (updated for corrected data) ---
 
@@ -268,3 +268,46 @@ def test_move_count_covers_old_library() -> None:
     # Old library had 26 moves (without direction/stance variants)
     # New library enumerates all variants explicitly, so it should be larger
     assert len(_LIBRARY.moves) >= 26, f"Expected at least 26 moves, got {len(_LIBRARY.moves)}"
+
+def test_realism_filters_does_not_bypass_duplicates_on_category_failure() -> None:
+    """
+    If the engine is forced to repeat a category (because no other valid transitions exist),
+    it must STILL apply the duplicate and spin filters via a soft fallback.
+    """
+    # Use 'turn' category moves so we trigger Constraint 1, but not the hard slide cap
+    combo = [Trick("parallel_turn_o"), Trick("tree_turn_c")]
+    
+    candidates = [
+        MOVES["tree_turn_c"], # Duplicate of last move
+        MOVES["parallel_turn_c"] # Valid new move in the same category
+    ]
+    
+    # We pass hard_category=False to simulate the fallback behavior in generate_combo
+    filtered = _apply_realism_filters(candidates, combo, hard_category=False)
+    
+    assert MOVES["tree_turn_c"] not in filtered, "Filter bypassed Constraint 2 (Duplicates)!"
+    assert MOVES["parallel_turn_c"] in filtered, "Filter dropped all candidates instead of falling back to soft constraints!"
+
+def test_slide_probability_constraint() -> None:
+    """Test that a third consecutive slide is strictly forbidden, even with soft fallback."""
+    combo = [Trick("parallel_slide_f"), Trick("back_slide_f")]
+    candidates = [MOVES["mizu_slide_f"]] # Valid state transition, but it's a 3rd slide
+    
+    # Even on soft fallback, it should return [] if the only option is a 3rd slide.
+    filtered = _apply_realism_filters(candidates, combo, hard_category=False)
+    assert not filtered, "Filter allowed a 3rd consecutive slide!"
+
+def test_realism_filters_soft_fallback_keeps_options() -> None:
+    """Test that if category constraint fails, we still get non-duplicate options back."""
+    combo = [Trick("predator_f_o")]
+    
+    # Suppose the only valid next moves are base moves again
+    candidates = [
+        MOVES["predator_f_o"], # Duplicate
+        MOVES["predator_one_f"] # New
+    ]
+    
+    filtered = _apply_realism_filters(candidates, combo, hard_category=False)
+    assert len(filtered) == 1
+    assert filtered[0].id == "predator_one_f"
+
