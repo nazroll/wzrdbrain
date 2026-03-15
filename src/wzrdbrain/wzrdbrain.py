@@ -131,7 +131,9 @@ class Trick:
         }
 
 
-def _apply_realism_filters(candidates: list[Move], combo: list[Trick], hard_category: bool = True) -> list[Move]:
+def _apply_realism_filters(
+    candidates: list[Move], combo: list[Trick], hard_category: bool = True
+) -> list[Move]:
     """
     Applies realism constraints to candidate moves.
     If hard_category is True and category diversity cannot be satisfied,
@@ -159,7 +161,7 @@ def _apply_realism_filters(candidates: list[Move], combo: list[Trick], hard_cate
         # Hard cap at 2 slides (absolute, ignores hard_category flag)
         if len(combo) >= 2 and MOVES[combo[-2].move_id].category == "slide":
             no_slide = [m for m in filtered if m.category != "slide"]
-            if not no_slide: # Absolute hard cap, never soft-fallback back into slides
+            if not no_slide:  # Absolute hard cap, never soft-fallback back into slides
                 return []
             filtered = no_slide
         else:
@@ -169,10 +171,6 @@ def _apply_realism_filters(candidates: list[Move], combo: list[Trick], hard_cate
                 no_slide = [m for m in filtered if m.category != "slide"]
                 if not no_slide and hard_category:
                     return []
-                # Only apply the no_slide filter if it leaves us with options, 
-                # OR if we are doing a hard constraint (which we just checked).
-                # Wait, if we are in soft-fallback (hard_category=False) and there are no non-slides,
-                # we SHOULD NOT set filtered = no_slide (which is empty). We keep the slides!
                 if no_slide:
                     filtered = no_slide
 
@@ -224,7 +222,9 @@ def generate_combo(num_of_tricks: Optional[int] = None, max_stage: int = 5) -> l
         relaxed = [m for m in eligible if m.entry.direction == current_trick.exit_direction]
 
         # Apply realism constraints to strict pool first, widen to relaxed if needed
-        strict_filtered = _apply_realism_filters(strict, combo, hard_category=True) if strict else []
+        strict_filtered = (
+            _apply_realism_filters(strict, combo, hard_category=True) if strict else []
+        )
         relaxed_filtered = _apply_realism_filters(relaxed, combo, hard_category=True)
 
         if strict_filtered:
@@ -233,7 +233,7 @@ def generate_combo(num_of_tricks: Optional[int] = None, max_stage: int = 5) -> l
             candidates = relaxed_filtered
         else:
             candidates = _apply_realism_filters(relaxed, combo, hard_category=False)
-            
+
         if not candidates:
             # Absolute worst-case fallback, should rarely be hit given the library size
             candidates = relaxed
