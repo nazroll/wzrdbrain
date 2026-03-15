@@ -131,6 +131,42 @@ class Trick:
         }
 
 
+def _apply_realism_filters(candidates: list[Move], combo: list[Trick]) -> list[Move]:
+    """
+    Applies realism constraints to candidate moves.
+    Returns empty list if category diversity cannot be satisfied,
+    signalling the caller to try a wider candidate pool.
+    """
+    if not combo:
+        return candidates
+
+    last_move = MOVES[combo[-1].move_id]
+    filtered = candidates
+
+    # Constraint 1 (highest priority): Max 2 consecutive same category
+    # Returns empty if unsatisfiable so the caller widens the pool.
+    if len(combo) >= 2:
+        prev_category = MOVES[combo[-2].move_id].category
+        if prev_category == last_move.category:
+            no_cat = [m for m in filtered if m.category != last_move.category]
+            if not no_cat:
+                return []
+            filtered = no_cat
+
+    # Constraint 2: No consecutive same move
+    no_dup = [m for m in filtered if m.id != last_move.id]
+    if no_dup:
+        filtered = no_dup
+
+    # Constraint 3: No consecutive high-rotation (degrees >= 360)
+    if last_move.mechanics.degrees >= 360:
+        no_spin = [m for m in filtered if m.mechanics.degrees < 360]
+        if no_spin:
+            filtered = no_spin
+
+    return filtered
+
+
 def generate_combo(num_of_tricks: Optional[int] = None, max_stage: int = 5) -> list[dict[str, Any]]:
     """
     Generates a combination of tricks based on physical state transitions.
@@ -164,7 +200,16 @@ def generate_combo(num_of_tricks: Optional[int] = None, max_stage: int = 5) -> l
         # Tier 2 — relaxed: direction only (implicit edge/point shift between tricks)
         relaxed = [m for m in eligible if m.entry.direction == current_trick.exit_direction]
 
-        candidates = strict if strict else relaxed
+        # Apply realism constraints to strict pool first, widen to relaxed if needed
+        strict_filtered = _apply_realism_filters(strict, combo) if strict else []
+        relaxed_filtered = _apply_realism_filters(relaxed, combo)
+
+        if strict_filtered:
+            candidates = strict_filtered
+        elif relaxed_filtered:
+            candidates = relaxed_filtered
+        else:
+            candidates = relaxed
 
         next_move = random.choice(candidates)
         current_trick = Trick(next_move.id)

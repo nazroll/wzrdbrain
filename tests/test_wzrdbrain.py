@@ -212,6 +212,41 @@ def test_swivel_category_exists() -> None:
     assert MOVES["ufo_swivel_b"].category == "swivel"
 
 
+def test_no_consecutive_duplicate_tricks() -> None:
+    """No adjacent tricks in a combo should be the same move."""
+    for _ in range(100):
+        combo = generate_combo(5)
+        for i in range(len(combo) - 1):
+            assert combo[i]["id"] != combo[i + 1]["id"], (
+                f"Consecutive duplicate: {combo[i]['name']} at positions {i} and {i + 1}"
+            )
+
+
+def test_max_consecutive_same_category() -> None:
+    """No more than 2 consecutive tricks from the same category."""
+    for _ in range(100):
+        combo = generate_combo(5)
+        for i in range(len(combo) - 2):
+            cats = [combo[i]["category"], combo[i + 1]["category"], combo[i + 2]["category"]]
+            assert not (cats[0] == cats[1] == cats[2]), (
+                f"3 consecutive same category '{cats[0]}': "
+                f"{combo[i]['name']}, {combo[i+1]['name']}, {combo[i+2]['name']}"
+            )
+
+
+def test_no_consecutive_high_rotation() -> None:
+    """No adjacent tricks should both have degrees >= 360."""
+    for _ in range(100):
+        combo = generate_combo(5)
+        for i in range(len(combo) - 1):
+            curr_deg = MOVES[combo[i]["id"]].mechanics.degrees
+            next_deg = MOVES[combo[i + 1]["id"]].mechanics.degrees
+            assert not (curr_deg >= 360 and next_deg >= 360), (
+                f"Consecutive high-rotation: {combo[i]['name']} ({curr_deg}°) → "
+                f"{combo[i+1]['name']} ({next_deg}°)"
+            )
+
+
 def test_gazelle_entry_edge_is_outside() -> None:
     """Gazelles (two-footed) should enter on outside edge (leading-foot convention)."""
     for move_id in ["gazelle_f_o", "gazelle_b_o", "gazelle_s_f_o", "gazelle_s_b_o"]:

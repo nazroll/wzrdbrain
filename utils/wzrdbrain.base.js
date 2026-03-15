@@ -96,6 +96,45 @@ export class Trick {
 }
 
 /**
+ * Applies realism constraints to candidate moves.
+ * Returns empty array if category diversity cannot be satisfied,
+ * signalling the caller to try a wider candidate pool.
+ * @private
+ * @param {object[]} candidates - Array of move objects.
+ * @param {Trick[]} combo - Tricks selected so far.
+ * @returns {object[]} Filtered candidates.
+ */
+function _applyRealismFilters(candidates, combo) {
+  if (combo.length === 0) return candidates;
+
+  const lastMove = MOVES[combo[combo.length - 1].moveId];
+  let filtered = candidates;
+
+  // Constraint 1 (highest priority): Max 2 consecutive same category
+  // Returns empty if unsatisfiable so the caller widens the pool.
+  if (combo.length >= 2) {
+    const prevMove = MOVES[combo[combo.length - 2].moveId];
+    if (prevMove.category === lastMove.category) {
+      const noCat = filtered.filter(m => m.category !== lastMove.category);
+      if (noCat.length === 0) return [];
+      filtered = noCat;
+    }
+  }
+
+  // Constraint 2: No consecutive same move
+  const noDup = filtered.filter(m => m.id !== lastMove.id);
+  if (noDup.length > 0) filtered = noDup;
+
+  // Constraint 3: No consecutive high-rotation (degrees >= 360)
+  if (lastMove.mechanics.degrees >= 360) {
+    const noSpin = filtered.filter(m => m.mechanics.degrees < 360);
+    if (noSpin.length > 0) filtered = noSpin;
+  }
+
+  return filtered;
+}
+
+/**
  * Generates a combination of tricks based on physical state transitions.
  *
  * @param {number|null} [numTricks=null] - Number of tricks to generate.
@@ -111,7 +150,7 @@ export function generateCombo(numTricks = null, maxStage = 5) {
 
   const combo = [];
   const validMoves = MOVE_LIBRARY.moves.filter(m => m.stage <= maxStage);
-  
+
   if (validMoves.length === 0) return [];
 
   // 1. Select the first trick
@@ -122,7 +161,7 @@ export function generateCombo(numTricks = null, maxStage = 5) {
   // 2. Iteratively find compatible moves using two-tier matching
   for (let i = 0; i < numTricks - 1; i++) {
     // Tier 1 — strict: direction + point must both match the current exit state
-    const strictCandidates = validMoves.filter(m => 
+    const strictCandidates = validMoves.filter(m =>
       m.entry.direction === currentTrick.exitDirection &&
       m.entry.point === currentTrick.exitPoint
     );
@@ -132,9 +171,20 @@ export function generateCombo(numTricks = null, maxStage = 5) {
       m.entry.direction === currentTrick.exitDirection
     );
 
-    const candidates = strictCandidates.length > 0 ? strictCandidates : relaxedCandidates;
+    if (relaxedCandidates.length === 0) break; // Should theoretically not happen with a complete library
 
-    if (candidates.length === 0) break; // Should theoretically not happen with a complete library
+    // Apply realism constraints to strict pool first, widen to relaxed if needed
+    const strictFiltered = strictCandidates.length > 0 ? _applyRealismFilters(strictCandidates, combo) : [];
+    const relaxedFiltered = _applyRealismFilters(relaxedCandidates, combo);
+
+    let candidates;
+    if (strictFiltered.length > 0) {
+      candidates = strictFiltered;
+    } else if (relaxedFiltered.length > 0) {
+      candidates = relaxedFiltered;
+    } else {
+      candidates = relaxedCandidates;
+    }
 
     const nextMove = candidates[Math.floor(Math.random() * candidates.length)];
     currentTrick = new Trick(nextMove.id);
