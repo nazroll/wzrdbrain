@@ -14,7 +14,7 @@ The script performs the following steps:
 
 1.  It reads the content of three key files:
     *   `src/wzrdbrain/wzrdbrain.py`: The Python source code.
-    *   `src/wzrdbrain/tricks.json`: The JSON data file containing trick definitions and rules.
+    *   `src/wzrdbrain/moves.json`: The JSON data file containing move definitions and rules.
     *   `utils/wzrdbrain.base.js`: A reference JavaScript file that provides the desired structure, style, and conventions for the output.
 2.  It constructs a detailed prompt for the Gemini LLM. This prompt includes the full content of all three source files and a precise set of instructions for the translation, such as:
     *   Embedding the `tricks.json` data directly into the JavaScript file as `const` variables.
@@ -58,7 +58,7 @@ The translation process is automated as part of the project's Github Actions CI 
 
 ### The `translate` job
 
-Whenever changes are pushed to the repository that affect `src/wzrdbrain/wzrdbrain.py` or `src/wzrdbrain/tricks.json`, the CI workflow is triggered. After the test suite passes, the `translate` job automatically performs the following steps:
+Whenever changes are pushed to the repository that affect `src/wzrdbrain/wzrdbrain.py` or `src/wzrdbrain/moves.json`, the CI workflow is triggered. After the test suite passes, the `translate` job automatically performs the following steps:
 
 1.  It executes the `python utils/translate2js.py` script, using a `GEMINI_API_KEY` stored in the repository's secrets.
 2.  It checks if the script generated a new or modified version of `src/wzrdbrain/wzrdbrain.js`.

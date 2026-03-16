@@ -28,7 +28,7 @@ The JavaScript version is automatically generated from the Python source code us
 
 [![contributors](https://contrib.rocks/image?repo=nazroll/wzrdbrain)](https://github.com/nazroll/wzrdbrain/graphs/contributors)
 
-_**Disclosure:** AI coding assistant tools like Google Gemini CLI, Jules by Google and Github Copilot are used in this project._
+_**Disclosure:** AI coding assistant tools like Claude Code by Anthropic, Google Gemini CLI, Jules by Google and Github Copilot are used in this project._
 
 ## Getting started
 
@@ -38,8 +38,8 @@ For developers, read [usage.md](./usage.md) to learn how to install and use the 
 
 For more detailed information about the data structures used in `wzrdbrain`, please refer to the following documents:
 
-- [The Trick object](./api_reference.md#the-trick-object)
-- [Generating trick combos](./api_reference.md#generating-trick-combos)
+- [The Trick object](./usage.md#the-trick-object)
+- [Generating trick combos](./usage.md#generating-trick-combos)
 
 ## Python-to-JS code translation
 
