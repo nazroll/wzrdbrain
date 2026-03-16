@@ -70,7 +70,7 @@ Each trick dict contains `id`, `name`, `category`, `stage`, `entry` and `exit` s
 
 You can use the ES6 module directly from the JSDelivr CDN.
 ```javascript
-import { generateCombo } from 'https://cdn.jsdelivr.net/gh/nazroll/wzrdbrain@v0.4.0/src/wzrdbrain/wzrdbrain.js';
+import { generateCombo } from 'https://cdn.jsdelivr.net/gh/nazroll/wzrdbrain@v0.4.1/src/wzrdbrain/wzrdbrain.js';
 
 const combo = generateCombo(3);
 combo.forEach(trick => {
