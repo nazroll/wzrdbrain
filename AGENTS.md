@@ -63,4 +63,5 @@ python utils/translate2js.py
 ## Branching & Release Policy
 
 - **Never push directly to `main`**. All changes must be made on a working branch and merged via pull request.
+- **Before merging a PR**, wait for all GitHub Actions checks to pass. Do not merge (including with `--admin`) if any check is pending or failing.
 - **New releases may only be created after all GitHub Actions checks have passed** on the merged PR. Do not tag or publish a release if any CI job is failing.
