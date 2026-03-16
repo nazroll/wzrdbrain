@@ -38,7 +38,7 @@ for trick in combo:
 The JavaScript version of the library can be used in any environment that supports ES6 modules.
 
 ```javascript
-import { generateCombo } from 'https://cdn.jsdelivr.net/gh/nazroll/wzrdbrain@v0.4.0/src/wzrdbrain/wzrdbrain.js';
+import { generateCombo } from 'https://cdn.jsdelivr.net/gh/nazroll/wzrdbrain@v0.4.1/src/wzrdbrain/wzrdbrain.js';
 
 const combo = generateCombo(3);
 combo.forEach(trick => {
@@ -121,7 +121,7 @@ for trick in combo:
 #### JavaScript: `generateCombo()`
 
 ```javascript
-import { generateCombo } from 'https://cdn.jsdelivr.net/gh/nazroll/wzrdbrain@v0.4.0/src/wzrdbrain/wzrdbrain.js';
+import { generateCombo } from 'https://cdn.jsdelivr.net/gh/nazroll/wzrdbrain@v0.4.1/src/wzrdbrain/wzrdbrain.js';
 
 const combo = generateCombo(3);
 combo.forEach(trick => {
