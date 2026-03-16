@@ -59,3 +59,8 @@ python utils/translate2js.py
 - Edge convention: for two-footed moves, `edge` refers to the leading foot's edge
 - When moves.json or wzrdbrain.py change, CI auto-translates and commits an updated wzrdbrain.js
 - `__version__` in `__init__.py` should stay in sync with `pyproject.toml`
+
+## Branching & Release Policy
+
+- **Never push directly to `main`**. All changes must be made on a working branch and merged via pull request.
+- **New releases may only be created after all GitHub Actions checks have passed** on the merged PR. Do not tag or publish a release if any CI job is failing.
