@@ -58,7 +58,7 @@ python utils/translate2js.py
 - Adding moves: add a new entry to `moves.json` with entry/exit states — this is the easiest contribution
 - Edge convention: for two-footed moves, `edge` refers to the leading foot's edge
 - When moves.json or wzrdbrain.py change, CI auto-translates and commits an updated wzrdbrain.js
-- `__version__` in `__init__.py` should stay in sync with `pyproject.toml`
+- **Version bumps must update ALL files that contain the version number.** Search the entire repo for the old version string before committing. Known locations: `pyproject.toml`, `src/wzrdbrain/__init__.py`, `README.md`, and `docs/usage.md` (CDN URLs).
 
 ## Branching & Release Policy
 
