@@ -200,8 +200,10 @@ def generate_combo(num_of_tricks: Optional[int] = None, max_stage: int = 5) -> l
 
     combo: list[Trick] = []
 
-    # 1. Select the first trick (usually a Stage 1 move or random)
+    # 1. Select the first trick uniformly from all moves within max_stage
     valid_start_moves = [m for m in _LIBRARY.moves if m.stage <= max_stage]
+    if not valid_start_moves:
+        return []
     first_move = random.choice(valid_start_moves)
     current_trick = Trick(first_move.id)
     combo.append(current_trick)
@@ -235,8 +237,19 @@ def generate_combo(num_of_tricks: Optional[int] = None, max_stage: int = 5) -> l
             candidates = _apply_realism_filters(relaxed, combo, hard_category=False)
 
         if not candidates:
-            # Absolute worst-case fallback, should rarely be hit given the library size
+            # Absolute worst-case fallback, should rarely be hit given the library size.
+            # Even here the 2-slide hard cap is absolute and must hold.
             candidates = relaxed
+            if (
+                len(combo) >= 2
+                and MOVES[combo[-1].move_id].category == "slide"
+                and MOVES[combo[-2].move_id].category == "slide"
+            ):
+                candidates = [m for m in candidates if m.category != "slide"]
+
+        if not candidates:
+            # No physically valid continuation exists; return the partial combo
+            break
 
         next_move = random.choice(candidates)
         current_trick = Trick(next_move.id)
