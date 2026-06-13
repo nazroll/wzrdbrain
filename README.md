@@ -10,7 +10,9 @@ Logic makes magic.
 
 ## How it works
 
-Every move in the library defines an **entry state** (what the skater needs to be doing) and an **exit state** (what the skater ends up doing). The combo generator chains moves by matching exit states to entry states, producing sequences that flow naturally.
+Every move in the library defines an **entry state** (what the skater needs to be doing) and an **exit state** (what the skater ends up doing). The combo generator chains moves by matching exit states to entry states across all four physical dimensions (direction, edge, stance, weight point), producing sequences that flow naturally.
+
+Matching uses a three-tier cascade: it prefers a fully continuous link (direction + point + edge + stance), falls back to matching direction + point, then to direction alone — so it never dead-ends. Each trick reports how continuous its link is via a `transition` field (`start`, `linked`, `edge_shift`, or `reset`), so the output is honest about where the skater makes an implicit adjustment.
 
 The move library (`moves.json`) contains 64 move variants across 7 categories:
 
@@ -64,7 +66,7 @@ for trick in combo:
 # Back Lion (Open): back → front
 ```
 
-Each trick dict contains `id`, `name`, `category`, `stage`, `entry` and `exit` state objects.
+Each trick dict contains `id`, `name`, `category`, `stage`, a `transition` annotation describing its link to the previous trick (`start`/`linked`/`edge_shift`/`reset`), and `entry`/`exit` state objects. The `exit` object includes `direction`, `edge`, `stance`, `point`, plus `lead_foot` and `feet`.
 
 ### JavaScript usage
 

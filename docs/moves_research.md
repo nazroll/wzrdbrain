@@ -107,14 +107,17 @@ Exit states use relative values (`same`, `opposite`) resolved against the entry:
 
 ## 7. Resolved Design Decisions
 
-### 7a. Dead-ends → Two-tier matching
+### 7a. Dead-ends → Three-tier matching
 
-The generator uses two-tier candidate matching to guarantee `generate_combo(N)` always returns exactly N tricks:
+The generator uses a three-tier candidate cascade to maximize physical continuity while guaranteeing `generate_combo(N)` always returns exactly N tricks:
 
-1. **Strict** (preferred): next move's entry direction AND point must match current exit state
-2. **Relaxed** (fallback): next move's entry direction must match current exit direction
+1. **Strict** (preferred): next move's entry direction, point, **edge AND stance** all match the current exit state — a fully continuous link, no body reset required.
+2. **Mid** (fallback): next move's entry direction and point match; the skater re-sets an edge/stance between tricks.
+3. **Relaxed** (last resort): next move's entry direction matches; the skater also re-distributes weight (point).
 
-The relaxed tier represents implicit state shifts (edge/point adjustments) that skaters naturally perform between tricks. This preserves direction continuity while avoiding dead-ends.
+Direction is the one hard invariant and is preserved by every tier. The lower tiers represent implicit state shifts that skaters naturally perform between tricks, so the generator never dead-ends.
+
+Each emitted trick carries a `transition` field recording which kind of link it required: `start` (first trick), `linked` (strict — full continuity), `edge_shift` (mid), or `reset` (relaxed). This keeps the output honest: a generated combo no longer silently contradicts itself, and consumers can see exactly where an implicit adjustment is expected. In practice ~85% of links achieve full (`linked`) continuity; on those links edge/stance/point/direction never contradict between adjacent tricks (verified by `tests/simulate_continuity.py` and `test_strict_links_are_fully_continuous`).
 
 ### 7b. Two-footed edge → Leading-foot convention
 

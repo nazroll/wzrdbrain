@@ -70,6 +70,64 @@ def test_generate_combo_physical_continuity() -> None:
             assert current["exit"]["direction"] == next_trick["entry"]["direction"]
 
 
+def test_strict_links_are_fully_continuous() -> None:
+    """
+    Links annotated "linked" must carry over every physical dimension (direction,
+    edge, stance, point) with no contradiction between the previous exit state and
+    the next entry requirement.
+    """
+    for _ in range(100):
+        combo = generate_combo(5)
+        for current, nxt in zip(combo, combo[1:]):
+            if nxt["transition"] != "linked":
+                continue
+            for dim in ("direction", "edge", "stance", "point"):
+                assert current["exit"][dim] == nxt["entry"][dim], (
+                    f"'linked' transition into {nxt['name']} broke {dim}: "
+                    f"{current['exit'][dim]} -> {nxt['entry'][dim]}"
+                )
+
+
+def test_strict_links_dominate() -> None:
+    """
+    Most links should achieve full ('linked') continuity. The tiered cascade only
+    falls back to edge_shift/reset when no fully-continuous candidate survives the
+    realism filters, which should be the minority case across many combos.
+    """
+    linked = 0
+    non_start = 0
+    for _ in range(200):
+        combo = generate_combo(5)
+        for trick in combo:
+            if trick["transition"] == "start":
+                continue
+            non_start += 1
+            if trick["transition"] == "linked":
+                linked += 1
+    assert non_start > 0
+    assert linked / non_start > 0.5, f"Only {linked}/{non_start} links were fully continuous"
+
+
+def test_transition_field_values() -> None:
+    """Every trick exposes a transition annotation; the first is always 'start'."""
+    valid = {"start", "linked", "edge_shift", "reset"}
+    for _ in range(20):
+        combo = generate_combo(4)
+        assert combo[0]["transition"] == "start"
+        for trick in combo:
+            assert trick["transition"] in valid
+
+
+def test_to_dict_surfaces_lead_foot_and_feet() -> None:
+    """Exit state must surface lead_foot and feet so downstream consumers see them."""
+    trick_dict = Trick("lion_f_o").to_dict()
+    assert "lead_foot" in trick_dict["exit"]
+    assert "feet" in trick_dict["exit"]
+    # lion_f_o is a one-footed move
+    assert trick_dict["exit"]["feet"] == MOVES["lion_f_o"].exit.feet
+    assert trick_dict["exit"]["lead_foot"] == MOVES["lion_f_o"].exit.lead_foot
+
+
 def test_generate_combo_stage_filtering() -> None:
     """Test that max_stage correctly filters moves."""
     combo = generate_combo(5, max_stage=1)
