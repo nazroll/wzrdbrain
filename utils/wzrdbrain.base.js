@@ -41,6 +41,10 @@ export class Trick {
     this.exitEdge = this._resolveRelative(move.exit.edge, this.edge);
     this.exitStance = this._resolveRelative(move.exit.stance, this.stance);
     this.exitPoint = move.exit.point; // Point is always absolute
+    // lead_foot is a relative token (same/opposite) telling the skater whether the
+    // guiding foot switches; feet (1 or 2) is absolute. Both are surfaced in toObject.
+    this.exitLeadFoot = move.exit.lead_foot;
+    this.exitFeet = move.exit.feet;
   }
 
   /**
@@ -71,14 +75,16 @@ export class Trick {
   }
 
   /**
+   * @param {string} [transition="start"] - How this trick links to the previous one.
    * @returns {object} Plain object representation of the trick.
    */
-  toObject() {
+  toObject(transition = "start") {
     return {
       id: this.moveId,
       name: this.name,
       category: this.category,
       stage: this.stage,
+      transition: transition,
       entry: {
         direction: this.direction,
         edge: this.edge,
@@ -90,6 +96,8 @@ export class Trick {
         edge: this.exitEdge,
         stance: this.exitStance,
         point: this.exitPoint,
+        lead_foot: this.exitLeadFoot,
+        feet: this.exitFeet,
       },
     };
   }
@@ -152,6 +160,28 @@ function _applyRealismFilters(candidates, combo, hardCategory = true) {
 }
 
 /**
+ * Classifies how physically continuous the link from prev (exit state) into
+ * nxt (entry requirements) is.
+ * @private
+ * @param {Trick} prev - The previous trick.
+ * @param {object} nxt - The next move object.
+ * @returns {string} The transition type ("linked", "edge_shift", or "reset").
+ */
+function _transitionType(prev, nxt) {
+  const edgeOk = nxt.entry.edge === prev.exitEdge;
+  const stanceOk = nxt.entry.stance === prev.exitStance;
+  const pointOk = nxt.entry.point === prev.exitPoint;
+
+  if (edgeOk && stanceOk && pointOk) {
+    return "linked";
+  }
+  if (pointOk) {
+    return "edge_shift";
+  }
+  return "reset";
+}
+
+/**
  * Generates a combination of tricks based on physical state transitions.
  *
  * @param {number|null} [numTricks=null] - Number of tricks to generate.
@@ -163,57 +193,83 @@ export function generateCombo(numTricks = null, maxStage = 5) {
     numTricks = Math.floor(Math.random() * (5 - 2 + 1)) + 2;
   }
 
-  if (numTricks <= 0) return [];
+  if (numTricks <= 0) {
+    return [];
+  }
 
   const combo = [];
+  const transitions = ["start"];
   const validMoves = MOVE_LIBRARY.moves.filter(m => m.stage <= maxStage);
 
-  if (validMoves.length === 0) return [];
+  if (validMoves.length === 0) {
+    return [];
+  }
 
   // 1. Select the first trick
-  let currentMove = validMoves[Math.floor(Math.random() * validMoves.length)];
-  let currentTrick = new Trick(currentMove.id);
+  const firstMove = validMoves[Math.floor(Math.random() * validMoves.length)];
+  let currentTrick = new Trick(firstMove.id);
   combo.push(currentTrick);
 
-  // 2. Iteratively find compatible moves using two-tier matching
+  // 2. Iteratively find compatible moves using the three-tier cascade
   for (let i = 0; i < numTricks - 1; i++) {
-    // Tier 1 — strict: direction + point must both match the current exit state
-    const strictCandidates = validMoves.filter(m =>
-      m.entry.direction === currentTrick.exitDirection &&
-      m.entry.point === currentTrick.exitPoint
+    const eligible = validMoves;
+
+    // All tiers preserve direction (the one hard physical invariant).
+    const sameDirection = eligible.filter(m => m.entry.direction === currentTrick.exitDirection);
+
+    // Tier 1 — strict: direction + point + edge + stance all match the exit state.
+    const strict = sameDirection.filter(m =>
+      m.entry.point === currentTrick.exitPoint &&
+      m.entry.edge === currentTrick.exitEdge &&
+      m.entry.stance === currentTrick.exitStance
     );
 
-    // Tier 2 — relaxed: direction only (implicit edge/point shift between tricks)
-    const relaxedCandidates = validMoves.filter(m =>
-      m.entry.direction === currentTrick.exitDirection
-    );
+    // Tier 2 — mid: direction + point match (edge/stance re-set between tricks).
+    const mid = sameDirection.filter(m => m.entry.point === currentTrick.exitPoint);
 
-    if (relaxedCandidates.length === 0) break; // Should theoretically not happen with a complete library
+    // Tier 3 — relaxed: direction only (weight point also re-set).
+    const relaxed = sameDirection;
 
-    // Apply realism constraints with tiered fallback
-    const strictFiltered = strictCandidates.length > 0 ? _applyRealismFilters(strictCandidates, combo, true) : [];
-    const relaxedFiltered = _applyRealismFilters(relaxedCandidates, combo, true);
+    // Apply realism constraints to the narrowest pool first, widening as needed.
+    // A tier is only accepted if it offers a move other than an immediate repeat;
+    // otherwise we widen so a single same-move survivor never forces a duplicate.
+    const lastId = currentTrick.moveId;
+    let candidates = [];
 
-    let candidates;
-    if (strictFiltered.length > 0) {
-      candidates = strictFiltered;
-    } else if (relaxedFiltered.length > 0) {
-      candidates = relaxedFiltered;
-    } else {
-      // Soft fallback: relax category enforcement but keep dedup and spin limits
-      candidates = _applyRealismFilters(relaxedCandidates, combo, false);
+    for (const pool of [strict, mid, pool => relaxed]) {
+      // If pool is a function, evaluate it, otherwise use it directly
+      const currentPool = typeof pool === "function" ? pool() : pool;
+      const filtered = currentPool.length > 0 ? _applyRealismFilters(currentPool, combo, true) : [];
+      const nonDup = filtered.filter(m => m.id !== lastId);
+      if (nonDup.length > 0) {
+        candidates = nonDup;
+        break;
+      }
     }
 
     if (candidates.length === 0) {
-      // Absolute worst-case fallback
-      candidates = relaxedCandidates;
-      if (candidates.length === 0) break;
+      // Every hard-category pool came up empty; relax the category constraint.
+      const filtered = _applyRealismFilters(relaxed, combo, false);
+      const nonDup = filtered.filter(m => m.id !== lastId);
+      candidates = nonDup.length > 0 ? nonDup : filtered;
+    }
+
+    if (candidates.length === 0) {
+      // Absolute worst-case fallback, should rarely be hit given the library size.
+      const nonDup = relaxed.filter(m => m.id !== lastId);
+      candidates = nonDup.length > 0 ? nonDup : relaxed;
+    }
+
+    if (candidates.length === 0) {
+      // No physically valid continuation exists; return the partial combo
+      break;
     }
 
     const nextMove = candidates[Math.floor(Math.random() * candidates.length)];
+    transitions.push(_transitionType(currentTrick, nextMove));
     currentTrick = new Trick(nextMove.id);
     combo.push(currentTrick);
   }
 
-  return combo.map(t => t.toObject());
+  return combo.map((t, idx) => t.toObject(transitions[idx]));
 }
