@@ -1,6 +1,14 @@
 import pytest
 
-from wzrdbrain.wzrdbrain import Trick, generate_combo, MOVES, _LIBRARY, _apply_realism_filters
+import wzrdbrain.wzrdbrain as wzrdbrain_module
+from wzrdbrain.wzrdbrain import (
+    MoveLibrary,
+    Trick,
+    generate_combo,
+    MOVES,
+    _LIBRARY,
+    _apply_realism_filters,
+)
 
 # --- Existing tests (updated for corrected data) ---
 
@@ -72,6 +80,44 @@ def test_generate_combo_stage_filtering() -> None:
 def test_generate_combo_edge_cases() -> None:
     assert generate_combo(0) == []
     assert len(generate_combo(1, max_stage=5)) == 1
+
+
+def test_generate_combo_max_stage_below_all_moves() -> None:
+    """max_stage below every move's stage must return [] instead of raising IndexError."""
+    assert generate_combo(3, max_stage=0) == []
+    assert generate_combo(3, max_stage=-1) == []
+
+
+def test_fallback_respects_slide_hard_cap(monkeypatch: pytest.MonkeyPatch) -> None:
+    """
+    With a slides-only library, the worst-case fallback must not produce a 3rd
+    consecutive slide; the combo is cut short instead.
+    """
+    slide_moves = [
+        m for m in _LIBRARY.moves if m.category == "slide" and m.entry.direction == "front"
+    ]
+    monkeypatch.setattr(
+        wzrdbrain_module, "_LIBRARY", MoveLibrary(version="test", moves=slide_moves)
+    )
+    for _ in range(20):
+        combo = generate_combo(5)
+        assert len(combo) <= 2, f"Fallback allowed a 3rd consecutive slide: {combo}"
+
+
+def test_fallback_handles_no_direction_match(monkeypatch: pytest.MonkeyPatch) -> None:
+    """
+    If no move can continue from the current exit direction, generate_combo must
+    return the partial combo instead of raising IndexError on an empty pool.
+    """
+    # Front Gazelle exits backward, and the shrunken library has no back-entry moves
+    monkeypatch.setattr(
+        wzrdbrain_module,
+        "_LIBRARY",
+        MoveLibrary(version="test", moves=[MOVES["gazelle_f_o"]]),
+    )
+    combo = generate_combo(3)
+    assert len(combo) == 1
+    assert combo[0]["id"] == "gazelle_f_o"
 
 
 # --- New tests ---
