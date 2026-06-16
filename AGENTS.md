@@ -38,7 +38,7 @@ python utils/translate2js.py
 **Core library**: `src/wzrdbrain/wzrdbrain.py`
 - Loads and validates `moves.json` via Pydantic models (`Move`, `MoveLibrary`, `State`, `ExitState`, `Mechanics`)
 - `Trick` dataclass: resolves absolute entry/exit states from a move ID; `__post_init__` applies relative state resolution (`same`/`opposite`)
-- `generate_combo(num_of_tricks, max_stage)` — chains tricks using a three-tier cascade: strict (direction + point + edge + stance) preferred, then mid (direction + point), then relaxed (direction only). Each emitted trick records a `transition` annotation (`start`/`linked`/`edge_shift`/`reset`) describing how continuous its link is. Always returns exactly N tricks.
+- `generate_combo(num_of_tricks, max_stage)` — chains tricks using a three-tier cascade: strict (direction + point + edge + stance) preferred, then mid (direction + point), then relaxed (direction only). Each emitted trick records a `transition` annotation (`start`/`linked`/`edge_shift`/`reset`) describing how continuous its link is. Returns exactly N tricks as long as a direction-compatible move exists (always true for the current library); otherwise returns the partial combo rather than dead-ending.
 - `MOVES` dict built at module load for O(1) move lookup by ID
 
 **Data**: `src/wzrdbrain/moves.json` — single source of truth for all 64 move variants. Each move defines entry/exit physical states (direction, edge, stance, point), mechanics, category, and stage.

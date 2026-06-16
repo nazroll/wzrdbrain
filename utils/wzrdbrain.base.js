@@ -236,10 +236,8 @@ export function generateCombo(numTricks = null, maxStage = 5) {
     const lastId = currentTrick.moveId;
     let candidates = [];
 
-    for (const pool of [strict, mid, pool => relaxed]) {
-      // If pool is a function, evaluate it, otherwise use it directly
-      const currentPool = typeof pool === "function" ? pool() : pool;
-      const filtered = currentPool.length > 0 ? _applyRealismFilters(currentPool, combo, true) : [];
+    for (const pool of [strict, mid, relaxed]) {
+      const filtered = pool.length > 0 ? _applyRealismFilters(pool, combo, true) : [];
       const nonDup = filtered.filter(m => m.id !== lastId);
       if (nonDup.length > 0) {
         candidates = nonDup;

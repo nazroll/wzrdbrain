@@ -109,7 +109,7 @@ Exit states use relative values (`same`, `opposite`) resolved against the entry:
 
 ### 7a. Dead-ends → Three-tier matching
 
-The generator uses a three-tier candidate cascade to maximize physical continuity while guaranteeing `generate_combo(N)` always returns exactly N tricks:
+The generator uses a three-tier candidate cascade to maximize physical continuity while still returning N tricks whenever a direction-compatible continuation exists (always true for the current library; if none did, the generator returns the partial combo rather than dead-ending):
 
 1. **Strict** (preferred): next move's entry direction, point, **edge AND stance** all match the current exit state — a fully continuous link, no body reset required.
 2. **Mid** (fallback): next move's entry direction and point match; the skater re-sets an edge/stance between tricks.

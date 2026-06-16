@@ -143,7 +143,9 @@ combo.forEach(trick => {
 The `generate_combo` function chains tricks using physical state continuity:
 
 1.  The first trick is chosen at random from all moves at or below the specified stage.
-2.  For each subsequent trick, the function uses two-tier matching:
-    *   **Strict**: the next move's entry direction AND weight point must match the current exit state.
-    *   **Relaxed** (fallback): only entry direction must match (implicit edge/point shift between tricks).
-3.  This guarantees the function always returns exactly N tricks with no dead-ends.
+2.  For each subsequent trick, the function uses a three-tier cascade, preferring the most continuous link and widening only when needed:
+    *   **Strict**: the next move's entry direction, weight point, edge AND stance all match the current exit state — a fully continuous link.
+    *   **Mid** (fallback): entry direction and weight point match; the skater re-sets an edge/stance between tricks.
+    *   **Relaxed** (last resort): only entry direction matches; the skater also re-distributes weight (point).
+3.  Each emitted trick carries a `transition` annotation (`start`/`linked`/`edge_shift`/`reset`) recording which tier its link required.
+4.  Direction is the one hard invariant preserved by every tier, so the function returns exactly N tricks as long as a direction-compatible move exists (always true for the current library); if none does, it returns the partial combo built so far rather than dead-ending.
