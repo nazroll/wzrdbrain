@@ -593,11 +593,13 @@ const MOVE_LIBRARY = {
 const MOVES = Object.fromEntries(MOVE_LIBRARY.moves.map(m => [m.id, m]));
 
 /**
- * Represents a single trick, resolving its entry and exit states based on the move definition.
+ * Represents a single trick, resolving its entry and exit states
+ * based on the base move definition.
+ * @class
  */
 export class Trick {
   /**
-   * @param {string} moveId - The unique identifier for the move from the move library.
+   * @param {string} moveId The unique identifier for the move.
    */
   constructor(moveId) {
     const move = MOVES[moveId];
@@ -605,30 +607,30 @@ export class Trick {
 
     this.moveId = moveId;
 
-    // Entry states
+    // Entry states are absolute in the library
     this.direction = move.entry.direction;
     this.edge = move.entry.edge;
     this.stance = move.entry.stance;
     this.point = move.entry.point;
 
-    // Resolve Exit States
+    // Resolve Exit States from relative values
     this.exitDirection = this._resolveRelative(move.exit.direction, this.direction);
     this.exitEdge = this._resolveRelative(move.exit.edge, this.edge);
     this.exitStance = this._resolveRelative(move.exit.stance, this.stance);
-    this.exitPoint = move.exit.point; // Point is always absolute
+    this.exitPoint = move.exit.point;
+    this.exitLeadFoot = move.exit.lead_foot;
+    this.exitFeet = move.exit.feet;
   }
 
   /**
-   * Resolves relative state values like "same" or "opposite" into absolute states.
+   * Resolves relative state values like "same" or "opposite".
    * @private
-   * @param {string} value - The relative value (e.g., "same", "opposite").
-   * @param {string} base - The base state to compare against (e.g., "front", "inside").
-   * @returns {string} The resolved absolute state.
+   * @param {string} value The relative value (e.g., "same", "opposite").
+   * @param {string} base The base value to compare against (e.g., "front").
+   * @returns {string} The resolved, absolute state value.
    */
   _resolveRelative(value, base) {
-    if (value === "same") {
-      return base;
-    }
+    if (value === "same") return base;
     if (value === "opposite") {
       const opposites = {
         front: "back",
@@ -651,15 +653,17 @@ export class Trick {
   }
 
   /**
-   * @returns {object} A plain object representation of the trick with its resolved states.
+   * @param {string} [transition="start"] How this trick links to the previous one.
+   * @returns {object} A plain object representation of the trick.
    */
-  toObject() {
+  toObject(transition = "start") {
     const move = MOVES[this.moveId];
     return {
       id: this.moveId,
       name: move.name,
       category: move.category,
       stage: move.stage,
+      transition: transition,
       entry: {
         direction: this.direction,
         edge: this.edge,
@@ -671,6 +675,8 @@ export class Trick {
         edge: this.exitEdge,
         stance: this.exitStance,
         point: this.exitPoint,
+        lead_foot: this.exitLeadFoot,
+        feet: this.exitFeet,
       },
     };
   }
@@ -678,17 +684,16 @@ export class Trick {
 
 /**
  * Applies realism constraints to a list of candidate moves.
- * If hardCategory is true and category diversity cannot be satisfied, it returns
- * an empty array to signal the caller to try a wider candidate pool. If
- * hardCategory is false, it applies other constraints even if the category repeats.
+ * If hardCategory is true and diversity cannot be satisfied, it returns an
+ * empty array to signal the caller to try a wider candidate pool.
  * @private
- * @param {object[]} candidates - An array of move objects to be filtered.
- * @param {Trick[]} combo - The list of tricks already in the combo.
- * @param {boolean} [hardCategory=true] - Whether to enforce strict category diversity.
+ * @param {object[]} candidates - Array of move objects to filter.
+ * @param {Trick[]} combo - The list of tricks already in the combination.
+ * @param {boolean} [hardCategory=true] - If true, strictly enforces category diversity.
  * @returns {object[]} The filtered list of candidate moves.
  */
 function _applyRealismFilters(candidates, combo, hardCategory = true) {
-  if (candidates.length === 0 || combo.length === 0) {
+  if (!candidates || candidates.length === 0 || !combo || combo.length === 0) {
     return candidates;
   }
 
@@ -697,34 +702,26 @@ function _applyRealismFilters(candidates, combo, hardCategory = true) {
 
   // Constraint 1: Max 2 consecutive same category (general)
   if (combo.length >= 2) {
-    const prevCategory = MOVES[combo[combo.length - 2].moveId].category;
-    if (prevCategory === lastMove.category && lastMove.category !== "slide") {
+    const prevMove = MOVES[combo[combo.length - 2].moveId];
+    if (prevMove.category === lastMove.category && lastMove.category !== "slide") {
       const noCat = filtered.filter(m => m.category !== lastMove.category);
-      if (noCat.length === 0 && hardCategory) {
-        return [];
-      }
-      if (noCat.length > 0) {
-        filtered = noCat;
-      }
+      if (noCat.length === 0 && hardCategory) return [];
+      if (noCat.length > 0) filtered = noCat;
     }
   }
 
   // Constraint 1b: Specific slide probability
   if (lastMove.category === "slide") {
-    // Hard cap at 2 slides (absolute, ignores hardCategory flag)
+    // Hard cap at 2 consecutive slides
     if (combo.length >= 2 && MOVES[combo[combo.length - 2].moveId].category === "slide") {
       const noSlide = filtered.filter(m => m.category !== "slide");
-      return noSlide; // Absolute hard cap, never soft-fallback into slides
+      return noSlide.length > 0 ? noSlide : []; // Absolute hard cap
     } else {
-      // 90% chance to force a non-slide after one slide
+      // 10% chance to allow a second consecutive slide
       if (Math.random() > 0.10) {
         const noSlide = filtered.filter(m => m.category !== "slide");
-        if (noSlide.length === 0 && hardCategory) {
-          return [];
-        }
-        if (noSlide.length > 0) {
-          filtered = noSlide;
-        }
+        if (noSlide.length === 0 && hardCategory) return [];
+        if (noSlide.length > 0) filtered = noSlide;
       }
     }
   }
@@ -747,10 +744,28 @@ function _applyRealismFilters(candidates, combo, hardCategory = true) {
 }
 
 /**
- * Generates a combination of tricks based on physical state transitions, ensuring
- * that the exit state of one trick is a valid entry state for the next.
+ * Classifies the physical continuity of a transition between two tricks.
+ * @private
+ * @param {Trick} prev - The previous trick instance.
+ * @param {object} nxt - The next move object from the library.
+ * @returns {string} The transition type: "linked", "edge_shift", or "reset".
+ */
+function _transitionType(prev, nxt) {
+  const edgeOk = nxt.entry.edge === prev.exitEdge;
+  const stanceOk = nxt.entry.stance === prev.exitStance;
+  const pointOk = nxt.entry.point === prev.exitPoint;
+
+  if (edgeOk && stanceOk && pointOk) return "linked";
+  if (pointOk) return "edge_shift";
+  return "reset";
+}
+
+/**
+ * Generates a combination of tricks based on physical state transitions.
+ * Candidate selection uses a three-tier cascade to prefer full physical
+ * continuity but widens the search to prevent dead-ends.
  *
- * @param {number|null} [numTricks=null] - The number of tricks to generate. If null, a random number between 2 and 5 is chosen.
+ * @param {number|null} [numTricks=null] - The number of tricks to generate (2-5 if null).
  * @param {number} [maxStage=5] - The maximum skill stage of moves to include.
  * @returns {object[]} An array of trick objects representing the generated combo.
  */
@@ -764,64 +779,73 @@ export function generateCombo(numTricks = null, maxStage = 5) {
   }
 
   const combo = [];
+  const transitions = ["start"];
+  const validMoves = MOVE_LIBRARY.moves.filter(m => m.stage <= maxStage);
 
-  // 1. Select the first trick uniformly from all moves within max_stage
-  const validStartMoves = MOVE_LIBRARY.moves.filter(m => m.stage <= maxStage);
-  if (validStartMoves.length === 0) {
+  if (validMoves.length === 0) {
     return [];
   }
-  const firstMove = validStartMoves[Math.floor(Math.random() * validStartMoves.length)];
+
+  // 1. Select the first trick
+  const firstMove = validMoves[Math.floor(Math.random() * validMoves.length)];
   let currentTrick = new Trick(firstMove.id);
   combo.push(currentTrick);
 
-  // 2. Iteratively find compatible moves using two-tier matching
+  // 2. Iteratively find compatible moves using the three-tier cascade
   for (let i = 0; i < numTricks - 1; i++) {
-    const eligible = MOVE_LIBRARY.moves.filter(m => m.stage <= maxStage);
+    const eligible = validMoves;
 
-    // Tier 1 — strict: direction + point must both match the current exit state
-    const strict = eligible.filter(m =>
-      m.entry.direction === currentTrick.exitDirection &&
-      m.entry.point === currentTrick.exitPoint
+    // All tiers preserve direction (the one hard physical invariant).
+    const sameDirection = eligible.filter(m => m.entry.direction === currentTrick.exitDirection);
+
+    // Tier 1 (strict): direction + point + edge + stance match.
+    const strict = sameDirection.filter(m =>
+      m.entry.point === currentTrick.exitPoint &&
+      m.entry.edge === currentTrick.exitEdge &&
+      m.entry.stance === currentTrick.exitStance
     );
 
-    // Tier 2 — relaxed: direction only (implicit edge/point shift between tricks)
-    const relaxed = eligible.filter(m => m.entry.direction === currentTrick.exitDirection);
+    // Tier 2 (mid): direction + point match.
+    const mid = sameDirection.filter(m => m.entry.point === currentTrick.exitPoint);
 
-    // Apply realism constraints to strict pool first, widen to relaxed if needed
-    const strictFiltered = strict.length > 0 ? _applyRealismFilters(strict, combo, true) : [];
-    const relaxedFiltered = _applyRealismFilters(relaxed, combo, true);
+    // Tier 3 (relaxed): direction only.
+    const relaxed = sameDirection;
 
-    let candidates;
-    if (strictFiltered.length > 0) {
-      candidates = strictFiltered;
-    } else if (relaxedFiltered.length > 0) {
-      candidates = relaxedFiltered;
-    } else {
-      candidates = _applyRealismFilters(relaxed, combo, false);
-    }
-
-    if (candidates.length === 0) {
-      // Absolute worst-case fallback, should rarely be hit.
-      candidates = relaxed;
-      // Even here, the 2-slide hard cap must be enforced.
-      if (
-        combo.length >= 2 &&
-        MOVES[combo[combo.length - 1].moveId].category === "slide" &&
-        MOVES[combo[combo.length - 2].moveId].category === "slide"
-      ) {
-        candidates = candidates.filter(m => m.category !== "slide");
+    // Apply realism constraints, widening the pool as needed.
+    const lastId = currentTrick.moveId;
+    let candidates = [];
+    for (const pool of [strict, mid, relaxed]) {
+      const filtered = pool.length > 0 ? _applyRealismFilters(pool, combo, true) : [];
+      const nonDup = filtered.filter(m => m.id !== lastId);
+      if (nonDup.length > 0) {
+        candidates = nonDup;
+        break;
       }
     }
 
     if (candidates.length === 0) {
-      // No physically valid continuation exists; return the partial combo
+      // If all hard-category pools failed, relax the category constraint.
+      const filtered = _applyRealismFilters(relaxed, combo, false);
+      const nonDup = filtered.filter(m => m.id !== lastId);
+      candidates = nonDup.length > 0 ? nonDup : filtered;
+    }
+
+    if (candidates.length === 0) {
+      // Absolute worst-case fallback: ignore realism filters.
+      const nonDup = relaxed.filter(m => m.id !== lastId);
+      candidates = nonDup.length > 0 ? nonDup : relaxed;
+    }
+
+    if (candidates.length === 0) {
+      // No physically valid continuation exists; return the partial combo.
       break;
     }
 
     const nextMove = candidates[Math.floor(Math.random() * candidates.length)];
+    transitions.push(_transitionType(currentTrick, nextMove));
     currentTrick = new Trick(nextMove.id);
     combo.push(currentTrick);
   }
 
-  return combo.map(t => t.toObject());
+  return combo.map((t, idx) => t.toObject(transitions[idx]));
 }
