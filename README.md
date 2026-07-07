@@ -14,12 +14,12 @@ Every move in the library defines an **entry state** (what the skater needs to b
 
 Matching uses a three-tier cascade: it prefers a fully continuous link (direction + point + edge + stance), falls back to matching direction + point, then to direction alone — so it never dead-ends. Each trick reports how continuous its link is via a `transition` field (`start`, `linked`, `edge_shift`, or `reset`), so the output is honest about where the skater makes an implicit adjustment.
 
-The move library (`moves.json`) contains 64 move variants across 7 categories:
+The move library (`moves.json`) contains 68 move variants across 7 categories:
 
 | Category | Examples | Count |
 |----------|----------|-------|
 | Base | Predator, Predator One | 4 |
-| Turn | Parallel Turn, Tree Turn | 4 |
+| Turn | Parallel Turn, Tree Turn (front and back entries) | 8 |
 | Transition | Gazelle, Lion, Lion S, Gazelle S, 180, 360, 540 | 22 |
 | Pivot | Toe Pivot, Heel Pivot (all direction/stance combos) | 8 |
 | Swivel | Stunami, UFO Swivel | 4 |
@@ -40,11 +40,9 @@ To get started, please read our [**contributing guide**](./CONTRIBUTING.md) whic
 
 - Report bugs and suggest features
 - Improve documentation
-- Submit code improvements for the Python or JavaScript libraries
+- Submit code improvements for the library
 
 ## For developers
-
-This library is available in both Python and JavaScript.
 
 ### Python usage
 
@@ -68,16 +66,12 @@ for trick in combo:
 
 Each trick dict contains `id`, `name`, `category`, `stage`, a `transition` annotation describing its link to the previous trick (`start`/`linked`/`edge_shift`/`reset`), and `entry`/`exit` state objects. The `exit` object includes `direction`, `edge`, `stance`, `point`, plus `lead_foot` and `feet`.
 
-### JavaScript usage
+### JavaScript
 
-You can use the ES6 module directly from the JSDelivr CDN.
-```javascript
-import { generateCombo } from 'https://cdn.jsdelivr.net/gh/nazroll/wzrdbrain@v0.4.1/src/wzrdbrain/wzrdbrain.js';
+Earlier releases shipped an auto-generated JavaScript port. It was removed to cut maintenance; if you need it, pin the last release that included it via JSDelivr:
 
-const combo = generateCombo(3);
-combo.forEach(trick => {
-    console.log(`${trick.name}: ${trick.entry.direction} → ${trick.exit.direction}`);
-});
+```
+https://cdn.jsdelivr.net/gh/nazroll/wzrdbrain@v0.4.1/src/wzrdbrain/wzrdbrain.js
 ```
 
 ## Credits
