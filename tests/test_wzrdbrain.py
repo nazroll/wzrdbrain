@@ -416,3 +416,43 @@ def test_realism_filters_soft_fallback_keeps_options() -> None:
     filtered = _apply_realism_filters(candidates, combo, hard_category=False)
     assert len(filtered) == 1
     assert filtered[0].id == "predator_one_f"
+
+
+def test_every_direction_covers_every_category() -> None:
+    """
+    Every category in the library must be reachable from both directions, so no
+    combo segment silently locks a whole category out (e.g. backward segments
+    could never link into a turn before back-entry turns were added).
+    """
+    all_categories = {m.category for m in _LIBRARY.moves}
+    for direction in ("front", "back"):
+        available = {m.category for m in _LIBRARY.moves if m.entry.direction == direction}
+        missing = all_categories - available
+        assert not missing, f"entry direction {direction!r} has no moves in: {sorted(missing)}"
+
+
+def test_every_move_has_direction_compatible_successor() -> None:
+    """
+    Every move's exit state must have at least one direction-compatible successor.
+    This is the invariant that lets generate_combo return exactly N tricks instead
+    of a partial combo.
+    """
+    for move in _LIBRARY.moves:
+        trick = Trick(move.id)
+        successors = [m for m in _LIBRARY.moves if m.entry.direction == trick.exit_direction]
+        assert successors, f"{move.id}: no move can follow exit direction {trick.exit_direction!r}"
+
+
+def test_back_turn_entry_edges_mirror_front_turns() -> None:
+    """Back turns should use the same open=outside / closed=inside edge convention."""
+    for move_id in ["parallel_turn_b_o", "tree_turn_b_o"]:
+        assert (
+            MOVES[move_id].entry.edge == "outside"
+        ), f"{move_id}: open turn should enter on outside edge"
+    for move_id in ["parallel_turn_b_c", "tree_turn_b_c"]:
+        assert (
+            MOVES[move_id].entry.edge == "inside"
+        ), f"{move_id}: closed turn should enter on inside edge"
+    for move_id in ["parallel_turn_b_o", "parallel_turn_b_c", "tree_turn_b_o", "tree_turn_b_c"]:
+        assert MOVES[move_id].entry.direction == "back"
+        assert MOVES[move_id].entry.point == "toe", f"{move_id}: back moves roll on the toe"

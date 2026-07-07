@@ -127,14 +127,14 @@ The `edge` property represents the **leading foot's** edge. For two-footed moves
 
 All direction × stance combinations are defined as separate move entries (e.g., `gazelle_f_o`, `gazelle_f_c`, `gazelle_b_o`, `gazelle_b_c`). This provides full variety through the candidate pool without runtime parameterization.
 
-### 7d. Move coverage → 64 variants
+### 7d. Move coverage → 68 variants
 
-The library now defines 64 move variants covering all 26 base move types from the old `tricks.json`:
+The library now defines 68 move variants covering all 26 base move types from the old `tricks.json`:
 
 | Category | Count | Moves |
 |----------|-------|-------|
 | Base | 4 | Predator (f/b), Predator One (f/b) |
-| Turn | 4 | Parallel Turn (o/c), Tree Turn (o/c) |
+| Turn | 8 | Parallel Turn (f/b × o/c), Tree Turn (f/b × o/c) |
 | Transition | 22 | Gazelle (4), Gazelle S (4), Lion (4), Lion S (4), 180 (2), 360 (2), 540 (2) |
 | Pivot | 8 | Toe Pivot (f/b × o/c), Heel Pivot (f/b × o/c) |
 | Swivel | 4 | Stunami (f/b), UFO Swivel (f/b) |

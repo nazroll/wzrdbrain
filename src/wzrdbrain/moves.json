@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "moves": [
     {
       "id": "predator_f_o",
@@ -73,6 +73,42 @@
       "mechanics": { "feet": 1, "is_rotation": false, "degrees": 90, "rotation_type": "natural" },
       "entry": { "direction": "front", "edge": "inside", "stance": "closed", "point": "heel" },
       "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "heel", "lead_foot": "same", "feet": 1 }
+    },
+    {
+      "id": "parallel_turn_b_o",
+      "name": "Back Parallel Turn (Open)",
+      "category": "turn",
+      "stage": 2,
+      "mechanics": { "feet": 2, "is_rotation": false, "degrees": 90, "rotation_type": "natural" },
+      "entry": { "direction": "back", "edge": "outside", "stance": "open", "point": "toe" },
+      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "toe", "lead_foot": "same", "feet": 2 }
+    },
+    {
+      "id": "parallel_turn_b_c",
+      "name": "Back Parallel Turn (Closed)",
+      "category": "turn",
+      "stage": 2,
+      "mechanics": { "feet": 2, "is_rotation": false, "degrees": 90, "rotation_type": "natural" },
+      "entry": { "direction": "back", "edge": "inside", "stance": "closed", "point": "toe" },
+      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "toe", "lead_foot": "same", "feet": 2 }
+    },
+    {
+      "id": "tree_turn_b_o",
+      "name": "Back Tree Turn (Open)",
+      "category": "turn",
+      "stage": 2,
+      "mechanics": { "feet": 1, "is_rotation": false, "degrees": 90, "rotation_type": "natural" },
+      "entry": { "direction": "back", "edge": "outside", "stance": "open", "point": "toe" },
+      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "toe", "lead_foot": "same", "feet": 1 }
+    },
+    {
+      "id": "tree_turn_b_c",
+      "name": "Back Tree Turn (Closed)",
+      "category": "turn",
+      "stage": 2,
+      "mechanics": { "feet": 1, "is_rotation": false, "degrees": 90, "rotation_type": "natural" },
+      "entry": { "direction": "back", "edge": "inside", "stance": "closed", "point": "toe" },
+      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "toe", "lead_foot": "same", "feet": 1 }
     },
 
     {
