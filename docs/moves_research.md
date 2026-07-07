@@ -72,7 +72,8 @@ The `edge` property uses the **leading-foot convention**: for two-footed moves, 
 | 1 | Base | Predators | Weight distribution, staggered stance |
 | 2 | Turns | Parallel, Tree | Carving arcs |
 | 3 | Transitions | Gazelles, Lions | Core wizard skating (3-turns) |
-| 4 | Advanced | Pivots, Same-Edge Swivels, Manuals | Isolated wheel/edge work |
+| 4 | Advanced | Pivots, Same-Edge Swivels, Manuals, Slides, Spins (180/360) | Isolated wheel/edge work |
+| 5 | Expert | 540, Star Slide | Highest-difficulty rotations and slides |
 
 ### Category corrections (applied)
 

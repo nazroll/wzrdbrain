@@ -7,22 +7,21 @@
 - [About the project](#about-the-project)
 - [Maintainers & contributors](#maintainers--contributors)
 - [Getting started](./usage.md)
-  - [Python usage](./usage.md#python-usage)
-  - [JavaScript usage](./usage.md#javascript-usage)
-  - [API reference](usage.md#api-reference)
+  - [Python usage](./usage.md#python)
+  - [API reference](./usage.md#api-reference)
     - [The Trick object](./usage.md#the-trick-object)
     - [Generating trick combos](./usage.md#generating-trick-combos)
-- [Python-to-JS code translation](#python-to-js-code-translation)
+- [Move research & schema](./moves_research.md)
 - [Credits](#credits)
 
 
 ## About the project
 
-`wzrdbrain`  is designed to help wizard skaters discover new trick combinations. By randomizing the sequence of tricks, it can help skaters break out of their usual patterns. 
+`wzrdbrain` is designed to help wizard skaters discover new trick combinations. By randomizing the sequence of tricks, it can help skaters break out of their usual patterns.
 
-The project provides both a Python and a JavaScript version of the library.
+The library is physics-aware: moves are modeled as state transitions (direction, edge, stance, weight point), so generated combinations are physically executable, not just random names. The research and state model behind this are documented in [Move research & schema](./moves_research.md).
 
-The JavaScript version is automatically generated from the Python source code using a translation script that leverages the Google Gemini API.
+`wzrdbrain` is a Python library. Earlier releases also shipped an auto-generated JavaScript port; it was removed in v0.5.0 to cut maintenance. If you need it, pin the last release that included it via JSDelivr: `https://cdn.jsdelivr.net/gh/nazroll/wzrdbrain@v0.4.1/src/wzrdbrain/wzrdbrain.js`
 
 ## Maintainers & contributors
 
@@ -32,7 +31,7 @@ _**Disclosure:** AI coding assistant tools like Claude Code by Anthropic, Google
 
 ## Getting started
 
-For developers, read [usage.md](./usage.md) to learn how to install and use the library in Python and JavaScript.
+For developers, read [usage.md](./usage.md) to learn how to install and use the library.
 
 ## API reference
 
@@ -40,10 +39,6 @@ For more detailed information about the data structures used in `wzrdbrain`, ple
 
 - [The Trick object](./usage.md#the-trick-object)
 - [Generating trick combos](./usage.md#generating-trick-combos)
-
-## Python-to-JS code translation
-
-The JavaScript version of the library (`src/wzrdbrain/wzrdbrain.js`) is automatically generated from the Python source code. For more details on this process, read [Translating Python code to JavaScript code](./translate2js.md).
 
 ## Credits
 

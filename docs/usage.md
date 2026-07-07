@@ -45,14 +45,15 @@ The `Trick` object represents a single wizard skating trick with its resolved ph
 
 A `Trick` object (returned as a dict/object from `generate_combo`) has the following properties:
 
-| Property   | Type     | Description                                                              |
-| ---------- | -------- | ------------------------------------------------------------------------ |
-| `id`       | `string` | The unique move identifier (e.g., `gazelle_f_o`)                         |
-| `name`     | `string` | Human-readable name (e.g., `Front Gazelle (Open)`)                       |
-| `category` | `string` | Move category: `base`, `turn`, `transition`, `manual`, `pivot`, `slide`, `swivel` |
-| `stage`    | `int`    | Difficulty tier from 1 (beginner) to 5 (advanced)                        |
-| `entry`    | `object` | The skater's physical state when entering the trick                      |
-| `exit`     | `object` | The skater's physical state when exiting the trick                       |
+| Property     | Type     | Description                                                              |
+| ------------ | -------- | ------------------------------------------------------------------------ |
+| `id`         | `string` | The unique move identifier (e.g., `gazelle_f_o`)                         |
+| `name`       | `string` | Human-readable name (e.g., `Front Gazelle (Open)`)                       |
+| `category`   | `string` | Move category: `base`, `turn`, `transition`, `manual`, `pivot`, `slide`, `swivel` |
+| `stage`      | `int`    | Difficulty tier from 1 (beginner) to 5 (advanced)                        |
+| `transition` | `string` | How this trick links to the previous one: `start`, `linked`, `edge_shift`, or `reset` (see [Logic](#logic)) |
+| `entry`      | `object` | The skater's physical state when entering the trick                      |
+| `exit`       | `object` | The skater's physical state when exiting the trick                       |
 
 The `entry` and `exit` objects each contain:
 
@@ -62,6 +63,13 @@ The `entry` and `exit` objects each contain:
 | `edge`      | `string` | Leading foot's edge: `inside`, `outside`, or `center`    |
 | `stance`    | `string` | Foot position: `open`, `closed`, or `neutral`            |
 | `point`     | `string` | Weight distribution: `toe`, `heel`, or `all`             |
+
+The `exit` object additionally contains:
+
+| Property    | Type     | Description                                                    |
+| ----------- | -------- | -------------------------------------------------------------- |
+| `lead_foot` | `string` | Whether the guiding foot changes after the move: `same` or `opposite` |
+| `feet`      | `int`    | Number of feet on the ground: `1` or `2`                       |
 
 #### Behavior & logic
 
@@ -95,7 +103,7 @@ for trick in combo:
 
 #### Returns
 
--   A `list` of `dict` objects, where each object contains `id`, `name`, `category`, `stage`, `entry`, and `exit`.
+-   A `list` of `dict` objects, where each object contains `id`, `name`, `category`, `stage`, `transition`, `entry`, and `exit`.
 
 #### Logic
 
