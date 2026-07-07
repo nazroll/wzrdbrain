@@ -76,6 +76,8 @@ class Trick:
     exit_edge: str = field(init=False)
     exit_stance: str = field(init=False)
     exit_point: str = field(init=False)
+    exit_lead_foot: str = field(init=False)
+    exit_feet: int = field(init=False)
 
     def __post_init__(self) -> None:
         move = MOVES[self.move_id]
@@ -90,6 +92,10 @@ class Trick:
         self.exit_edge = self._resolve_relative(move.exit.edge, self.edge)
         self.exit_stance = self._resolve_relative(move.exit.stance, self.stance)
         self.exit_point = move.exit.point  # Point is always absolute
+        # lead_foot is a relative token (same/opposite) telling the skater whether the
+        # guiding foot switches; feet (1 or 2) is absolute. Both are surfaced in to_dict.
+        self.exit_lead_foot = move.exit.lead_foot
+        self.exit_feet = move.exit.feet
 
     def _resolve_relative(self, value: str, base: str) -> str:
         if value == "same":
@@ -109,13 +115,17 @@ class Trick:
     def __str__(self) -> str:
         return MOVES[self.move_id].name
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self, transition: str = "start") -> dict[str, Any]:
         move = MOVES[self.move_id]
         return {
             "id": self.move_id,
             "name": move.name,
             "category": move.category,
             "stage": move.stage,
+            # How this trick links to the previous one. "start" for the first trick;
+            # otherwise describes how much implicit body adjustment the link required
+            # (see _transition_type).
+            "transition": transition,
             "entry": {
                 "direction": self.direction,
                 "edge": self.edge,
@@ -127,6 +137,8 @@ class Trick:
                 "edge": self.exit_edge,
                 "stance": self.exit_stance,
                 "point": self.exit_point,
+                "lead_foot": self.exit_lead_foot,
+                "feet": self.exit_feet,
             },
         }
 
@@ -188,9 +200,40 @@ def _apply_realism_filters(
     return filtered
 
 
+def _transition_type(prev: Trick, nxt: Move) -> str:
+    """
+    Classifies how physically continuous the link from ``prev`` (exit state) into
+    ``nxt`` (entry requirements) is. The generator always preserves direction, so
+    direction is assumed to match here. Returns, from most to least continuous:
+
+    - "linked":     edge, stance and point all carry over — no body reset needed.
+    - "edge_shift": point carries over but the skater re-sets an edge/stance.
+    - "reset":      direction only — the skater re-distributes weight (point) and edge.
+    """
+    edge_ok = nxt.entry.edge == prev.exit_edge
+    stance_ok = nxt.entry.stance == prev.exit_stance
+    point_ok = nxt.entry.point == prev.exit_point
+
+    if edge_ok and stance_ok and point_ok:
+        return "linked"
+    if point_ok:
+        return "edge_shift"
+    return "reset"
+
+
 def generate_combo(num_of_tricks: Optional[int] = None, max_stage: int = 5) -> list[dict[str, Any]]:
     """
     Generates a combination of tricks based on physical state transitions.
+
+    Candidate selection uses a three-tier cascade so that each link prefers full
+    physical continuity but never dead-ends:
+
+      Tier 1 (strict):  entry direction + point + edge + stance all match the exit state
+      Tier 2 (mid):     entry direction + point match (edge/stance re-set between tricks)
+      Tier 3 (relaxed): entry direction matches (weight point also re-set)
+
+    Each emitted trick records which kind of link it required via the ``transition``
+    field (see _transition_type), so the output never silently contradicts itself.
     """
     if num_of_tricks is None:
         num_of_tricks = random.randint(2, 5)
@@ -199,6 +242,7 @@ def generate_combo(num_of_tricks: Optional[int] = None, max_stage: int = 5) -> l
         return []
 
     combo: list[Trick] = []
+    transitions: list[str] = ["start"]
 
     # 1. Select the first trick uniformly from all moves within max_stage
     valid_start_moves = [m for m in _LIBRARY.moves if m.stage <= max_stage]
@@ -208,38 +252,48 @@ def generate_combo(num_of_tricks: Optional[int] = None, max_stage: int = 5) -> l
     current_trick = Trick(first_move.id)
     combo.append(current_trick)
 
-    # 2. Iteratively find compatible moves using two-tier matching
+    # 2. Iteratively find compatible moves using the three-tier cascade
     for _ in range(num_of_tricks - 1):
         eligible = [m for m in _LIBRARY.moves if m.stage <= max_stage]
 
-        # Tier 1 — strict: direction + point must both match the current exit state
+        # All tiers preserve direction (the one hard physical invariant).
+        same_direction = [m for m in eligible if m.entry.direction == current_trick.exit_direction]
+
+        # Tier 1 — strict: direction + point + edge + stance all match the exit state.
         strict = [
             m
-            for m in eligible
-            if m.entry.direction == current_trick.exit_direction
-            and m.entry.point == current_trick.exit_point
+            for m in same_direction
+            if m.entry.point == current_trick.exit_point
+            and m.entry.edge == current_trick.exit_edge
+            and m.entry.stance == current_trick.exit_stance
         ]
 
-        # Tier 2 — relaxed: direction only (implicit edge/point shift between tricks)
-        relaxed = [m for m in eligible if m.entry.direction == current_trick.exit_direction]
+        # Tier 2 — mid: direction + point match (edge/stance re-set between tricks).
+        mid = [m for m in same_direction if m.entry.point == current_trick.exit_point]
 
-        # Apply realism constraints to strict pool first, widen to relaxed if needed
-        strict_filtered = (
-            _apply_realism_filters(strict, combo, hard_category=True) if strict else []
-        )
-        relaxed_filtered = _apply_realism_filters(relaxed, combo, hard_category=True)
+        # Tier 3 — relaxed: direction only (weight point also re-set).
+        relaxed = same_direction
 
-        if strict_filtered:
-            candidates = strict_filtered
-        elif relaxed_filtered:
-            candidates = relaxed_filtered
+        # Apply realism constraints to the narrowest pool first, widening as needed.
+        # A tier is only accepted if it offers a move other than an immediate repeat;
+        # otherwise we widen so a single same-move survivor never forces a duplicate.
+        last_id = current_trick.move_id
+        candidates = []
+        for pool in (strict, mid, relaxed):
+            filtered = _apply_realism_filters(pool, combo, hard_category=True) if pool else []
+            non_dup = [m for m in filtered if m.id != last_id]
+            if non_dup:
+                candidates = non_dup
+                break
         else:
-            candidates = _apply_realism_filters(relaxed, combo, hard_category=False)
+            # Every hard-category pool came up empty; relax the category constraint.
+            filtered = _apply_realism_filters(relaxed, combo, hard_category=False)
+            candidates = [m for m in filtered if m.id != last_id] or filtered
 
         if not candidates:
             # Absolute worst-case fallback, should rarely be hit given the library size.
-            # Even here the 2-slide hard cap is absolute and must hold.
-            candidates = relaxed
+            # Prefer a non-repeat, but keep the 2-slide hard cap absolute even here.
+            candidates = [m for m in relaxed if m.id != last_id] or relaxed
             if (
                 len(combo) >= 2
                 and MOVES[combo[-1].move_id].category == "slide"
@@ -252,7 +306,8 @@ def generate_combo(num_of_tricks: Optional[int] = None, max_stage: int = 5) -> l
             break
 
         next_move = random.choice(candidates)
+        transitions.append(_transition_type(current_trick, next_move))
         current_trick = Trick(next_move.id)
         combo.append(current_trick)
 
-    return [t.to_dict() for t in combo]
+    return [t.to_dict(transition) for t, transition in zip(combo, transitions)]

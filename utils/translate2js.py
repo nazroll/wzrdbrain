@@ -63,7 +63,7 @@ You are an expert Python to JavaScript translator. Your task is to translate the
     *   Implement a `toObject()` method equivalent to the Python `to_dict()` method.
 7.  **Function Translation:**
     *   Translate the `generate_combo` Python function into a `generateCombo` JavaScript function.
-    *   Ensure the logic for generating subsequent tricks uses the physical state continuity logic (Direction and Weight Point matching), just like the Python implementation.
+    *   Ensure the logic for generating subsequent tricks uses the physical state continuity logic (the three-tier matching cascade), just like the Python implementation.
 8.  **Code Style & Comments:**
     *   Maintain clean, readable code consistent with the reference file.
     *   Include JSDoc comments for the exported class and function, explaining what they do, their parameters, and what they return.
