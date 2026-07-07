@@ -54,7 +54,7 @@ For more details on the state model and edge conventions, see [the research doc]
 
 ## Contributing code (for developers)
 
-If you'd like to fix a bug or add a new feature to the Python or JavaScript code, this section is for you.
+If you'd like to fix a bug or add a new feature, this section is for you.
 
 ### Submitting changes
 

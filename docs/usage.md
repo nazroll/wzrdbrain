@@ -1,12 +1,11 @@
 # Usage
 
-Developers can integrate `wzrdbrain` into their Python and/or Javascript applications.
+Developers can integrate `wzrdbrain` into their Python applications.
 
 ## Table of contents
 
 
 - [Python](./usage.md#python)
-- [JavaScript](./usage.md#javascript)
 - [API reference](usage.md#api-reference)
     - [The Trick object](./usage.md#the-trick-object)
     - [Generating trick combos](./usage.md#generating-trick-combos)
@@ -33,19 +32,6 @@ for trick in combo:
 # Back Lion (Open): back → front
 ```
 
-## JavaScript
-
-The JavaScript version of the library can be used in any environment that supports ES6 modules.
-
-```javascript
-import { generateCombo } from 'https://cdn.jsdelivr.net/gh/nazroll/wzrdbrain@v0.4.1/src/wzrdbrain/wzrdbrain.js';
-
-const combo = generateCombo(3);
-combo.forEach(trick => {
-    console.log(`${trick.name}: ${trick.entry.direction} → ${trick.exit.direction}`);
-});
-```
-
 ## API reference
 
 - [The Trick object](#the-trick-object)
@@ -53,7 +39,7 @@ combo.forEach(trick => {
 
 ### The Trick object
 
-The `Trick` object represents a single wizard skating trick with its resolved physical states. It is available in both the Python and JavaScript versions of the library.
+The `Trick` object represents a single wizard skating trick with its resolved physical states.
 
 #### Properties
 
@@ -84,18 +70,11 @@ The `Trick` resolves its exit state from relative definitions in the move librar
 - `"opposite"` flips it (front↔back, inside↔outside, open↔closed)
 - Absolute values (`"toe"`, `"heel"`) override directly
 
-#### Python vs. JavaScript
-
--   In Python, `Trick` is a `dataclass` that uses `__post_init__` to resolve states from the move library.
--   In JavaScript, `Trick` is a `class` that applies the same resolution logic in its `constructor`.
-
-Both versions produce the same output structure.
-
 ### Generating trick combos
 
-The `generate_combo` function is the easiest way to create a sequence of random tricks. It is available in both the Python and JavaScript versions of the library.
+The `generate_combo` function is the easiest way to create a sequence of random tricks.
 
-#### Python: `generate_combo()`
+#### `generate_combo()`
 
 ```python
 from wzrdbrain import generate_combo
@@ -117,26 +96,6 @@ for trick in combo:
 #### Returns
 
 -   A `list` of `dict` objects, where each object contains `id`, `name`, `category`, `stage`, `entry`, and `exit`.
-
-#### JavaScript: `generateCombo()`
-
-```javascript
-import { generateCombo } from 'https://cdn.jsdelivr.net/gh/nazroll/wzrdbrain@v0.4.1/src/wzrdbrain/wzrdbrain.js';
-
-const combo = generateCombo(3);
-combo.forEach(trick => {
-    console.log(`${trick.name}: ${trick.entry.direction} → ${trick.exit.direction}`);
-});
-```
-
-#### Arguments
-
--   `numTricks` (optional, `number`): The number of tricks to generate. If not provided (or `null`), a random number between 2 and 5 is chosen.
--   `maxStage` (optional, `number`, default `5`): The maximum difficulty stage to include.
-
-#### Returns
-
--   An `Array` of `Object` instances with `id`, `name`, `category`, `stage`, `entry`, and `exit` properties.
 
 #### Logic
 

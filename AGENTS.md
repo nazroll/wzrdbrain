@@ -4,7 +4,7 @@ This file provides guidance to AI coding agents working with this repository.
 
 ## Project Overview
 
-`wzrdbrain` is a Python library (with an auto-generated JavaScript port) that generates random wizard skating trick combinations. The main consumer app is [Rocker'd Magic Moves](https://rockerd.web.app). Published to PyPI; JS version served via JSDelivr CDN.
+`wzrdbrain` is a Python library that generates random wizard skating trick combinations. Consumers: [Rocker'd Magic Moves](https://rockerd.web.app) (web app) and the WizardSkatingBot Telegram bot. Published to PyPI. (A JavaScript port existed through v0.4.1 and was removed; old tags remain fetchable via JSDelivr.)
 
 ## Development Setup
 
@@ -28,9 +28,6 @@ pytest tests/test_wzrdbrain.py::test_name -v
 
 # Build package
 python -m build
-
-# Regenerate wzrdbrain.js from Python source (requires GEMINI_API_KEY)
-python utils/translate2js.py
 ```
 
 ## Architecture
@@ -41,11 +38,9 @@ python utils/translate2js.py
 - `generate_combo(num_of_tricks, max_stage)` — chains tricks using a three-tier cascade: strict (direction + point + edge + stance) preferred, then mid (direction + point), then relaxed (direction only). Each emitted trick records a `transition` annotation (`start`/`linked`/`edge_shift`/`reset`) describing how continuous its link is. Returns exactly N tricks as long as a direction-compatible move exists (always true for the current library); otherwise returns the partial combo rather than dead-ending.
 - `MOVES` dict built at module load for O(1) move lookup by ID
 
-**Data**: `src/wzrdbrain/moves.json` — single source of truth for all 64 move variants. Each move defines entry/exit physical states (direction, edge, stance, point), mechanics, category, and stage.
+**Data**: `src/wzrdbrain/moves.json` — single source of truth for all 68 move variants. Each move defines entry/exit physical states (direction, edge, stance, point), mechanics, category, and stage.
 
 **Schema**: `src/wzrdbrain/move_schema.json` — JSON Schema defining the structure of moves.json. Categories: `base`, `turn`, `transition`, `manual`, `pivot`, `slide`, `swivel`, `air`.
-
-**JavaScript port**: `src/wzrdbrain/wzrdbrain.js` is **auto-generated** by `utils/translate2js.py` using the Gemini API. Do not hand-edit it — changes to Python logic or `moves.json` trigger CI to regenerate it. The reference style guide for the JS output is `utils/wzrdbrain.base.js`.
 
 **Research**: `docs/moves_research.md` — methodology, source verification, edge conventions, and design decisions.
 
@@ -57,8 +52,7 @@ python utils/translate2js.py
 - Strict mypy: all code must pass `mypy .` with `strict = true`
 - Adding moves: add a new entry to `moves.json` with entry/exit states — this is the easiest contribution
 - Edge convention: for two-footed moves, `edge` refers to the leading foot's edge
-- When moves.json or wzrdbrain.py change, CI auto-translates and commits an updated wzrdbrain.js
-- **Version bumps must update ALL files that contain the version number.** Search the entire repo for the old version string before committing. Known locations: `pyproject.toml`, `src/wzrdbrain/__init__.py`, `README.md`, and `docs/usage.md` (CDN URLs).
+- **Version bumps must update ALL files that contain the version number.** Search the entire repo for the old version string before committing. Known locations: `pyproject.toml` and `src/wzrdbrain/__init__.py`. (The JSDelivr URL in README.md is intentionally pinned to `v0.4.1`, the last release with the JS port — never bump it.)
 
 ## Branching & Release Policy
 
