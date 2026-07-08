@@ -72,6 +72,12 @@ Skaters who prefer "fakie"/"forward" wording can switch the display style with `
 combo = generate_combo(3, terminology="fakie")
 ```
 
+To practice a specific move, pass `trick=` and the combo is guaranteed to include it — matching is case-insensitive, understands fakie wording, and forgives small typos:
+
+```python
+combo = generate_combo(3, trick="Front Open Gazelle")
+```
+
 ### JavaScript
 
 Earlier releases shipped an auto-generated JavaScript port. It was removed to cut maintenance; if you need it, pin the last release that included it via JSDelivr:

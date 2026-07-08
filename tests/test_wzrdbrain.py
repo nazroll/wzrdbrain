@@ -349,6 +349,63 @@ def test_to_dict_rejects_unknown_terminology() -> None:
         Trick("gazelle_f_o").to_dict(terminology="wizard")  # type: ignore[arg-type]
 
 
+def test_trick_argument_always_included() -> None:
+    """generate_combo(trick=...) must include the named move in every combo."""
+    for _ in range(50):
+        combo = generate_combo(3, trick="Front Open Gazelle")
+        assert len(combo) == 3
+        assert "gazelle_f_o" in [t["id"] for t in combo]
+
+
+def test_trick_argument_fuzzy_matching() -> None:
+    """Case, fakie wording, and small typos should all resolve to the same move."""
+    for query in (
+        "front open gazelle",
+        "FRONT OPEN GAZELLE",
+        "Forward Open Gazelle",  # fakie-style wording
+        "Front Open Gazele",  # typo
+    ):
+        combo = generate_combo(2, trick=query)
+        assert "gazelle_f_o" in [t["id"] for t in combo], query
+    combo = generate_combo(2, trick="Fakie 540")
+    assert "spin_540_b" in [t["id"] for t in combo]
+
+
+def test_trick_argument_unknown_raises() -> None:
+    with pytest.raises(ValueError, match="Unknown trick"):
+        generate_combo(3, trick="Quantum Backflip")
+
+
+def test_trick_argument_wins_over_max_stage() -> None:
+    """The requested trick is included even above max_stage; others stay filtered."""
+    for _ in range(20):
+        combo = generate_combo(3, trick="Front 540", max_stage=1)
+        ids = [t["id"] for t in combo]
+        assert "spin_540_f" in ids
+        for t in combo:
+            assert t["id"] == "spin_540_f" or t["stage"] <= 1
+
+
+def test_trick_argument_single_trick_combo() -> None:
+    combo = generate_combo(1, trick="Back Predator")
+    assert [t["id"] for t in combo] == ["predator_b"]
+
+
+def test_trick_argument_preserves_continuity() -> None:
+    """Weaving the trick in must not break direction continuity."""
+    for _ in range(30):
+        combo = generate_combo(4, trick="Front Open Gazelle")
+        for current, nxt in zip(combo, combo[1:]):
+            assert current["exit"]["direction"] == nxt["entry"]["direction"]
+
+
+def test_trick_argument_with_fakie_terminology() -> None:
+    """trick= accepts classic wording while output renders in fakie style."""
+    combo = generate_combo(2, trick="Back Open Lion", terminology="fakie")
+    named = [t for t in combo if t["id"] == "lion_b_o"]
+    assert named and named[0]["name"] == "Fakie Open Lion"
+
+
 def test_invalid_enum_values_rejected_at_load() -> None:
     """MoveLibrary should reject moves with values outside the schema enums."""
     valid_move: dict[str, Any] = {

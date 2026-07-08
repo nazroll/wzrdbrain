@@ -1,3 +1,4 @@
+import difflib
 import random
 import json
 import importlib.resources
@@ -101,6 +102,36 @@ def _display_name(move: Move, terminology: Terminology) -> str:
         if move.name.startswith("Back "):
             return "Fakie " + move.name.removeprefix("Back ")
     return move.name
+
+
+def _resolve_trick_name(name: str) -> Move:
+    """
+    Resolves a user-supplied trick name to a Move, tolerating sloppy input:
+    matching is case-insensitive, accepts fakie-style wording ("Forward Open
+    Gazelle", "Fakie 540") by mapping it back to the canonical prefixes, and
+    falls back to closest-match fuzzy lookup for small typos.
+
+    Raises ValueError (with suggestions when available) if nothing matches.
+    """
+    query = " ".join(name.lower().split())
+    for alias, canonical in (("forward ", "front "), ("fakie ", "back ")):
+        if query.startswith(alias):
+            query = canonical + query.removeprefix(alias)
+            break
+
+    by_name = {m.name.lower(): m for m in _LIBRARY.moves}
+    if query in by_name:
+        return by_name[query]
+
+    close = difflib.get_close_matches(query, by_name.keys(), n=1, cutoff=0.75)
+    if close:
+        return by_name[close[0]]
+
+    suggestions = difflib.get_close_matches(query, by_name.keys(), n=3, cutoff=0.4)
+    hint = ""
+    if suggestions:
+        hint = " Did you mean: " + ", ".join(by_name[s].name for s in suggestions) + "?"
+    raise ValueError(f"Unknown trick: {name!r}.{hint}")
 
 
 @dataclass
@@ -262,52 +293,39 @@ def _transition_type(prev: Trick, nxt: Move) -> str:
     return "reset"
 
 
-def generate_combo(
-    num_of_tricks: Optional[int] = None,
-    max_stage: int = 5,
-    terminology: Terminology = "classic",
-) -> list[dict[str, Any]]:
+def _build_chain(
+    num_of_tricks: int,
+    max_stage: int,
+    required: Optional[Move] = None,
+    force_start: bool = False,
+) -> tuple[list[Trick], list[str]]:
     """
-    Generates a combination of tricks based on physical state transitions.
+    Builds a chain of tricks using the three-tier cascade (see generate_combo).
 
-    ``terminology`` selects the display style of trick names: "classic" (default)
-    keeps the canonical "Front X"/"Back X" names; "fakie" renders them as
-    "Forward X"/"Fakie X". Only the ``name`` field changes — ids and all state
-    values are unaffected.
-
-    Candidate selection uses a three-tier cascade so that each link prefers full
-    physical continuity but never dead-ends:
-
-      Tier 1 (strict):  entry direction + point + edge + stance all match the exit state
-      Tier 2 (mid):     entry direction + point match (edge/stance re-set between tricks)
-      Tier 3 (relaxed): entry direction matches (weight point also re-set)
-
-    Each emitted trick records which kind of link it required via the ``transition``
-    field (see _transition_type), so the output never silently contradicts itself.
+    When ``required`` is given it is always part of the eligible pool (even above
+    ``max_stage``) and is picked greedily the first time the state machine can
+    reach it; ``force_start=True`` pins it as the first trick instead.
     """
-    if terminology not in ("classic", "fakie"):
-        raise ValueError(f"Unknown terminology style: {terminology!r}")
-
-    if num_of_tricks is None:
-        num_of_tricks = random.randint(2, 5)
-
-    if num_of_tricks <= 0:
-        return []
-
     combo: list[Trick] = []
     transitions: list[str] = ["start"]
 
     # 1. Select the first trick uniformly from all moves within max_stage
     valid_start_moves = [m for m in _LIBRARY.moves if m.stage <= max_stage]
+    if required is not None and all(m.id != required.id for m in valid_start_moves):
+        valid_start_moves = valid_start_moves + [required]
     if not valid_start_moves:
-        return []
-    first_move = random.choice(valid_start_moves)
+        return [], []
+    first_move = (
+        required if (force_start and required is not None) else random.choice(valid_start_moves)
+    )
     current_trick = Trick(first_move.id)
     combo.append(current_trick)
 
     # 2. Iteratively find compatible moves using the three-tier cascade
     for _ in range(num_of_tricks - 1):
         eligible = [m for m in _LIBRARY.moves if m.stage <= max_stage]
+        if required is not None and all(m.id != required.id for m in eligible):
+            eligible = eligible + [required]
 
         # All tiers preserve direction (the one hard physical invariant).
         same_direction = [m for m in eligible if m.entry.direction == current_trick.exit_direction]
@@ -358,9 +376,65 @@ def generate_combo(
             # No physically valid continuation exists; return the partial combo
             break
 
-        next_move = random.choice(candidates)
+        # Weave in the required trick the first time the chain can reach it;
+        # otherwise pick randomly as usual.
+        placed = required is not None and any(t.move_id == required.id for t in combo)
+        if required is not None and not placed and any(m.id == required.id for m in candidates):
+            next_move = required
+        else:
+            next_move = random.choice(candidates)
         transitions.append(_transition_type(current_trick, next_move))
         current_trick = Trick(next_move.id)
         combo.append(current_trick)
+
+    return combo, transitions
+
+
+def generate_combo(
+    num_of_tricks: Optional[int] = None,
+    max_stage: int = 5,
+    terminology: Terminology = "classic",
+    trick: Optional[str] = None,
+) -> list[dict[str, Any]]:
+    """
+    Generates a combination of tricks based on physical state transitions.
+
+    ``terminology`` selects the display style of trick names: "classic" (default)
+    keeps the canonical "Front X"/"Back X" names; "fakie" renders them as
+    "Forward X"/"Fakie X". Only the ``name`` field changes — ids and all state
+    values are unaffected.
+
+    ``trick`` guarantees the named move appears in the combo. The name is matched
+    case-insensitively, accepts fakie-style wording and small typos (see
+    _resolve_trick_name), and wins over ``max_stage``. The move is woven in
+    wherever the state machine naturally reaches it; if the chain never gets
+    there, the combo is rebuilt starting from that move instead. Raises
+    ValueError if the name matches no move in the library.
+
+    Candidate selection uses a three-tier cascade so that each link prefers full
+    physical continuity but never dead-ends:
+
+      Tier 1 (strict):  entry direction + point + edge + stance all match the exit state
+      Tier 2 (mid):     entry direction + point match (edge/stance re-set between tricks)
+      Tier 3 (relaxed): entry direction matches (weight point also re-set)
+
+    Each emitted trick records which kind of link it required via the ``transition``
+    field (see _transition_type), so the output never silently contradicts itself.
+    """
+    if terminology not in ("classic", "fakie"):
+        raise ValueError(f"Unknown terminology style: {terminology!r}")
+
+    required = _resolve_trick_name(trick) if trick is not None else None
+
+    if num_of_tricks is None:
+        num_of_tricks = random.randint(2, 5)
+
+    if num_of_tricks <= 0:
+        return []
+
+    combo, transitions = _build_chain(num_of_tricks, max_stage, required)
+    if required is not None and all(t.move_id != required.id for t in combo):
+        # The chain never reached a state the trick could enter from; anchor it first.
+        combo, transitions = _build_chain(num_of_tricks, max_stage, required, force_start=True)
 
     return [t.to_dict(transition, terminology) for t, transition in zip(combo, transitions)]

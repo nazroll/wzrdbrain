@@ -101,10 +101,14 @@ for trick in combo:
 -   `num_of_tricks` (optional, `int`): The number of tricks to generate. If not provided, a random number between 2 and 5 is chosen.
 -   `max_stage` (optional, `int`, default `5`): The maximum difficulty stage to include.
 -   `terminology` (optional, `str`, default `"classic"`): The display style for trick names. `"classic"` keeps the canonical `Front X`/`Back X` names; `"fakie"` renders them as `Forward X`/`Fakie X`. Only the `name` field is affected — `id` and all state values keep the canonical `front`/`back` vocabulary.
+-   `trick` (optional, `str`): The name of a move that must appear in the combo. Matching is case-insensitive, accepts fakie-style wording (`"Forward Open Gazelle"`, `"Fakie 540"`), and tolerates small typos; raises `ValueError` (with suggestions) if nothing matches. The move is woven in wherever the chain naturally reaches it — falling back to the first position — and is included even if its stage exceeds `max_stage` (the stage filter still applies to the other moves).
 
 ```python
 combo = generate_combo(3, terminology="fakie")
 # Example output names: Forward Open Gazelle, Fakie Open Lion
+
+combo = generate_combo(3, trick="Front Open Gazelle")
+# One of the three tricks is guaranteed to be Front Open Gazelle
 ```
 
 #### Returns
