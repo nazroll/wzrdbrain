@@ -18,7 +18,7 @@ from wzrdbrain.wzrdbrain import (
 
 def test_trick_creation_and_state_resolution() -> None:
     """Test that creating a Trick resolves entry and exit states correctly."""
-    # Front Gazelle (Open): entry on OUTSIDE edge (leading-foot convention)
+    # Front Open Gazelle: entry on OUTSIDE edge (leading-foot convention)
     trick = Trick("gazelle_f_o")
 
     assert trick.move_id == "gazelle_f_o"
@@ -36,7 +36,7 @@ def test_trick_creation_and_state_resolution() -> None:
 def test_trick_str_representation() -> None:
     """Test the string formatting of a Trick."""
     trick = Trick("gazelle_f_o")
-    assert str(trick) == "Front Gazelle (Open)"
+    assert str(trick) == "Front Open Gazelle"
 
 
 def test_trick_to_dict() -> None:
@@ -44,7 +44,7 @@ def test_trick_to_dict() -> None:
     trick = Trick("gazelle_f_o")
     trick_dict = trick.to_dict()
     assert isinstance(trick_dict, dict)
-    assert trick_dict["name"] == "Front Gazelle (Open)"
+    assert trick_dict["name"] == "Front Open Gazelle"
     assert "entry" in trick_dict
     assert "exit" in trick_dict
     assert trick_dict["entry"]["direction"] == "front"
@@ -231,18 +231,18 @@ def test_rotating_moves_flip_direction() -> None:
 def test_non_rotating_moves_keep_direction() -> None:
     """Non-rotating moves (predator, tree, presses, rolls) exit in the same direction."""
     non_rotating_ids = [
-        "predator_f_o",
-        "predator_b_o",
+        "predator_f",
+        "predator_b",
         "predator_one_f",
         "predator_one_b",
-        "tree_turn_o",
-        "tree_turn_c",
-        "tree_turn_b_o",
-        "tree_turn_b_c",
-        "parallel_turn_o",
-        "parallel_turn_c",
-        "parallel_turn_b_o",
-        "parallel_turn_b_c",
+        "tree_o",
+        "tree_c",
+        "tree_b_o",
+        "tree_b_c",
+        "parallel_o",
+        "parallel_c",
+        "parallel_b_o",
+        "parallel_b_c",
         "toe_press_f",
         "heel_press_b",
         "toe_roll_f",
@@ -283,7 +283,7 @@ def test_pivot_stance_variants_exist() -> None:
 
 def test_resolve_relative_center_neutral() -> None:
     """'opposite' of center/neutral should return center/neutral (no opposite defined)."""
-    trick = Trick("predator_f_o")
+    trick = Trick("predator_f")
     assert trick._resolve_relative("opposite", "center") == "center"
     assert trick._resolve_relative("opposite", "neutral") == "neutral"
 
@@ -309,6 +309,44 @@ def test_all_moves_in_library_are_valid() -> None:
         assert move.entry.stance in valid_stances, f"{move.id}: bad entry stance"
         assert move.entry.point in valid_points, f"{move.id}: bad entry point"
         assert 1 <= move.stage <= 5, f"{move.id}: bad stage {move.stage}"
+
+
+def test_terminology_fakie_renames_direction_prefixes() -> None:
+    """terminology='fakie' renders Front->Forward and Back->Fakie in names."""
+    assert Trick("gazelle_f_o").to_dict(terminology="fakie")["name"] == "Forward Open Gazelle"
+    assert Trick("lion_b_o").to_dict(terminology="fakie")["name"] == "Fakie Open Lion"
+    # Turn names carry the direction prefix too and map like any other move
+    assert Trick("parallel_o").to_dict(terminology="fakie")["name"] == "Forward Open Parallel"
+    # Every library name has a Front/Back prefix, so fakie style never leaves one behind
+    for move in _LIBRARY.moves:
+        assert move.name.startswith(("Front ", "Back ")), move.id
+
+
+def test_terminology_default_is_classic() -> None:
+    """Without the toggle, names keep the canonical Front/Back wording."""
+    assert Trick("gazelle_f_o").to_dict()["name"] == "Front Open Gazelle"
+    for trick in generate_combo(4):
+        assert not trick["name"].startswith(("Forward ", "Fakie "))
+
+
+def test_generate_combo_terminology_fakie() -> None:
+    """generate_combo(terminology='fakie') emits no Front/Back name prefixes."""
+    for _ in range(20):
+        for trick in generate_combo(4, terminology="fakie"):
+            assert not trick["name"].startswith(("Front ", "Back ")), trick["name"]
+            # ids and state values keep canonical vocabulary
+            assert trick["entry"]["direction"] in ("front", "back")
+
+
+def test_generate_combo_rejects_unknown_terminology() -> None:
+    with pytest.raises(ValueError):
+        generate_combo(3, terminology="wizard")  # type: ignore[arg-type]
+
+
+def test_to_dict_rejects_unknown_terminology() -> None:
+    """to_dict must raise like generate_combo, not silently fall back to classic."""
+    with pytest.raises(ValueError):
+        Trick("gazelle_f_o").to_dict(terminology="wizard")  # type: ignore[arg-type]
 
 
 def test_invalid_enum_values_rejected_at_load() -> None:
@@ -428,19 +466,19 @@ def test_realism_filters_does_not_bypass_duplicates_on_category_failure() -> Non
     it must STILL apply the duplicate and spin filters via a soft fallback.
     """
     # Use 'turn' category moves so we trigger Constraint 1, but not the hard slide cap
-    combo = [Trick("parallel_turn_o"), Trick("tree_turn_c")]
+    combo = [Trick("parallel_o"), Trick("tree_c")]
 
     candidates = [
-        MOVES["tree_turn_c"],  # Duplicate of last move
-        MOVES["parallel_turn_c"],  # Valid new move in the same category
+        MOVES["tree_c"],  # Duplicate of last move
+        MOVES["parallel_c"],  # Valid new move in the same category
     ]
 
     # We pass hard_category=False to simulate the fallback behavior in generate_combo
     filtered = _apply_realism_filters(candidates, combo, hard_category=False)
 
-    assert MOVES["tree_turn_c"] not in filtered, "Filter bypassed Constraint 2 (Duplicates)!"
+    assert MOVES["tree_c"] not in filtered, "Filter bypassed Constraint 2 (Duplicates)!"
     assert (
-        MOVES["parallel_turn_c"] in filtered
+        MOVES["parallel_c"] in filtered
     ), "Filter dropped all candidates instead of falling back to soft constraints!"
 
 
@@ -456,10 +494,10 @@ def test_slide_probability_constraint() -> None:
 
 def test_realism_filters_soft_fallback_keeps_options() -> None:
     """Test that if category constraint fails, we still get non-duplicate options back."""
-    combo = [Trick("predator_f_o")]
+    combo = [Trick("predator_f")]
 
     # Suppose the only valid next moves are base moves again
-    candidates = [MOVES["predator_f_o"], MOVES["predator_one_f"]]  # Duplicate  # New
+    candidates = [MOVES["predator_f"], MOVES["predator_one_f"]]  # Duplicate  # New
 
     filtered = _apply_realism_filters(candidates, combo, hard_category=False)
     assert len(filtered) == 1
@@ -493,14 +531,14 @@ def test_every_move_has_direction_compatible_successor() -> None:
 
 def test_back_turn_entry_edges_mirror_front_turns() -> None:
     """Back turns should use the same open=outside / closed=inside edge convention."""
-    for move_id in ["parallel_turn_b_o", "tree_turn_b_o"]:
+    for move_id in ["parallel_b_o", "tree_b_o"]:
         assert (
             MOVES[move_id].entry.edge == "outside"
         ), f"{move_id}: open turn should enter on outside edge"
-    for move_id in ["parallel_turn_b_c", "tree_turn_b_c"]:
+    for move_id in ["parallel_b_c", "tree_b_c"]:
         assert (
             MOVES[move_id].entry.edge == "inside"
         ), f"{move_id}: closed turn should enter on inside edge"
-    for move_id in ["parallel_turn_b_o", "parallel_turn_b_c", "tree_turn_b_o", "tree_turn_b_c"]:
+    for move_id in ["parallel_b_o", "parallel_b_c", "tree_b_o", "tree_b_c"]:
         assert MOVES[move_id].entry.direction == "back"
         assert MOVES[move_id].entry.point == "toe", f"{move_id}: back moves roll on the toe"

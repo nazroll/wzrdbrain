@@ -1,9 +1,9 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "moves": [
     {
-      "id": "predator_f_o",
-      "name": "Front Predator (Open)",
+      "id": "predator_f",
+      "name": "Front Predator",
       "category": "base",
       "stage": 1,
       "mechanics": { "feet": 2, "is_rotation": false, "degrees": 0, "rotation_type": "neutral" },
@@ -11,8 +11,8 @@
       "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "heel", "lead_foot": "same", "feet": 2 }
     },
     {
-      "id": "predator_b_o",
-      "name": "Back Predator (Open)",
+      "id": "predator_b",
+      "name": "Back Predator",
       "category": "base",
       "stage": 1,
       "mechanics": { "feet": 2, "is_rotation": false, "degrees": 0, "rotation_type": "neutral" },
@@ -39,8 +39,8 @@
     },
 
     {
-      "id": "parallel_turn_o",
-      "name": "Parallel Turn (Open)",
+      "id": "parallel_o",
+      "name": "Front Open Parallel",
       "category": "turn",
       "stage": 2,
       "mechanics": { "feet": 2, "is_rotation": false, "degrees": 90, "rotation_type": "natural" },
@@ -48,8 +48,8 @@
       "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "heel", "lead_foot": "same", "feet": 2 }
     },
     {
-      "id": "parallel_turn_c",
-      "name": "Parallel Turn (Closed)",
+      "id": "parallel_c",
+      "name": "Front Closed Parallel",
       "category": "turn",
       "stage": 2,
       "mechanics": { "feet": 2, "is_rotation": false, "degrees": 90, "rotation_type": "natural" },
@@ -57,8 +57,8 @@
       "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "heel", "lead_foot": "same", "feet": 2 }
     },
     {
-      "id": "tree_turn_o",
-      "name": "Tree Turn (Open)",
+      "id": "tree_o",
+      "name": "Front Open Tree",
       "category": "turn",
       "stage": 2,
       "mechanics": { "feet": 1, "is_rotation": false, "degrees": 90, "rotation_type": "natural" },
@@ -66,8 +66,8 @@
       "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "heel", "lead_foot": "same", "feet": 1 }
     },
     {
-      "id": "tree_turn_c",
-      "name": "Tree Turn (Closed)",
+      "id": "tree_c",
+      "name": "Front Closed Tree",
       "category": "turn",
       "stage": 2,
       "mechanics": { "feet": 1, "is_rotation": false, "degrees": 90, "rotation_type": "natural" },
@@ -75,8 +75,8 @@
       "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "heel", "lead_foot": "same", "feet": 1 }
     },
     {
-      "id": "parallel_turn_b_o",
-      "name": "Back Parallel Turn (Open)",
+      "id": "parallel_b_o",
+      "name": "Back Open Parallel",
       "category": "turn",
       "stage": 2,
       "mechanics": { "feet": 2, "is_rotation": false, "degrees": 90, "rotation_type": "natural" },
@@ -84,8 +84,8 @@
       "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "toe", "lead_foot": "same", "feet": 2 }
     },
     {
-      "id": "parallel_turn_b_c",
-      "name": "Back Parallel Turn (Closed)",
+      "id": "parallel_b_c",
+      "name": "Back Closed Parallel",
       "category": "turn",
       "stage": 2,
       "mechanics": { "feet": 2, "is_rotation": false, "degrees": 90, "rotation_type": "natural" },
@@ -93,8 +93,8 @@
       "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "toe", "lead_foot": "same", "feet": 2 }
     },
     {
-      "id": "tree_turn_b_o",
-      "name": "Back Tree Turn (Open)",
+      "id": "tree_b_o",
+      "name": "Back Open Tree",
       "category": "turn",
       "stage": 2,
       "mechanics": { "feet": 1, "is_rotation": false, "degrees": 90, "rotation_type": "natural" },
@@ -102,8 +102,8 @@
       "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "toe", "lead_foot": "same", "feet": 1 }
     },
     {
-      "id": "tree_turn_b_c",
-      "name": "Back Tree Turn (Closed)",
+      "id": "tree_b_c",
+      "name": "Back Closed Tree",
       "category": "turn",
       "stage": 2,
       "mechanics": { "feet": 1, "is_rotation": false, "degrees": 90, "rotation_type": "natural" },
@@ -113,7 +113,7 @@
 
     {
       "id": "gazelle_f_o",
-      "name": "Front Gazelle (Open)",
+      "name": "Front Open Gazelle",
       "category": "transition",
       "stage": 3,
       "mechanics": { "feet": 2, "is_rotation": true, "degrees": 180, "rotation_type": "natural" },
@@ -123,7 +123,7 @@
     },
     {
       "id": "gazelle_f_c",
-      "name": "Front Gazelle (Closed)",
+      "name": "Front Closed Gazelle",
       "category": "transition",
       "stage": 3,
       "mechanics": { "feet": 2, "is_rotation": true, "degrees": 180, "rotation_type": "natural" },
@@ -132,7 +132,7 @@
     },
     {
       "id": "gazelle_b_o",
-      "name": "Back Gazelle (Open)",
+      "name": "Back Open Gazelle",
       "category": "transition",
       "stage": 3,
       "mechanics": { "feet": 2, "is_rotation": true, "degrees": 180, "rotation_type": "natural" },
@@ -141,7 +141,7 @@
     },
     {
       "id": "gazelle_b_c",
-      "name": "Back Gazelle (Closed)",
+      "name": "Back Closed Gazelle",
       "category": "transition",
       "stage": 3,
       "mechanics": { "feet": 2, "is_rotation": true, "degrees": 180, "rotation_type": "natural" },
@@ -151,7 +151,7 @@
 
     {
       "id": "gazelle_s_f_o",
-      "name": "Front Gazelle S (Open)",
+      "name": "Front Open Gazelle S",
       "category": "transition",
       "stage": 3,
       "mechanics": { "feet": 2, "is_rotation": true, "degrees": 180, "rotation_type": "natural" },
@@ -161,7 +161,7 @@
     },
     {
       "id": "gazelle_s_f_c",
-      "name": "Front Gazelle S (Closed)",
+      "name": "Front Closed Gazelle S",
       "category": "transition",
       "stage": 3,
       "mechanics": { "feet": 2, "is_rotation": true, "degrees": 180, "rotation_type": "natural" },
@@ -170,7 +170,7 @@
     },
     {
       "id": "gazelle_s_b_o",
-      "name": "Back Gazelle S (Open)",
+      "name": "Back Open Gazelle S",
       "category": "transition",
       "stage": 3,
       "mechanics": { "feet": 2, "is_rotation": true, "degrees": 180, "rotation_type": "natural" },
@@ -179,7 +179,7 @@
     },
     {
       "id": "gazelle_s_b_c",
-      "name": "Back Gazelle S (Closed)",
+      "name": "Back Closed Gazelle S",
       "category": "transition",
       "stage": 3,
       "mechanics": { "feet": 2, "is_rotation": true, "degrees": 180, "rotation_type": "natural" },
@@ -189,7 +189,7 @@
 
     {
       "id": "lion_f_o",
-      "name": "Front Lion (Open)",
+      "name": "Front Open Lion",
       "category": "transition",
       "stage": 3,
       "mechanics": { "feet": 1, "is_rotation": true, "degrees": 180, "rotation_type": "natural" },
@@ -198,7 +198,7 @@
     },
     {
       "id": "lion_f_c",
-      "name": "Front Lion (Closed)",
+      "name": "Front Closed Lion",
       "category": "transition",
       "stage": 3,
       "mechanics": { "feet": 1, "is_rotation": true, "degrees": 180, "rotation_type": "natural" },
@@ -207,7 +207,7 @@
     },
     {
       "id": "lion_b_o",
-      "name": "Back Lion (Open)",
+      "name": "Back Open Lion",
       "category": "transition",
       "stage": 3,
       "mechanics": { "feet": 1, "is_rotation": true, "degrees": 180, "rotation_type": "natural" },
@@ -216,7 +216,7 @@
     },
     {
       "id": "lion_b_c",
-      "name": "Back Lion (Closed)",
+      "name": "Back Closed Lion",
       "category": "transition",
       "stage": 3,
       "mechanics": { "feet": 1, "is_rotation": true, "degrees": 180, "rotation_type": "natural" },
@@ -226,7 +226,7 @@
 
     {
       "id": "lion_s_f_o",
-      "name": "Front Lion S (Open)",
+      "name": "Front Open Lion S",
       "category": "transition",
       "stage": 3,
       "mechanics": { "feet": 1, "is_rotation": true, "degrees": 180, "rotation_type": "natural" },
@@ -235,7 +235,7 @@
     },
     {
       "id": "lion_s_f_c",
-      "name": "Front Lion S (Closed)",
+      "name": "Front Closed Lion S",
       "category": "transition",
       "stage": 3,
       "mechanics": { "feet": 1, "is_rotation": true, "degrees": 180, "rotation_type": "natural" },
@@ -244,7 +244,7 @@
     },
     {
       "id": "lion_s_b_o",
-      "name": "Back Lion S (Open)",
+      "name": "Back Open Lion S",
       "category": "transition",
       "stage": 3,
       "mechanics": { "feet": 1, "is_rotation": true, "degrees": 180, "rotation_type": "natural" },
@@ -253,7 +253,7 @@
     },
     {
       "id": "lion_s_b_c",
-      "name": "Back Lion S (Closed)",
+      "name": "Back Closed Lion S",
       "category": "transition",
       "stage": 3,
       "mechanics": { "feet": 1, "is_rotation": true, "degrees": 180, "rotation_type": "natural" },
@@ -263,7 +263,7 @@
 
     {
       "id": "toe_pivot_f_o",
-      "name": "Front Toe Pivot (Open)",
+      "name": "Front Open Toe Pivot",
       "category": "pivot",
       "stage": 4,
       "mechanics": { "feet": 1, "is_rotation": true, "degrees": 180, "rotation_type": "neutral" },
@@ -272,7 +272,7 @@
     },
     {
       "id": "toe_pivot_f_c",
-      "name": "Front Toe Pivot (Closed)",
+      "name": "Front Closed Toe Pivot",
       "category": "pivot",
       "stage": 4,
       "mechanics": { "feet": 1, "is_rotation": true, "degrees": 180, "rotation_type": "neutral" },
@@ -281,7 +281,7 @@
     },
     {
       "id": "toe_pivot_b_o",
-      "name": "Back Toe Pivot (Open)",
+      "name": "Back Open Toe Pivot",
       "category": "pivot",
       "stage": 4,
       "mechanics": { "feet": 1, "is_rotation": true, "degrees": 180, "rotation_type": "neutral" },
@@ -290,7 +290,7 @@
     },
     {
       "id": "toe_pivot_b_c",
-      "name": "Back Toe Pivot (Closed)",
+      "name": "Back Closed Toe Pivot",
       "category": "pivot",
       "stage": 4,
       "mechanics": { "feet": 1, "is_rotation": true, "degrees": 180, "rotation_type": "neutral" },
@@ -299,7 +299,7 @@
     },
     {
       "id": "heel_pivot_f_o",
-      "name": "Front Heel Pivot (Open)",
+      "name": "Front Open Heel Pivot",
       "category": "pivot",
       "stage": 4,
       "mechanics": { "feet": 1, "is_rotation": true, "degrees": 180, "rotation_type": "neutral" },
@@ -308,7 +308,7 @@
     },
     {
       "id": "heel_pivot_f_c",
-      "name": "Front Heel Pivot (Closed)",
+      "name": "Front Closed Heel Pivot",
       "category": "pivot",
       "stage": 4,
       "mechanics": { "feet": 1, "is_rotation": true, "degrees": 180, "rotation_type": "neutral" },
@@ -317,7 +317,7 @@
     },
     {
       "id": "heel_pivot_b_o",
-      "name": "Back Heel Pivot (Open)",
+      "name": "Back Open Heel Pivot",
       "category": "pivot",
       "stage": 4,
       "mechanics": { "feet": 1, "is_rotation": true, "degrees": 180, "rotation_type": "neutral" },
@@ -326,7 +326,7 @@
     },
     {
       "id": "heel_pivot_b_c",
-      "name": "Back Heel Pivot (Closed)",
+      "name": "Back Closed Heel Pivot",
       "category": "pivot",
       "stage": 4,
       "mechanics": { "feet": 1, "is_rotation": true, "degrees": 180, "rotation_type": "neutral" },
@@ -414,36 +414,36 @@
       "name": "Front Toe Roll",
       "category": "manual",
       "stage": 4,
-      "mechanics": { "feet": 2, "is_rotation": false, "degrees": 0, "rotation_type": "neutral" },
+      "mechanics": { "feet": 1, "is_rotation": false, "degrees": 0, "rotation_type": "neutral" },
       "entry": { "direction": "front", "edge": "center", "stance": "neutral", "point": "toe" },
-      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "toe", "lead_foot": "same", "feet": 2 }
+      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "toe", "lead_foot": "same", "feet": 1 }
     },
     {
       "id": "toe_roll_b",
       "name": "Back Toe Roll",
       "category": "manual",
       "stage": 4,
-      "mechanics": { "feet": 2, "is_rotation": false, "degrees": 0, "rotation_type": "neutral" },
+      "mechanics": { "feet": 1, "is_rotation": false, "degrees": 0, "rotation_type": "neutral" },
       "entry": { "direction": "back", "edge": "center", "stance": "neutral", "point": "toe" },
-      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "toe", "lead_foot": "same", "feet": 2 }
+      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "toe", "lead_foot": "same", "feet": 1 }
     },
     {
       "id": "heel_roll_f",
       "name": "Front Heel Roll",
       "category": "manual",
       "stage": 4,
-      "mechanics": { "feet": 2, "is_rotation": false, "degrees": 0, "rotation_type": "neutral" },
+      "mechanics": { "feet": 1, "is_rotation": false, "degrees": 0, "rotation_type": "neutral" },
       "entry": { "direction": "front", "edge": "center", "stance": "neutral", "point": "heel" },
-      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "heel", "lead_foot": "same", "feet": 2 }
+      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "heel", "lead_foot": "same", "feet": 1 }
     },
     {
       "id": "heel_roll_b",
       "name": "Back Heel Roll",
       "category": "manual",
       "stage": 4,
-      "mechanics": { "feet": 2, "is_rotation": false, "degrees": 0, "rotation_type": "neutral" },
+      "mechanics": { "feet": 1, "is_rotation": false, "degrees": 0, "rotation_type": "neutral" },
       "entry": { "direction": "back", "edge": "center", "stance": "neutral", "point": "heel" },
-      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "heel", "lead_foot": "same", "feet": 2 }
+      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "heel", "lead_foot": "same", "feet": 1 }
     },
 
     {
@@ -596,36 +596,36 @@
       "name": "Front Fast Slide",
       "category": "slide",
       "stage": 4,
-      "mechanics": { "feet": 2, "is_rotation": false, "degrees": 0, "rotation_type": "neutral" },
+      "mechanics": { "feet": 1, "is_rotation": false, "degrees": 0, "rotation_type": "neutral" },
       "entry": { "direction": "front", "edge": "outside", "stance": "open", "point": "all" },
-      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "all", "lead_foot": "same", "feet": 2 }
+      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "all", "lead_foot": "same", "feet": 1 }
     },
     {
       "id": "fast_slide_b",
       "name": "Back Fast Slide",
       "category": "slide",
       "stage": 4,
-      "mechanics": { "feet": 2, "is_rotation": false, "degrees": 0, "rotation_type": "neutral" },
+      "mechanics": { "feet": 1, "is_rotation": false, "degrees": 0, "rotation_type": "neutral" },
       "entry": { "direction": "back", "edge": "outside", "stance": "open", "point": "all" },
-      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "all", "lead_foot": "same", "feet": 2 }
+      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "all", "lead_foot": "same", "feet": 1 }
     },
     {
       "id": "back_slide_f",
       "name": "Front Back Slide",
       "category": "slide",
       "stage": 4,
-      "mechanics": { "feet": 2, "is_rotation": false, "degrees": 0, "rotation_type": "neutral" },
+      "mechanics": { "feet": 1, "is_rotation": false, "degrees": 0, "rotation_type": "neutral" },
       "entry": { "direction": "front", "edge": "inside", "stance": "open", "point": "all" },
-      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "all", "lead_foot": "same", "feet": 2 }
+      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "all", "lead_foot": "same", "feet": 1 }
     },
     {
       "id": "back_slide_b",
       "name": "Back Back Slide",
       "category": "slide",
       "stage": 4,
-      "mechanics": { "feet": 2, "is_rotation": false, "degrees": 0, "rotation_type": "neutral" },
+      "mechanics": { "feet": 1, "is_rotation": false, "degrees": 0, "rotation_type": "neutral" },
       "entry": { "direction": "back", "edge": "inside", "stance": "open", "point": "all" },
-      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "all", "lead_foot": "same", "feet": 2 }
+      "exit": { "direction": "same", "edge": "same", "stance": "same", "point": "all", "lead_foot": "same", "feet": 1 }
     }
   ]
 }

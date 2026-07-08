@@ -27,9 +27,9 @@ combo = generate_combo(3)
 for trick in combo:
     print(f"{trick['name']}: {trick['entry']['direction']} → {trick['exit']['direction']}")
 # Example output:
-# Front Predator (Open): front → front
-# Front Gazelle (Open): front → back
-# Back Lion (Open): back → front
+# Front Predator: front → front
+# Front Open Gazelle: front → back
+# Back Open Lion: back → front
 ```
 
 ## API reference
@@ -48,7 +48,7 @@ A `Trick` object (returned as a dict/object from `generate_combo`) has the follo
 | Property     | Type     | Description                                                              |
 | ------------ | -------- | ------------------------------------------------------------------------ |
 | `id`         | `string` | The unique move identifier (e.g., `gazelle_f_o`)                         |
-| `name`       | `string` | Human-readable name (e.g., `Front Gazelle (Open)`)                       |
+| `name`       | `string` | Human-readable name (e.g., `Front Open Gazelle`)                       |
 | `category`   | `string` | Move category: `base`, `turn`, `transition`, `manual`, `pivot`, `slide`, `swivel` |
 | `stage`      | `int`    | Difficulty tier from 1 (beginner) to 5 (advanced)                        |
 | `transition` | `string` | How this trick links to the previous one: `start`, `linked`, `edge_shift`, or `reset` (see [Logic](#logic)) |
@@ -91,15 +91,21 @@ combo = generate_combo(3)
 for trick in combo:
     print(f"{trick['name']}: {trick['entry']['direction']} → {trick['exit']['direction']}")
 # Example output:
-# Front Predator (Open): front → front
-# Front Gazelle (Open): front → back
-# Back Lion (Open): back → front
+# Front Predator: front → front
+# Front Open Gazelle: front → back
+# Back Open Lion: back → front
 ```
 
 #### Arguments
 
 -   `num_of_tricks` (optional, `int`): The number of tricks to generate. If not provided, a random number between 2 and 5 is chosen.
 -   `max_stage` (optional, `int`, default `5`): The maximum difficulty stage to include.
+-   `terminology` (optional, `str`, default `"classic"`): The display style for trick names. `"classic"` keeps the canonical `Front X`/`Back X` names; `"fakie"` renders them as `Forward X`/`Fakie X`. Only the `name` field is affected — `id` and all state values keep the canonical `front`/`back` vocabulary.
+
+```python
+combo = generate_combo(3, terminology="fakie")
+# Example output names: Forward Open Gazelle, Fakie Open Lion
+```
 
 #### Returns
 

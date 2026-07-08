@@ -76,6 +76,32 @@ def _load_move_library() -> MoveLibrary:
 _LIBRARY = _load_move_library()
 MOVES = {move.id: move for move in _LIBRARY.moves}
 
+# Display terminology styles for trick names. Canonical data always uses
+# "Front"/"Back"; "fakie" is the wording preferred by skaters (issue #37).
+Terminology = Literal["classic", "fakie"]
+
+
+def _display_name(move: Move, terminology: Terminology) -> str:
+    """
+    Renders the move's display name in the requested terminology style.
+
+    "classic" returns the canonical name from moves.json unchanged. "fakie"
+    swaps the direction prefixes: "Front X" -> "Forward X", "Back X" ->
+    "Fakie X". Every library name carries one of those prefixes; a name
+    without one would be returned unchanged in both styles.
+
+    Raises ValueError for unknown styles so untyped callers fail loudly
+    instead of silently getting classic names.
+    """
+    if terminology not in ("classic", "fakie"):
+        raise ValueError(f"Unknown terminology style: {terminology!r}")
+    if terminology == "fakie":
+        if move.name.startswith("Front "):
+            return "Forward " + move.name.removeprefix("Front ")
+        if move.name.startswith("Back "):
+            return "Fakie " + move.name.removeprefix("Back ")
+    return move.name
+
 
 @dataclass
 class Trick:
@@ -128,11 +154,13 @@ class Trick:
     def __str__(self) -> str:
         return MOVES[self.move_id].name
 
-    def to_dict(self, transition: str = "start") -> dict[str, Any]:
+    def to_dict(
+        self, transition: str = "start", terminology: Terminology = "classic"
+    ) -> dict[str, Any]:
         move = MOVES[self.move_id]
         return {
             "id": self.move_id,
-            "name": move.name,
+            "name": _display_name(move, terminology),
             "category": move.category,
             "stage": move.stage,
             # How this trick links to the previous one. "start" for the first trick;
@@ -234,9 +262,18 @@ def _transition_type(prev: Trick, nxt: Move) -> str:
     return "reset"
 
 
-def generate_combo(num_of_tricks: Optional[int] = None, max_stage: int = 5) -> list[dict[str, Any]]:
+def generate_combo(
+    num_of_tricks: Optional[int] = None,
+    max_stage: int = 5,
+    terminology: Terminology = "classic",
+) -> list[dict[str, Any]]:
     """
     Generates a combination of tricks based on physical state transitions.
+
+    ``terminology`` selects the display style of trick names: "classic" (default)
+    keeps the canonical "Front X"/"Back X" names; "fakie" renders them as
+    "Forward X"/"Fakie X". Only the ``name`` field changes — ids and all state
+    values are unaffected.
 
     Candidate selection uses a three-tier cascade so that each link prefers full
     physical continuity but never dead-ends:
@@ -248,6 +285,9 @@ def generate_combo(num_of_tricks: Optional[int] = None, max_stage: int = 5) -> l
     Each emitted trick records which kind of link it required via the ``transition``
     field (see _transition_type), so the output never silently contradicts itself.
     """
+    if terminology not in ("classic", "fakie"):
+        raise ValueError(f"Unknown terminology style: {terminology!r}")
+
     if num_of_tricks is None:
         num_of_tricks = random.randint(2, 5)
 
@@ -323,4 +363,4 @@ def generate_combo(num_of_tricks: Optional[int] = None, max_stage: int = 5) -> l
         current_trick = Trick(next_move.id)
         combo.append(current_trick)
 
-    return [t.to_dict(transition) for t, transition in zip(combo, transitions)]
+    return [t.to_dict(transition, terminology) for t, transition in zip(combo, transitions)]
