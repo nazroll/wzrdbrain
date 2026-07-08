@@ -5,28 +5,41 @@ from typing import Optional, Any, Literal
 from dataclasses import dataclass, field
 from pydantic import BaseModel, Field
 
+# Enums mirroring move_schema.json. Entry states are absolute; exit states may
+# also be the relative tokens "same"/"opposite", resolved against the entry.
+EntryDirection = Literal["front", "back"]
+ExitDirection = Literal["same", "opposite", "front", "back"]
+EntryEdge = Literal["inside", "outside", "center"]
+ExitEdge = Literal["same", "opposite", "inside", "outside", "center"]
+EntryStance = Literal["open", "closed", "neutral"]
+ExitStance = Literal["same", "opposite", "open", "closed", "neutral"]
+Point = Literal["toe", "heel", "all", "none"]
+LeadFoot = Literal["same", "opposite"]
+Category = Literal["base", "turn", "transition", "manual", "pivot", "slide", "swivel", "air"]
+RotationType = Literal["natural", "switch", "neutral"]
+
 
 # Pydantic models for the new state-transition schema
 class Mechanics(BaseModel):
     feet: int
     is_rotation: bool
     degrees: int
-    rotation_type: str
+    rotation_type: RotationType
 
 
 class State(BaseModel):
-    direction: str
-    edge: str
-    stance: str
-    point: str
+    direction: EntryDirection
+    edge: EntryEdge
+    stance: EntryStance
+    point: Point
 
 
 class ExitState(BaseModel):
-    direction: str
-    edge: str
-    stance: str
-    point: str
-    lead_foot: str
+    direction: ExitDirection
+    edge: ExitEdge
+    stance: ExitStance
+    point: Point
+    lead_foot: LeadFoot
     feet: int
 
 
@@ -39,7 +52,7 @@ class Metadata(BaseModel):
 class Move(BaseModel):
     id: str
     name: str
-    category: str
+    category: Category
     stage: int
     mechanics: Mechanics
     entry: State
@@ -55,7 +68,7 @@ class MoveLibrary(BaseModel):
 # Load move library from JSON
 def _load_move_library() -> MoveLibrary:
     """Loads move definitions from the embedded moves.json file."""
-    with importlib.resources.open_text("wzrdbrain", "moves.json") as f:
+    with importlib.resources.files("wzrdbrain").joinpath("moves.json").open(encoding="utf-8") as f:
         data = json.load(f)
         return MoveLibrary.model_validate(data)
 
