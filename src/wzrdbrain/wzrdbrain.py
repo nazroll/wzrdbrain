@@ -55,7 +55,7 @@ class MoveLibrary(BaseModel):
 # Load move library from JSON
 def _load_move_library() -> MoveLibrary:
     """Loads move definitions from the embedded moves.json file."""
-    with importlib.resources.open_text("wzrdbrain", "moves.json") as f:
+    with importlib.resources.files("wzrdbrain").joinpath("moves.json").open(encoding="utf-8") as f:
         data = json.load(f)
         return MoveLibrary.model_validate(data)
 
