@@ -74,8 +74,8 @@ def _display_name(move: Move, terminology: Terminology) -> str:
 
     "classic" returns the canonical name from moves.json unchanged. "fakie"
     swaps the direction prefixes: "Front X" -> "Forward X", "Back X" ->
-    "Fakie X". Names without a direction prefix (e.g. "Parallel Turn (Open)",
-    an implicitly forward turn) are returned unchanged in both styles.
+    "Fakie X". Every library name carries one of those prefixes; a name
+    without one would be returned unchanged in both styles.
 
     Raises ValueError for unknown styles so untyped callers fail loudly
     instead of silently getting classic names.

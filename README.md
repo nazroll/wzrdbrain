@@ -59,14 +59,14 @@ combo = generate_combo(3)
 for trick in combo:
     print(f"{trick['name']}: {trick['entry']['direction']} → {trick['exit']['direction']}")
 # Example output:
-# Front Predator (Open): front → front
-# Front Gazelle (Open): front → back
-# Back Lion (Open): back → front
+# Front Predator: front → front
+# Front Open Gazelle: front → back
+# Back Open Lion: back → front
 ```
 
 Each trick dict contains `id`, `name`, `category`, `stage`, a `transition` annotation describing its link to the previous trick (`start`/`linked`/`edge_shift`/`reset`), and `entry`/`exit` state objects. The `exit` object includes `direction`, `edge`, `stance`, `point`, plus `lead_foot` and `feet`.
 
-Skaters who prefer "fakie"/"forward" wording can switch the display style with `terminology="fakie"` — trick names render as `Forward Gazelle (Open)` / `Fakie Lion (Open)` while ids and state values stay unchanged:
+Skaters who prefer "fakie"/"forward" wording can switch the display style with `terminology="fakie"` — trick names render as `Forward Open Gazelle` / `Fakie Open Lion` while ids and state values stay unchanged:
 
 ```python
 combo = generate_combo(3, terminology="fakie")
