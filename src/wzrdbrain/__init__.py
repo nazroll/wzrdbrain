@@ -6,4 +6,4 @@ from .wzrdbrain import generate_combo
 
 __all__ = ["generate_combo"]
 
-__version__ = "0.5.0"
+__version__ = "0.6.0"
