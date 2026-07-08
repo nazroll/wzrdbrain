@@ -308,6 +308,35 @@ def test_all_moves_in_library_are_valid() -> None:
         assert 1 <= move.stage <= 5, f"{move.id}: bad stage {move.stage}"
 
 
+def test_terminology_fakie_renames_direction_prefixes() -> None:
+    """terminology='fakie' renders Front->Forward and Back->Fakie in names."""
+    assert Trick("gazelle_f_o").to_dict(terminology="fakie")["name"] == "Forward Gazelle (Open)"
+    assert Trick("lion_b_o").to_dict(terminology="fakie")["name"] == "Fakie Lion (Open)"
+    # Unprefixed (implicitly forward) turn names stay unchanged
+    assert Trick("parallel_turn_o").to_dict(terminology="fakie")["name"] == "Parallel Turn (Open)"
+
+
+def test_terminology_default_is_classic() -> None:
+    """Without the toggle, names keep the canonical Front/Back wording."""
+    assert Trick("gazelle_f_o").to_dict()["name"] == "Front Gazelle (Open)"
+    for trick in generate_combo(4):
+        assert not trick["name"].startswith(("Forward ", "Fakie "))
+
+
+def test_generate_combo_terminology_fakie() -> None:
+    """generate_combo(terminology='fakie') emits no Front/Back name prefixes."""
+    for _ in range(20):
+        for trick in generate_combo(4, terminology="fakie"):
+            assert not trick["name"].startswith(("Front ", "Back ")), trick["name"]
+            # ids and state values keep canonical vocabulary
+            assert trick["entry"]["direction"] in ("front", "back")
+
+
+def test_generate_combo_rejects_unknown_terminology() -> None:
+    with pytest.raises(ValueError):
+        generate_combo(3, terminology="wizard")  # type: ignore[arg-type]
+
+
 def test_combo_variety() -> None:
     """100 combos should produce more than 1 unique first move."""
     first_moves = {generate_combo(3)[0]["id"] for _ in range(100)}

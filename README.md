@@ -66,6 +66,12 @@ for trick in combo:
 
 Each trick dict contains `id`, `name`, `category`, `stage`, a `transition` annotation describing its link to the previous trick (`start`/`linked`/`edge_shift`/`reset`), and `entry`/`exit` state objects. The `exit` object includes `direction`, `edge`, `stance`, `point`, plus `lead_foot` and `feet`.
 
+Skaters who prefer "fakie"/"forward" wording can switch the display style with `terminology="fakie"` — trick names render as `Forward Gazelle (Open)` / `Fakie Lion (Open)` while ids and state values stay unchanged:
+
+```python
+combo = generate_combo(3, terminology="fakie")
+```
+
 ### JavaScript
 
 Earlier releases shipped an auto-generated JavaScript port. It was removed to cut maintenance; if you need it, pin the last release that included it via JSDelivr:
