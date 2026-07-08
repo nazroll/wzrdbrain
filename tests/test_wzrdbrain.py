@@ -337,6 +337,12 @@ def test_generate_combo_rejects_unknown_terminology() -> None:
         generate_combo(3, terminology="wizard")  # type: ignore[arg-type]
 
 
+def test_to_dict_rejects_unknown_terminology() -> None:
+    """to_dict must raise like generate_combo, not silently fall back to classic."""
+    with pytest.raises(ValueError):
+        Trick("gazelle_f_o").to_dict(terminology="wizard")  # type: ignore[arg-type]
+
+
 def test_combo_variety() -> None:
     """100 combos should produce more than 1 unique first move."""
     first_moves = {generate_combo(3)[0]["id"] for _ in range(100)}

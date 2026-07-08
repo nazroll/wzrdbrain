@@ -76,7 +76,12 @@ def _display_name(move: Move, terminology: Terminology) -> str:
     swaps the direction prefixes: "Front X" -> "Forward X", "Back X" ->
     "Fakie X". Names without a direction prefix (e.g. "Parallel Turn (Open)",
     an implicitly forward turn) are returned unchanged in both styles.
+
+    Raises ValueError for unknown styles so untyped callers fail loudly
+    instead of silently getting classic names.
     """
+    if terminology not in ("classic", "fakie"):
+        raise ValueError(f"Unknown terminology style: {terminology!r}")
     if terminology == "fakie":
         if move.name.startswith("Front "):
             return "Forward " + move.name.removeprefix("Front ")
