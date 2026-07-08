@@ -1,4 +1,7 @@
+from typing import Any
+
 import pytest
+from pydantic import ValidationError
 
 import wzrdbrain.wzrdbrain as wzrdbrain_module
 from wzrdbrain.wzrdbrain import (
@@ -306,6 +309,45 @@ def test_all_moves_in_library_are_valid() -> None:
         assert move.entry.stance in valid_stances, f"{move.id}: bad entry stance"
         assert move.entry.point in valid_points, f"{move.id}: bad entry point"
         assert 1 <= move.stage <= 5, f"{move.id}: bad stage {move.stage}"
+
+
+def test_invalid_enum_values_rejected_at_load() -> None:
+    """MoveLibrary should reject moves with values outside the schema enums."""
+    valid_move: dict[str, Any] = {
+        "id": "test_move",
+        "name": "Test Move",
+        "category": "base",
+        "stage": 1,
+        "mechanics": {"feet": 2, "is_rotation": False, "degrees": 0, "rotation_type": "neutral"},
+        "entry": {"direction": "front", "edge": "center", "stance": "neutral", "point": "all"},
+        "exit": {
+            "direction": "same",
+            "edge": "same",
+            "stance": "same",
+            "point": "all",
+            "lead_foot": "same",
+            "feet": 2,
+        },
+    }
+    # Sanity check: the valid move loads
+    MoveLibrary.model_validate({"version": "test", "moves": [valid_move]})
+
+    bad_cases = [
+        ("entry", {"direction": "fornt"}),  # typo
+        ("entry", {"edge": "sideways"}),
+        ("entry", {"point": "ball"}),
+        ("exit", {"direction": "reverse"}),
+        ("exit", {"lead_foot": "front"}),  # absolute value not allowed for lead_foot
+    ]
+    for section, override in bad_cases:
+        bad_move: dict[str, Any] = {**valid_move, section: {**valid_move[section], **override}}
+        with pytest.raises(ValidationError):
+            MoveLibrary.model_validate({"version": "test", "moves": [bad_move]})
+
+    for top_override in [{"category": "dance"}]:
+        bad_move = {**valid_move, **top_override}
+        with pytest.raises(ValidationError):
+            MoveLibrary.model_validate({"version": "test", "moves": [bad_move]})
 
 
 def test_combo_variety() -> None:
