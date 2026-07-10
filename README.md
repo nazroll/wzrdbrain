@@ -14,12 +14,14 @@ Every move in the library defines an **entry state** (what the skater needs to b
 
 Matching uses a three-tier cascade: it prefers a fully continuous link (direction + point + edge + stance), falls back to matching direction + point, then to direction alone — so it never dead-ends. Each trick reports how continuous its link is via a `transition` field (`start`, `linked`, `edge_shift`, or `reset`), so the output is honest about where the skater makes an implicit adjustment.
 
+Move names follow the `Front/Back [Open|Closed] Move` convention (e.g. `Front Open Gazelle`), and the whole library is validated against the move schema at load time — a typo in the data fails at import instead of silently generating broken combos.
+
 The move library (`moves.json`) contains 68 move variants across 7 categories:
 
 | Category | Examples | Count |
 |----------|----------|-------|
 | Base | Predator, Predator One | 4 |
-| Turn | Parallel Turn, Tree Turn (front and back entries) | 8 |
+| Turn | Parallel, Tree (front and back entries) | 8 |
 | Transition | Gazelle, Lion, Lion S, Gazelle S, 180, 360, 540 | 22 |
 | Pivot | Toe Pivot, Heel Pivot (all direction/stance combos) | 8 |
 | Swivel | Stunami, UFO Swivel | 4 |
@@ -32,7 +34,7 @@ We welcome contributions! `wzrdbrain` is an open-source project, and we encourag
 
 ### Want to add a new trick?
 
-This is the most common way for skaters to contribute! Add a new move entry to `src/wzrdbrain/moves.json` with its entry/exit states. See [the research doc](./docs/moves_research.md) for the state model and edge conventions.
+This is the most common way for skaters to contribute! Add a new move entry to `src/wzrdbrain/moves.json` with its entry/exit states. Name it following the `Front/Back [Open|Closed] Move` convention — the library is validated at load time, so any invalid state value is caught the moment the tests run. See [the research doc](./docs/moves_research.md) for the state model and edge conventions.
 
 To get started, please read our [**contributing guide**](./CONTRIBUTING.md) which will walk you through the process.
 
